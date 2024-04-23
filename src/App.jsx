@@ -1,19 +1,21 @@
-import React from "react";
-import { DatePicker, Button } from "antd";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Admin from "./pages/admin";
+import Login from "./pages/login";
+import Join from "./pages/Join";
+import JoinForm from "components/JoinForm";
 
-const App = () => {
+function App() {
   return (
-    <div>
-      <div>
-        <h2 className="text-blue-500 text-xl font-bold text-center">
-          Hello, React
-        </h2>
-        <p className="text-lg font-medium">Hello, Typescript!</p>
-      </div>
-      <DatePicker />
-      <Button type="primary">Primary Button</Button>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/admin/login" element={<Login admin={true} />} />
+        <Route path="/admin" element={<Admin />}></Route>
+        <Route path="/join" element={<Join />} />
+        <Route path="/join/:type" element={<JoinForm />} />
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
 export default App;
