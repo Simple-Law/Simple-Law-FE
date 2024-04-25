@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Admin from "./pages/admin";
 import Login from "./pages/login";
 import SignUp from "./pages/SignUp";
-import JoinForm from "components/SignUpForm";
+import Agreement from "components/SignUpForm/Agreement";
 
 function App() {
   return (
@@ -12,7 +12,7 @@ function App() {
         <Route path="/admin/login" element={<Login admin={true} />} />
         <Route path="/admin" element={<Admin />}></Route>
         <Route path="/signup" element={<SignUp />} />
-        <Route path="/join/:type" element={<JoinForm />} />
+        <Route path="/signup/:type" element={<Agreement />} />
       </Routes>
     </BrowserRouter>
   );
