@@ -12,6 +12,9 @@ const theme = {
       colorTextDisabled: "#B8C7D5",
       controlHeight: 48,
     },
+    Checkbox: {
+      controlInteractiveSize: 24,
+    },
   },
 };
 export default theme;
