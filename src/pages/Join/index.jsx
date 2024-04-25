@@ -37,15 +37,6 @@ const Join = () => {
   const [checkedQuest, setCheckedQuest] = useState(false);
   const [checkedLawyer, setCheckedLawyer] = useState(false);
 
-  // const onChangeQuest = (e) => {
-  //   setCheckedQuest(e.target.checked);
-  //   setCheckedLawyer(false);
-  // };
-
-  // const onChangeLawyer = (e) => {
-  //   setCheckedLawyer(e.target.checked);
-  //   setCheckedQuest(false);
-  // };
   const toggleQuest = () => {
     setCheckedQuest(!checkedQuest);
     setCheckedLawyer(false);
