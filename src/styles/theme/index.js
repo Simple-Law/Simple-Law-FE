@@ -6,7 +6,12 @@ const theme = {
     colorError: "#fe3240",
   },
   components: {
-    // component token
+    Button: {
+      borderColorDisabled: "rgba(255, 255, 255, 0)",
+      colorBgContainerDisabled: "#F1F5F9",
+      colorTextDisabled: "#B8C7D5",
+      controlHeight: 48,
+    },
   },
 };
 export default theme;
