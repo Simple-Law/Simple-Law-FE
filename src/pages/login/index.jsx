@@ -38,7 +38,7 @@ const Login = ({ admin }) => {
             </div>
             <div className="justify-center items-center gap-3 inline-flex w-full">
               <Link
-                to="/join"
+                to="/signup"
                 className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
               >
                 회원가입

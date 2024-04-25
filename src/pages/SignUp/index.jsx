@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Checkbox, Button, AutoComplete } from "antd";
+
+import { Checkbox, Button } from "antd";
 import MyButton from "components/MyButton";
 import kakao from "assets/images/icons/kakao.svg";
 import google from "assets/images/icons/Google.svg";
