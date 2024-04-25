@@ -38,7 +38,7 @@ const StyledButton = styled.button`
 
 const MyButton = ({ backgroundimage, text, ...rest }) => {
   return (
-    <StyledButton {...rest} backgroundimage={backgroundimage}>
+    <StyledButton {...rest} backgroundImage={backgroundimage}>
       {text}
     </StyledButton>
   );
