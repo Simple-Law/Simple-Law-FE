@@ -71,21 +71,21 @@ const Login = ({ admin }) => {
               <div className="w-full">
                 <MyButton
                   className="px-4 py-3 h-12 "
-                  backgroundImage={kakao}
+                  backgroundimage={kakao}
                   text="카카오 로그인"
-                  backgroundColor={"#FEE502"}
+                  backgroundcolor={"#FEE502"}
                 />
                 <MyButton
                   className="px-4 py-3 h-12 my-2"
-                  backgroundImage={naver}
+                  backgroundimage={naver}
                   text="네이버 로그인"
-                  hasBorder={true}
+                  hasborder={true}
                 />
                 <MyButton
                   className="px-4 py-3 h-12"
-                  backgroundImage={google}
+                  backgroundimage={google}
                   text="구글 로그인"
-                  hasBorder={true}
+                  hasborder={true}
                 />
               </div>
             )}

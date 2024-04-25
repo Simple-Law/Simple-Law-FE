@@ -45,6 +45,7 @@ const Join = () => {
   const toggleLawyer = () => {
     setCheckedLawyer(!checkedLawyer);
     setCheckedQuest(false);
+    console.log(checkedLawyer);
   };
 
   return (
@@ -73,14 +74,14 @@ const Join = () => {
                         <img src={Quest} alt="" className="ml-4" />
                       </div>
                     </div>
-                    <div class="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
+                    <div className="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
                       의뢰인
                     </div>
                   </div>
                 </CheckboxContainer>
                 <CheckboxContainer
                   active={checkedLawyer}
-                  onChange={toggleLawyer}
+                  onClick={toggleLawyer}
                 >
                   <div className="checkboxWrapper">
                     <Checkbox
@@ -92,7 +93,7 @@ const Join = () => {
                     <div className="w-[100px] h-[100px] mx-auto py-[20px] px-[20px] rounded-full bg-slate-50">
                       <img src={Lawyer} alt="" />
                     </div>
-                    <div class="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
+                    <div className="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
                       <span>변호사</span>
                     </div>
                   </div>
@@ -107,63 +108,63 @@ const Join = () => {
                 아이디로 가입하기
               </Button>
             </div>
-            <div class="justify-start items-center inline-flex">
-              <div class="grow shrink basis-0 h-px bg-zinc-200"></div>
-              <div class="px-3 justify-center items-center gap-2.5 flex">
-                <div class="text-center text-neutral-400 text-base font-medium font-['Pretendard'] leading-tight">
+            <div className="justify-start items-center inline-flex">
+              <div className="grow shrink basis-0 h-px bg-zinc-200"></div>
+              <div className="px-3 justify-center items-center gap-2.5 flex">
+                <div className="text-center text-neutral-400 text-base font-medium font-['Pretendard'] leading-tight">
                   또는
                 </div>
               </div>
-              <div class="grow shrink basis-0 h-px bg-zinc-200"></div>
+              <div className="grow shrink basis-0 h-px bg-zinc-200"></div>
             </div>
 
             <div className="w-full">
               <MyButton
                 className="px-4 py-3 h-12 "
-                backgroundImage={kakao}
+                backgroundimage={kakao}
                 text="카카오 로그인"
-                backgroundColor={"#FEE502"}
+                backgroundcolor={"#FEE502"}
               />
               <MyButton
                 className="px-4 py-3 h-12 my-2"
-                backgroundImage={naver}
+                backgroundimage={naver}
                 text="네이버 로그인"
-                hasBorder={true}
+                hasborder={true}
               />
               <MyButton
                 className="px-4 py-3 h-12"
-                backgroundImage={google}
+                backgroundimage={google}
                 text="구글 로그인"
-                hasBorder={true}
+                hasborder={true}
               />
             </div>
           </div>
         </div>
       </div>
-      <div class="min-w-[890px] absolute bottom-0  left-0  flex justify-center items-center bg-white w-full p-[24px]">
-        <div class="min-w-[890px] ml-[240px] w-full">
-          <div class="w-full items-center gap-4 inline-flex">
-            <div class="text-slate-400 text-sm font-normal font-['Pretendard']">
+      <div className="min-w-[890px] absolute bottom-0  left-0  flex justify-center items-center bg-white w-full p-[24px]">
+        <div className="min-w-[890px] ml-[240px] w-full">
+          <div className="w-full items-center gap-4 inline-flex">
+            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
               공지사항
             </div>
-            <div class="w-px h-2.5 bg-zinc-200"></div>
-            <div class="text-slate-400 text-sm font-bold font-['Pretendard']">
+            <div className="w-px h-2.5 bg-zinc-200"></div>
+            <div className="text-slate-400 text-sm font-bold font-['Pretendard']">
               이용약관 및 개인정보 보호 방침
             </div>
-            <div class="w-px h-2.5 bg-zinc-200"></div>
-            <div class="text-slate-400 text-sm font-normal font-['Pretendard']">
+            <div className="w-px h-2.5 bg-zinc-200"></div>
+            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
               고객문의이메일
             </div>
-            <div class="w-px h-2.5 bg-zinc-200"></div>
-            <div class="text-slate-400 text-sm font-normal font-['Pretendard']">
+            <div className="w-px h-2.5 bg-zinc-200"></div>
+            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
               주소
             </div>
-            <div class="w-px h-2.5 bg-zinc-200"></div>
-            <div class="text-slate-400 text-sm font-normal font-['Pretendard']">
+            <div className="w-px h-2.5 bg-zinc-200"></div>
+            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
               통신판매업신고번호
             </div>
-            <div class="w-px h-2.5 bg-zinc-200"></div>
-            <div class="text-slate-400 text-sm font-normal font-['Pretendard']">
+            <div className="w-px h-2.5 bg-zinc-200"></div>
+            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
               사업자 등록번호
             </div>
           </div>
