@@ -4,9 +4,9 @@ import styled from "styled-components";
 const StyledButton = styled.button`
   /* 버튼에 대한 기본 스타일 */
   padding: 10px 20px;
-  background-color: ${(props) => props.backgroundColor};
+  background-color: ${(props) => props.backgroundcolor};
   color: #000;
-  border: ${(props) => (props.hasBorder ? "1px solid #e4e9f1" : "none")};
+  border: ${(props) => (props.hasborder ? "1px solid #e4e9f1" : "none")};
   border-radius: 6px;
   cursor: pointer;
   display: block;
@@ -36,9 +36,9 @@ const StyledButton = styled.button`
   }
 `;
 
-const MyButton = ({ backgroundImage, text, ...rest }) => {
+const MyButton = ({ backgroundimage, text, ...rest }) => {
   return (
-    <StyledButton {...rest} backgroundImage={backgroundImage}>
+    <StyledButton {...rest} backgroundImage={backgroundimage}>
       {text}
     </StyledButton>
   );
