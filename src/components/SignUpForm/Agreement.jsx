@@ -94,32 +94,36 @@ const Agreement = () => {
         <button className="text-xs text-Btn-Text-Disabled">보기</button>
       </div>
       <div className="w-full h-px bg-zinc-200 my-[10px]"></div>
-      <p className="text-Color-gray-900 text-base font-medium">
-        이용자 연령 확인
-      </p>
-      <div className="w-full items-center justify-center flex flex-col rounded-md bg-primary px-4 py-4 my-[6px]">
-        <p className="w-full text-gray-800 text-sm font-normal leading-tight">
-          법률문제는 만 14세 미만 아동이 스스로 판단하기 힘든 복잡한 문제 일 수
-          있습니다.
-          <span className="text-red-500 text-sm font-semibold leading-tight">
-            112 경찰청&nbsp;
-          </span>
-          또는
-          <span className="text-red-500 text-sm font-semibold leading-tight">
-            &nbsp;1577-1391 아동보호전문기관
-          </span>
-          에 연락해 도움을 받아보세요.
-        </p>
-      </div>
-      <Checkbox
-        className="flex items-center py-[10px] text-neutral-400 text-base font-normal leading-tight mb-8"
-        value="age"
-        checked={checkedList.includes("age")}
-        onChange={(e) => handleChange("age", e.target.checked)}
-      >
-        만 14세 이상입니다.
-      </Checkbox>
-      <Button type="primary" block disabled={!isChecked}>
+      {type === "quest" && (
+        <>
+          <p className="text-Color-gray-900 text-base font-medium py-[10px]">
+            이용자 연령 확인
+          </p>
+          <div className="w-full items-center justify-center flex flex-col rounded-md bg-primary px-4 py-4 my-[6px]">
+            <p className="w-full text-gray-800 text-sm font-normal leading-tight">
+              법률문제는 만 14세 미만 아동이 스스로 판단하기 힘든 복잡한 문제 일
+              수 있습니다.
+              <span className="text-red-500 text-sm font-semibold leading-tight">
+                112 경찰청&nbsp;
+              </span>
+              또는
+              <span className="text-red-500 text-sm font-semibold leading-tight">
+                &nbsp;1577-1391 아동보호전문기관
+              </span>
+              에 연락해 도움을 받아보세요.
+            </p>
+          </div>
+          <Checkbox
+            className="flex items-center py-[10px] text-neutral-400 text-base font-normal leading-tight "
+            value="age"
+            checked={checkedList.includes("age")}
+            onChange={(e) => handleChange("age", e.target.checked)}
+          >
+            만 14세 이상입니다.
+          </Checkbox>
+        </>
+      )}
+      <Button type="primary" block disabled={!isChecked} className="mt-8">
         다음
       </Button>
     </LoginForm>
