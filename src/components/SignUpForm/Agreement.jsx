@@ -1,10 +1,11 @@
 import LoginForm from "components/LoginForm";
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Checkbox, Button } from "antd";
 
 const Agreement = () => {
   const { type } = useParams();
+  const navigate = useNavigate();
   const [allChecked, setAllChecked] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
   const [checkedList, setCheckedList] = useState([]);
@@ -44,6 +45,13 @@ const Agreement = () => {
       : checkedList.filter((item) => item !== value);
 
     setCheckedList(newList);
+  };
+  const handleNextButtonClick = () => {
+    if (type === "quest") {
+      navigate("/signup/quest/form");
+    } else if (type === "lawyer") {
+      navigate("/signup/lawyer/form");
+    }
   };
 
   return (
@@ -123,7 +131,13 @@ const Agreement = () => {
           </Checkbox>
         </>
       )}
-      <Button type="primary" block disabled={!isChecked} className="mt-8">
+      <Button
+        type="primary"
+        block
+        disabled={!isChecked}
+        className="mt-8"
+        onClick={handleNextButtonClick}
+      >
         다음
       </Button>
     </LoginForm>
