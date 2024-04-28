@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Checkbox, Button } from "antd";
 import MyButton from "components/MyButton";
@@ -9,6 +10,7 @@ import Logo from "assets/images/icons/Logo.svg";
 import Quest from "assets/images/icons/quest.svg";
 import Lawyer from "assets/images/icons/lawyer.svg";
 import styled, { css } from "styled-components";
+import LoginForm from "components/LoginForm";
 
 const CheckboxContainer = styled.div`
   border-radius: 8px;
@@ -34,6 +36,7 @@ const CheckboxContainer = styled.div`
 `;
 
 const Join = () => {
+  const navigate = useNavigate();
   const [checkedQuest, setCheckedQuest] = useState(false);
   const [checkedLawyer, setCheckedLawyer] = useState(false);
 
@@ -47,130 +50,96 @@ const Join = () => {
     setCheckedQuest(false);
     console.log(checkedLawyer);
   };
-
+  const handleSignUp = () => {
+    if (checkedQuest) {
+      navigate("/signup/quest");
+    } else if (checkedLawyer) {
+      navigate("/signup/lawyer");
+    } else {
+      // 체크된 체크박스가 없는 경우에 대한 처리
+    }
+  };
   return (
-    <div className="min-h-screen relative flex flex-col">
-      <div className="relative w-[600px] mb-[100px] pt-[120px] mx-auto">
-        <div className="w-full relative  mt-[20px]  px-[100px]">
-          <div className="mb-6">
-            <img src={Logo} alt="" className="mx-auto w-56" />
-            <h1 className="text-center text-2xl text-gray-900 font-bold mt-4 pb-[20px]">
-              회원가입
-            </h1>
-          </div>
-          <div className="gap-10 flex justify-center flex-col">
-            <div>
-              <div className="grid grid-cols-2 gap-x-2">
-                <CheckboxContainer active={checkedQuest} onClick={toggleQuest}>
-                  <div className="checkboxWrapper">
-                    <Checkbox
-                      value="quest"
-                      checked={checkedQuest}
-                      onChange={toggleQuest}
-                      className="mt-[20px] ml-[20px]"
-                    ></Checkbox>
-                    <div className="w-[100px] h-[100px] mx-auto py-[20px] px-[20px] rounded-full bg-slate-50">
-                      <div className="">
-                        <img src={Quest} alt="" className="ml-4" />
-                      </div>
-                    </div>
-                    <div className="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
-                      의뢰인
-                    </div>
+    <LoginForm title="회원가입">
+      <div className="gap-10 flex justify-center flex-col">
+        <div>
+          <div className="grid grid-cols-2 gap-x-2">
+            <CheckboxContainer active={checkedQuest} onClick={toggleQuest}>
+              <div className="checkboxWrapper">
+                <Checkbox
+                  value="quest"
+                  checked={checkedQuest}
+                  onChange={toggleQuest}
+                  className="mt-[20px] ml-[20px]"
+                ></Checkbox>
+                <div className="w-[100px] h-[100px] mx-auto py-[20px] px-[20px] rounded-full bg-slate-50">
+                  <div className="">
+                    <img src={Quest} alt="" className="ml-4" />
                   </div>
-                </CheckboxContainer>
-                <CheckboxContainer
-                  active={checkedLawyer}
-                  onClick={toggleLawyer}
-                >
-                  <div className="checkboxWrapper">
-                    <Checkbox
-                      value="lawyer"
-                      checked={checkedLawyer}
-                      onChange={toggleLawyer}
-                      className="mt-[20px] ml-[20px]"
-                    ></Checkbox>
-                    <div className="w-[100px] h-[100px] mx-auto py-[20px] px-[20px] rounded-full bg-slate-50">
-                      <img src={Lawyer} alt="" />
-                    </div>
-                    <div className="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
-                      <span>변호사</span>
-                    </div>
-                  </div>
-                </CheckboxContainer>
-              </div>
-              <Button
-                type="primary"
-                block
-                className=" px-4 py-3 text-base font-medium mt-3"
-                disabled={!checkedQuest && !checkedLawyer}
-              >
-                아이디로 가입하기
-              </Button>
-            </div>
-            <div className="justify-start items-center inline-flex">
-              <div className="grow shrink basis-0 h-px bg-zinc-200"></div>
-              <div className="px-3 justify-center items-center gap-2.5 flex">
-                <div className="text-center text-neutral-400 text-base font-medium font-['Pretendard'] leading-tight">
-                  또는
+                </div>
+                <div className="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
+                  의뢰인
                 </div>
               </div>
-              <div className="grow shrink basis-0 h-px bg-zinc-200"></div>
-            </div>
-
-            <div className="w-full">
-              <MyButton
-                className="px-4 py-3 h-12 "
-                backgroundimage={kakao}
-                text="카카오 로그인"
-                backgroundcolor={"#FEE502"}
-              />
-              <MyButton
-                className="px-4 py-3 h-12 my-2"
-                backgroundimage={naver}
-                text="네이버 로그인"
-                hasborder={true}
-              />
-              <MyButton
-                className="px-4 py-3 h-12"
-                backgroundimage={google}
-                text="구글 로그인"
-                hasborder={true}
-              />
+            </CheckboxContainer>
+            <CheckboxContainer active={checkedLawyer} onClick={toggleLawyer}>
+              <div className="checkboxWrapper">
+                <Checkbox
+                  value="lawyer"
+                  checked={checkedLawyer}
+                  onChange={toggleLawyer}
+                  className="mt-[20px] ml-[20px]"
+                ></Checkbox>
+                <div className="w-[100px] h-[100px] mx-auto py-[20px] px-[20px] rounded-full bg-slate-50">
+                  <img src={Lawyer} alt="" />
+                </div>
+                <div className="text-center mt-4 text-gray-800 text-lg font-semibold font-['Pretendard'] leading-6">
+                  <span>변호사</span>
+                </div>
+              </div>
+            </CheckboxContainer>
+          </div>
+          <Button
+            type="primary"
+            block
+            className=" px-4 py-3 text-base font-medium mt-3"
+            disabled={!checkedQuest && !checkedLawyer}
+            onClick={handleSignUp}
+          >
+            아이디로 가입하기
+          </Button>
+        </div>
+        <div className="justify-start items-center inline-flex">
+          <div className="grow shrink basis-0 h-px bg-zinc-200"></div>
+          <div className="px-3 justify-center items-center gap-2.5 flex">
+            <div className="text-center text-neutral-400 text-base font-medium font-['Pretendard'] leading-tight">
+              또는
             </div>
           </div>
+          <div className="grow shrink basis-0 h-px bg-zinc-200"></div>
+        </div>
+        <div className="w-full">
+          <MyButton
+            className="px-4 py-3 h-12 "
+            backgroundimage={kakao}
+            text="카카오 로그인"
+            backgroundcolor={"#FEE502"}
+          />
+          <MyButton
+            className="px-4 py-3 h-12 my-2"
+            backgroundimage={naver}
+            text="네이버 로그인"
+            hasborder={true}
+          />
+          <MyButton
+            className="px-4 py-3 h-12"
+            backgroundimage={google}
+            text="구글 로그인"
+            hasborder={true}
+          />
         </div>
       </div>
-      <div className="min-w-[890px] absolute bottom-0  left-0  flex justify-center items-center bg-white w-full p-[24px]">
-        <div className="min-w-[890px] ml-[240px] w-full">
-          <div className="w-full items-center gap-4 inline-flex">
-            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
-              공지사항
-            </div>
-            <div className="w-px h-2.5 bg-zinc-200"></div>
-            <div className="text-slate-400 text-sm font-bold font-['Pretendard']">
-              이용약관 및 개인정보 보호 방침
-            </div>
-            <div className="w-px h-2.5 bg-zinc-200"></div>
-            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
-              고객문의이메일
-            </div>
-            <div className="w-px h-2.5 bg-zinc-200"></div>
-            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
-              주소
-            </div>
-            <div className="w-px h-2.5 bg-zinc-200"></div>
-            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
-              통신판매업신고번호
-            </div>
-            <div className="w-px h-2.5 bg-zinc-200"></div>
-            <div className="text-slate-400 text-sm font-normal font-['Pretendard']">
-              사업자 등록번호
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </LoginForm>
   );
 };
 
