@@ -4,6 +4,7 @@ const theme = {
     colorInfo: "#287fff",
     wireframe: false,
     colorError: "#fe3240",
+    fontFamily: "Pretendard",
   },
   components: {
     Button: {
@@ -25,6 +26,9 @@ const theme = {
       controlHeight: 48,
       colorText: "rgb(148, 163, 184)",
       colorBorder: "rgb(228, 233, 241)",
+    },
+    Form: {
+      itemMarginBottom: 0,
     },
   },
 };
