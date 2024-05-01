@@ -1,37 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import LoginForm from "components/LoginForm";
 import { Input, Button, Radio, Form } from "antd";
 import moment from "moment";
+import SubmitButton from "components/SubmitButton";
 import { useParams } from "react-router-dom";
-const SubmitButton = ({ form, children }) => {
-  const [submittable, setSubmittable] = useState(false);
 
-  // Watch all values
-  const values = Form.useWatch([], form);
-  useEffect(() => {
-    form
-      .validateFields({
-        validateOnly: true,
-      })
-      .then(() => setSubmittable(true))
-      .catch(() => setSubmittable(false));
-  }, [form, values]);
-  return (
-    <Button block type="primary" htmlType="submit" disabled={!submittable}>
-      {children}
-    </Button>
-  );
-};
 const JoinForm = () => {
   // const { type } = useParams();
   const [form] = Form.useForm();
-  const normFile = (e) => {
-    console.log("Upload event:", e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
+  const [showAuthenticationCodeField, setShowAuthenticationCodeField] =
+    useState(false);
+
   const validPhoneNumber = (phoneNumberInput, value) => {
     if (!value || !value.startsWith("010")) {
       return Promise.reject(new Error(phoneNumberInput.message));
@@ -42,35 +21,22 @@ const JoinForm = () => {
 
   const handlePhoneNumberChange = (e) => {
     const { value } = e.target;
-
-    // 입력된 문자열에서 숫자만 추출하여 구성
     const phoneNumber = value.replace(/\D/g, "");
-
-    // 전화번호 형식에 맞게 '-' 추가
     const formattedPhoneNumber = phoneNumber.replace(
       /(\d{3})(\d{3,4})(\d{4})/,
       "$1-$2-$3"
     );
-
-    // 폼 필드에 값을 설정
     form.setFieldsValue({ tel: formattedPhoneNumber });
   };
 
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
+    console.log("결과값: ", values);
   };
-  const disabledDate = (current) => {
-    // 현재 날짜에서 14년 전 날짜를 구함
-    const fourteenYearsAgo = moment().subtract(14, "years");
 
-    // 현재 날짜보다 이전인 경우만 비활성화
-    return current && current > fourteenYearsAgo.endOf("day");
-  };
   const handleInputChange = (e) => {
     const { value } = e.target;
     // 숫자 이외의 문자 제거
     const formattedValue = value.replace(/\D/g, "");
-
     // 구분자를 추가하여 출력
     const formattedDate = formattedValue
       .split("")
@@ -79,29 +45,68 @@ const JoinForm = () => {
           index === 4 || index === 6 ? acc + "." + char : acc + char,
         ""
       );
-
     // 폼 필드에 값을 설정
     form.setFieldsValue({ birthday: formattedDate });
   };
+  const handleFormChange = (changedValues, allValues) => {
+    // 모든 필드가 채워졌을 때 인증번호 입력 필드를 표시합니다.
+    const isFormFilled = Object.keys(allValues).every((key) => allValues[key]);
+    setShowAuthenticationCodeField(isFormFilled);
+  };
+
   return (
     <LoginForm title="회원가입">
-      <Form form={form} onFinish={onFinish} autoComplete="off">
+      <Form
+        form={form}
+        name="validateOnly"
+        onFinish={onFinish}
+        onValuesChange={handleFormChange}
+      >
         <div className="flex gap-2 flex-col">
           <Form.Item
             name="id"
             rules={[
               {
                 whitespace: true,
-                required: true,
+
                 message: "아이디는 필수로 입력해야 합니다!",
               },
             ]}
+            validateTrigger="onBlur"
           >
             <Input placeholder="아이디 입력" />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ whitespace: true, required: true }]}
+            rules={[
+              { whitespace: true },
+              ({ getFieldValue }) => ({
+                validator(_, value) {
+                  if (!value) {
+                    return Promise.reject(new Error("비밀번호를 입력해주세요"));
+                  }
+                  const hasUpperCase = /[A-Z]/.test(value);
+                  const hasLowerCase = /[a-z]/.test(value);
+                  const hasNumber = /[0-9]/.test(value);
+                  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+                  const isValid =
+                    (hasUpperCase ? 1 : 0) +
+                      (hasLowerCase ? 1 : 0) +
+                      (hasNumber ? 1 : 0) +
+                      (hasSpecialChar ? 1 : 0) >=
+                    2;
+                  if (value.length < 8 || value.length > 16 || !isValid) {
+                    return Promise.reject(
+                      new Error(
+                        "비밀번호 취약 : 8~16자의 영문 대/소문자, 숫자, 특수문자 중 2가지 이상을 사용해야 합니다."
+                      )
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+            validateTrigger="onBlur"
           >
             <Input type="password" placeholder="비밀번호 입력" />
           </Form.Item>
@@ -110,7 +115,6 @@ const JoinForm = () => {
             dependencies={["password"]}
             rules={[
               {
-                required: true,
                 message: "비밀번호가 일치하지 않습니다.",
               },
               ({ getFieldValue }) => ({
@@ -124,6 +128,7 @@ const JoinForm = () => {
                 },
               }),
             ]}
+            validateTrigger="onBlur"
           >
             <Input type="password" placeholder="비밀번호 재확인" />
           </Form.Item>
@@ -133,11 +138,12 @@ const JoinForm = () => {
             rules={[
               {
                 whitespace: true,
-                required: true,
+
                 type: "email",
                 message: "아이디를 이메일 형태로 입력해주세요",
               },
             ]}
+            validateTrigger="onBlur"
           >
             <Input placeholder="이메일 입력" />
           </Form.Item>
@@ -149,7 +155,7 @@ const JoinForm = () => {
             rules={[
               {
                 whitespace: true,
-                required: true,
+
                 message: "이름은 필수로 입력해야 합니다.",
               },
             ]}
@@ -157,21 +163,10 @@ const JoinForm = () => {
             <Input placeholder="이름" />
           </Form.Item>
 
-          {/* <Form.Item
-            name="birthday"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <DatePicker placeholder="생년월일 8자리" disabledDate={disabledDate} />
-          </Form.Item> */}
           <Form.Item
             name="birthday"
             rules={[
               {
-                required: true,
                 message: "생년월일을 입력하세요.",
               },
               ({ getFieldValue }) => ({
@@ -204,13 +199,13 @@ const JoinForm = () => {
             rules={[
               {
                 whitespace: true,
-                required: true,
 
                 type: "number",
                 validator: validPhoneNumber,
                 message: "올바른 전화번호 양식이 아닙니다.",
               },
             ]}
+            validateTrigger="onBlur"
           >
             <Input
               placeholder="휴대전회번호('-' 제외하고 입력)"
@@ -218,14 +213,7 @@ const JoinForm = () => {
               maxLength="13"
             />
           </Form.Item>
-          <Form.Item
-            name="gender"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
+          <Form.Item name="gender">
             <Radio.Group
               buttonStyle="solid"
               className="w-full grid grid-cols-3 text-center"
@@ -236,30 +224,17 @@ const JoinForm = () => {
             </Radio.Group>
           </Form.Item>
 
-          {/* <Form.Item
-            name="dragger"
-            valuePropName="fileList"
-            getValueFromEvent={normFile}
-            noStyle
-          >
-            <Upload.Dragger name="files" action="/upload.do">
-              <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-              </p>
-              <p className="ant-upload-hint">최대 10mb이하 png,jpg,jpge,gif</p>
-            </Upload.Dragger>
-          </Form.Item> */}
+          {showAuthenticationCodeField && (
+            <Form.Item
+              name="authenticationCode"
+              rules={[{ required: true, message: "인증번호를 입력하세요." }]}
+            >
+              <Input placeholder="인증번호 입력" />
+            </Form.Item>
+          )}
         </div>
         <Form.Item className="mt-8">
-          <SubmitButton
-            type="primary"
-            htmlType="submit"
-            block
-            className="mt-8 w-full"
-            form={form}
-          >
-            인증 요청
-          </SubmitButton>
+          <SubmitButton form={form}>인증 요청</SubmitButton>
         </Form.Item>
       </Form>
     </LoginForm>

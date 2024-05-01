@@ -4,6 +4,8 @@ import Login from "./pages/login";
 import SignUp from "./pages/SignUp";
 import Agreement from "components/SignUpForm/Agreement";
 import JoinForm from "components/SignUpForm";
+import Detail from "components/SignUpForm/Detail";
+import Choice from "components/SignUpForm/Choice";
 
 function App() {
   return (
@@ -16,6 +18,8 @@ function App() {
         <Route path="/signup/:type" element={<Agreement />} />
         {/* <Route path="/signup/:type/form" element={<JoinForm />} /> */}
         <Route path="/signup/:type/form" element={<JoinForm />} />
+        <Route path="/signup/:type/form/detail" element={<Detail />} />
+        <Route path="/signup/:type/form/detail/choice" element={<Choice />} />
       </Routes>
     </BrowserRouter>
   );
