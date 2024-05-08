@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import LoginForm from "components/LoginForm";
 import { Input, Button, Radio, Form } from "antd";
 import moment from "moment";
-import SubmitButton from "components/SubmitButton";
+// import SubmitButton from "components/SubmitButton";
 import { useParams } from "react-router-dom";
 
-const JoinForm = () => {
-  // const { type } = useParams();
+const JoinForm = ({ handleData, nextStep }) => {
   const [form] = Form.useForm();
+  const { type } = useParams();
+  console.log(type);
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] =
     useState(false);
 
@@ -31,6 +32,8 @@ const JoinForm = () => {
 
   const onFinish = (values) => {
     console.log("결과값: ", values);
+    handleData(values);
+    nextStep();
   };
 
   const handleInputChange = (e) => {
@@ -48,11 +51,11 @@ const JoinForm = () => {
     // 폼 필드에 값을 설정
     form.setFieldsValue({ birthday: formattedDate });
   };
-  const handleFormChange = (changedValues, allValues) => {
-    // 모든 필드가 채워졌을 때 인증번호 입력 필드를 표시합니다.
-    const isFormFilled = Object.keys(allValues).every((key) => allValues[key]);
-    setShowAuthenticationCodeField(isFormFilled);
-  };
+  // const handleFormChange = (changedValues, allValues) => {
+  //   // 모든 필드가 채워졌을 때 인증번호 입력 필드를 표시합니다.
+  //   const isFormFilled = Object.keys(allValues).every((key) => allValues[key]);
+  //   setShowAuthenticationCodeField(isFormFilled);
+  // };
 
   return (
     <LoginForm title="회원가입">
@@ -60,7 +63,7 @@ const JoinForm = () => {
         form={form}
         name="validateOnly"
         onFinish={onFinish}
-        onValuesChange={handleFormChange}
+        // onValuesChange={handleFormChange}
       >
         <div className="flex gap-2 flex-col">
           <Form.Item
@@ -228,18 +231,21 @@ const JoinForm = () => {
             </Radio.Group>
           </Form.Item>
 
-          {showAuthenticationCodeField && (
+          {/* {showAuthenticationCodeField && (
             <Form.Item
               name="authenticationCode"
               rules={[{ required: true, message: "인증번호를 입력하세요." }]}
             >
               <Input placeholder="인증번호 입력" />
             </Form.Item>
-          )}
+          )} */}
         </div>
-        <Form.Item className="mt-8">
+        {/* <Form.Item className="mt-8">
           <SubmitButton form={form}>인증 요청</SubmitButton>
-        </Form.Item>
+        </Form.Item> */}
+        <Button type="primary" htmlType="submit" block className="mt-8">
+          다음
+        </Button>
       </Form>
     </LoginForm>
   );

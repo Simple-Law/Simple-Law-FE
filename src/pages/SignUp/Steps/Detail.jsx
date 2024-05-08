@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import LoginForm from "components/LoginForm";
 import { Form, Input, Upload, message, Button } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
-import SubmitButton from "components/SubmitButton";
+// import SubmitButton from "components/SubmitButton";
 const { Dragger } = Upload;
 const props = {
   name: "file",
@@ -23,7 +23,7 @@ const props = {
     console.log("Dropped files", e.dataTransfer.files);
   },
 };
-const Detail = () => {
+const Detail = ({ handleData, nextStep }) => {
   const [form] = Form.useForm();
 
   const [clientReady, setClientReady] = useState(false);
@@ -43,6 +43,8 @@ const Detail = () => {
   };
   const onFinish = (values) => {
     console.log("결과값: ", values);
+    handleData(values);
+    nextStep();
   };
   return (
     <LoginForm title="변호사 회원가입">
@@ -156,7 +158,7 @@ const Detail = () => {
           </SubmitButton>
         </Form.Item> */}
 
-        <Form.Item shouldUpdate>
+        {/* <Form.Item shouldUpdate>
           {() => (
             <Button
               block
@@ -172,7 +174,10 @@ const Detail = () => {
               다음
             </Button>
           )}
-        </Form.Item>
+        </Form.Item> */}
+        <Button type="primary" htmlType="submit" block className="mt-8">
+          다음
+        </Button>
       </Form>
     </LoginForm>
   );

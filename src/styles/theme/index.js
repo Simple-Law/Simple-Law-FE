@@ -26,6 +26,8 @@ const theme = {
       controlHeight: 48,
       colorText: "rgb(148, 163, 184)",
       colorBorder: "rgb(228, 233, 241)",
+      borderRadius: 0,
+      buttonPaddingInline: 0,
     },
     Form: {
       itemMarginBottom: 0,
