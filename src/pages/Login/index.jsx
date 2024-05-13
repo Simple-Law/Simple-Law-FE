@@ -42,7 +42,7 @@ const Login = () => {
           </Link>
           <div className="w-px h-3 bg-zinc-300"></div>
           <Link
-            to="/"
+            to="/findId"
             className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
           >
             아이디 찾기

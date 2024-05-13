@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import LoginForm from "components/LoginForm";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -32,6 +32,12 @@ const Home = () => {
           className="mt-1"
         >
           변호사
+        </Button>
+        <Button block className="mt-1">
+          <Link to="/board">의뢰자메일</Link>
+        </Button>
+        <Button block className="mt-1">
+          <Link to="/mail/quest">글작성</Link>
         </Button>
       </LoginForm>
     </>
