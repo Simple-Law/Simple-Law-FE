@@ -6,7 +6,7 @@ import { ReactComponent as Profile } from "assets/images/icons/profile.svg";
 
 const Header = () => {
   return (
-    <div className=" border-b-[1px] w-full">
+    <div className="h-16 border-b-[1px] w-full fixed top-0 left-0 bg-white z-[1000000]">
       <div className="flex justify-between items-center h-16 w-full">
         <div className="pl-[47px]">
           <Link to="/">

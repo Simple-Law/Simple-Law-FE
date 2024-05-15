@@ -13,7 +13,3 @@ body {
 button {
   font-family: "Pretendard";
 }
-.ant-menu-submenu-title,
-.ant-menu-item {
-  padding-left: 8px !important;
-}

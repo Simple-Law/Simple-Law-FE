@@ -6,11 +6,98 @@ import { ReactComponent as MailStar } from "assets/images/icons/mailStar.svg";
 import { ReactComponent as MailAll } from "assets/images/icons/mailAll.svg";
 import { ReactComponent as ArrowDown } from "assets/images/icons/arrowDown.svg";
 import { ReactComponent as ArrowUp } from "assets/images/icons/arrowUp.svg";
-import { FaStar, FaRegStar } from "react-icons/fa";
-import { Button, Dropdown, Menu, Select, Table } from "antd";
+import { ReactComponent as SearchIcon } from "assets/images/icons/search.svg";
+import { FaStar, FaRegStar, FaPlus } from "react-icons/fa";
+import { Button, Dropdown, Input, Menu, Table } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import moment from "moment"; // Import moment
 import StatusTag from "components/Tags";
+import styled from "styled-components";
+const { Search } = Input;
+
+const Board = styled.div`
+  .right-side {
+    height: calc(100vh - 64px);
+    border-right: 1px solid #e3e9ee;
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.6) 100%
+      ),
+      #f1f5f9;
+  }
+  .ant-menu {
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.6) 100%
+      ),
+      #f1f5f9;
+  }
+  .ant-menu-item-divider {
+    background: #e3e9ee;
+    margin: 16px 0;
+  }
+  .ant-menu-submenu-title,
+  .ant-menu-item {
+    padding: 8px !important;
+  }
+  .ant-pagination-item-active {
+    border: transparent !important;
+  }
+  .ant-menu-item-only-child {
+    padding: 0 40px !important;
+  }
+  .ant-spin-container {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+`;
+const PageSearch = styled(Search)`
+  width: 268px;
+  & .ant-input {
+    height: 40px;
+    border-radius: 4px 0 0 4px;
+    &:hover {
+      border-color: rgb(228, 233, 241);
+    }
+    &:focus {
+      border-color: rgb(228, 233, 241);
+    }
+  }
+  &:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  }
+  & .ant-btn-primary {
+    height: 40px;
+    border-radius: 0 4px 4px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(228, 233, 241);
+    border-left: none;
+    background: #fff;
+    &:hover {
+      background: #fff !important;
+    }
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  &.ant-input-search {
+    .ant-input-group-addon {
+      background: none;
+      border: none;
+    }
+    .ant-input-wrapper {
+      background: #ffffff;
+      border: 1px solid rgb(228, 233, 241);
+      border-radius: 4px;
+    }
+  }
+`;
 const QuestPage = () => {
   const [mails, setMails] = useState([]);
   const [data, setData] = useState([]);
@@ -32,13 +119,18 @@ const QuestPage = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/mails");
-        const formattedData = response.data.map((item) => ({
+        let formattedData = response.data.map((item) => ({
           ...item,
           key: item.id,
           category: "Text",
+          rawSentAt: item.sentAt,
           sentAt: moment(item.sentAt).format("YYYY. MM. DD"),
           time: item.time,
         }));
+        formattedData = formattedData.sort((a, b) =>
+          moment(b.rawSentAt).diff(moment(a.rawSentAt))
+        );
+
         const nonTrashData = formattedData.filter(
           (mail) => mail.statue !== "휴지통"
         );
@@ -72,9 +164,11 @@ const QuestPage = () => {
     {
       key: "All_request",
       label: (
-        <span>
-          전체 의뢰함{" "}
-          <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+        <span className="ml-2">
+          전체 의뢰함
+          <span
+            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
+          >
             {counts.total}
           </span>
         </span>
@@ -86,8 +180,14 @@ const QuestPage = () => {
           key: "preparing",
           label: (
             <span>
-              신청중{" "}
-              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+              신청중
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: "#2E7FF8",
+                  fontSize: "14px",
+                }}
+              >
                 {counts.preparing}
               </span>
             </span>
@@ -97,8 +197,14 @@ const QuestPage = () => {
           key: "pending",
           label: (
             <span>
-              보류중{" "}
-              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+              보류중
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: "#2E7FF8",
+                  fontSize: "14px",
+                }}
+              >
                 {counts.pending}
               </span>
             </span>
@@ -108,8 +214,14 @@ const QuestPage = () => {
           key: "completed",
           label: (
             <span>
-              신청완료{" "}
-              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+              신청완료
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: "#2E7FF8",
+                  fontSize: "14px",
+                }}
+              >
                 {counts.completed}
               </span>
             </span>
@@ -119,8 +231,14 @@ const QuestPage = () => {
           key: "refuse",
           label: (
             <span>
-              신청거절{" "}
-              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+              신청거절
+              <span
+                style={{
+                  marginLeft: "8px",
+                  color: "#2E7FF8",
+                  fontSize: "14px",
+                }}
+              >
                 {counts.refuse}
               </span>
             </span>
@@ -132,8 +250,10 @@ const QuestPage = () => {
       key: "important",
       label: (
         <span>
-          중요 의뢰함{" "}
-          <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+          중요 의뢰함
+          <span
+            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
+          >
             {counts.important}
           </span>
         </span>
@@ -154,8 +274,10 @@ const QuestPage = () => {
       key: "trash",
       label: (
         <span>
-          휴지통{" "}
-          <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+          휴지통
+          <span
+            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
+          >
             {counts.trash}
           </span>
         </span>
@@ -242,6 +364,8 @@ const QuestPage = () => {
         <div
           style={{
             fontSize: "18px",
+            display: "flex",
+            justifyContent: "center",
             color: record.isImportant ? "gold" : "#CDD8E2",
           }}
         >
@@ -251,14 +375,41 @@ const QuestPage = () => {
     },
     {
       title: "상태",
-      width: "10%",
+      width: 150,
       key: "statue",
       dataIndex: "statue",
       render: (statue) => <StatusTag status={statue} />,
     },
-    { title: "분야", dataIndex: "category", key: "acategory", width: "10%" },
-    { title: "세부 분야", dataIndex: "anytime", key: "anytime" },
-    { title: "제목", dataIndex: "title", key: "title", width: "30%" },
+    {
+      title: (
+        <div>
+          <span style={{ width: "27px", display: "inline-block" }}>분야</span>
+          <span
+            style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}
+          >
+            |
+          </span>
+          <span>세부 분야</span>
+        </div>
+      ),
+      key: "category",
+      dataIndex: "category",
+      width: 320,
+      render: (_, record) => (
+        <>
+          <span style={{ width: "27px", display: "inline-block" }}>
+            {record.category}
+          </span>
+          <span
+            style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}
+          >
+            |
+          </span>
+          <span>{record.anytime}</span>
+        </>
+      ),
+    },
+    { title: "제목", dataIndex: "title", key: "title" },
 
     {
       title: (
@@ -282,6 +433,7 @@ const QuestPage = () => {
           </button>
         </Dropdown>
       ),
+      width: 140,
       dataIndex: timeColumn,
       key: "time",
       render: (text) => <span>{text}</span>,
@@ -291,10 +443,17 @@ const QuestPage = () => {
     pageSize: 10, // Set the number of items per page
     position: ["bottomCenter"],
   };
+  const onSearch = (value, _e, info) => console.log(info?.source, value);
+
   return (
-    <div className="flex w-full">
-      <div className="w-[245px] px-4 h-screen border-e-[1px] shrink-0">
-        <Button type="primary" block className="my-6">
+    <Board className="flex w-full pt-16">
+      <div className="w-[245px] px-4 border-e-[1px] shrink-0 right-side">
+        <Button
+          type="primary"
+          block
+          className="my-6 flex items-center justify-center"
+        >
+          <FaPlus className="mr-1" />
           <Link to="/mail/quest">의뢰 요청하기</Link>
         </Button>
         <Menu
@@ -308,11 +467,24 @@ const QuestPage = () => {
       </div>
 
       <div className="mt-6 mx-8 w-full">
-        <h2 className=" font-bold text-[20px] pb-3">전체 의뢰함</h2>
+        <div className="flex justify-between items-end mb-3">
+          <h2 className=" font-bold text-[20px]">전체 의뢰함</h2>
+          <PageSearch
+            placeholder="Placeholder"
+            onSearch={onSearch}
+            enterButton={<SearchIcon />}
+            style={{
+              width: 268,
+            }}
+          />
+        </div>
         <Table
           dataSource={mails}
           columns={columns}
           pagination={paginationConfig}
+          style={{
+            cursor: "pointer",
+          }}
           onRow={(record, rowIndex) => {
             return {
               onClick: () => navigate(`/detail/${record.key}`),
@@ -320,7 +492,8 @@ const QuestPage = () => {
           }}
         />
       </div>
-    </div>
+    </Board>
   );
 };
+
 export default QuestPage;

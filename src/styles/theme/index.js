@@ -29,6 +29,7 @@ const theme = {
       headerBg: "rgb(241, 245, 249)",
       colorText: "rgb(23, 23, 23)",
       rowHoverBg: "rgb(241, 245, 249)",
+      padding: 10,
     },
     Input: {
       controlHeight: 48,
@@ -67,6 +68,12 @@ const theme = {
     },
     Layout: {
       siderBg: "rgb(241, 245, 249)",
+    },
+    Pagination: {
+      fontSize: 15,
+      colorPrimaryBorder: "rgba(255, 145, 145, 0)",
+      colorPrimary: "rgb(40, 127, 255)",
+      colorBgContainer: "#e9f2ff",
     },
   },
 };
