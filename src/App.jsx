@@ -8,6 +8,7 @@ import AppLayout from "components/AppLayout";
 import QuestPage from "pages/QuestPage";
 import QuestPost from "pages/QuestPost";
 import FindUserId from "pages/ FindUserId";
+import DetailPage from "pages/DetailPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/signup/:type" element={<SignUp />} />
           <Route path="/mail/quest" element={<QuestPost />} />
           <Route path="/" element={<LayoutWithHeader />}>
+            <Route path="/detail/:id" element={<DetailPage />} />
             <Route path="/board" element={<QuestPage />} />
             <Route path="/board/:type" element={<QuestPage />} />
           </Route>

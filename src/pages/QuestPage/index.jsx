@@ -452,9 +452,10 @@ const QuestPage = () => {
           type="primary"
           block
           className="my-6 flex items-center justify-center"
+          onClick={() => navigate("/mail/quest")}
         >
           <FaPlus className="mr-1" />
-          <Link to="/mail/quest">의뢰 요청하기</Link>
+          의뢰 요청하기
         </Button>
         <Menu
           onClick={onClick}
