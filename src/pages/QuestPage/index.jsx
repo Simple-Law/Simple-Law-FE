@@ -4,17 +4,31 @@ import { ReactComponent as Trash } from "assets/images/icons/trash.svg";
 import { ReactComponent as Mail } from "assets/images/icons/mail.svg";
 import { ReactComponent as MailStar } from "assets/images/icons/mailStar.svg";
 import { ReactComponent as MailAll } from "assets/images/icons/mailAll.svg";
+import { ReactComponent as ArrowDown } from "assets/images/icons/arrowDown.svg";
+import { ReactComponent as ArrowUp } from "assets/images/icons/arrowUp.svg";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { Button, Menu, Table } from "antd";
+import { Button, Dropdown, Menu, Select, Table } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import moment from "moment"; // Import moment
 import StatusTag from "components/Tags";
 const QuestPage = () => {
   const [mails, setMails] = useState([]);
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [timeColumn, setTimeColumn] = useState("sentAt");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
+  const [counts, setCounts] = useState({
+    total: 0,
+    preparing: 0,
+    pending: 0,
+    completed: 0,
+    refuse: 0,
+    important: 0,
+    trash: 0,
+  });
+  const navigate = useNavigate();
+
   useEffect(() => {
-    // Function to fetch data
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:4000/mails");
@@ -23,45 +37,108 @@ const QuestPage = () => {
           key: item.id,
           category: "Text",
           sentAt: moment(item.sentAt).format("YYYY. MM. DD"),
-          isImportant: false, // Add isImportant flag to each item
+          time: item.time,
         }));
-        setData(formattedData); // Set the formatted data to state
+        const nonTrashData = formattedData.filter(
+          (mail) => mail.statue !== "휴지통"
+        );
+        setData(formattedData);
+        setMails(nonTrashData); // 전체보기에는 휴지통 제외
+
+        const counts = {
+          total: nonTrashData.length,
+          preparing: formattedData.filter((mail) => mail.statue === "preparing")
+            .length,
+          pending: formattedData.filter((mail) => mail.statue === "pending")
+            .length,
+          completed: formattedData.filter((mail) => mail.statue === "completed")
+            .length,
+          refuse: formattedData.filter((mail) => mail.statue === "refuse")
+            .length,
+          important: formattedData.filter((mail) => mail.isImportant).length,
+          trash: formattedData.filter((mail) => mail.statue === "휴지통")
+            .length,
+        };
+        setCounts(counts);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    fetchData(); // Call the function on component mount
+    fetchData();
   }, []);
 
-  const items = [
+  const menuItems = [
     {
       key: "All_request",
-      label: "전체 의뢰함",
+      label: (
+        <span>
+          전체 의뢰함{" "}
+          <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+            {counts.total}
+          </span>
+        </span>
+      ),
       icon: <MailAll />,
-      onTitleClick: ({ key }) => navigate(`/board/${key}`), // 여기에 navigate 로직 추가
-      children: [
+      onTitleClick: () => handleMenuClick("All_request"),
+      items: [
         {
           key: "preparing",
-          label: "신청중",
+          label: (
+            <span>
+              신청중{" "}
+              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+                {counts.preparing}
+              </span>
+            </span>
+          ),
         },
         {
           key: "pending",
-          label: "보류중",
+          label: (
+            <span>
+              보류중{" "}
+              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+                {counts.pending}
+              </span>
+            </span>
+          ),
         },
         {
           key: "completed",
-          label: "신청완료",
+          label: (
+            <span>
+              신청완료{" "}
+              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+                {counts.completed}
+              </span>
+            </span>
+          ),
         },
         {
           key: "refuse",
-          label: "신청거절",
+          label: (
+            <span>
+              신청거절{" "}
+              <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+                {counts.refuse}
+              </span>
+            </span>
+          ),
         },
       ],
     },
     {
-      key: "sub2",
-      label: "중요 의뢰함",
+      key: "important",
+      label: (
+        <span>
+          중요 의뢰함{" "}
+          <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+            {counts.important}
+          </span>
+        </span>
+      ),
+      onTitleClick: () => handleMenuClick("important"),
       icon: <MailStar />,
     },
     {
@@ -74,53 +151,83 @@ const QuestPage = () => {
       type: "divider",
     },
     {
-      key: "sub5",
-      label: "휴지통",
+      key: "trash",
+      label: (
+        <span>
+          휴지통{" "}
+          <span style={{ color: "#2E7FF8", fontSize: "14px" }}>
+            {counts.trash}
+          </span>
+        </span>
+      ),
+      onTitleClick: () => handleMenuClick("trash"),
       icon: <Trash />,
     },
   ];
+  const handleMenuClick = (statusKey) => {
+    console.log(statusKey);
+    if (statusKey === "All_request") {
+      setMails(data); // 전체 데이터를 설정
+      navigate(`/board?status=all`); // 쿼리스트링을 사용하여 이동
+    } else if (statusKey === "important") {
+      const importantMails = data.filter((mail) => mail.isImportant);
+      setMails(importantMails); // 중요 메일 데이터 설정
+      navigate(`/board?status=important`); // 쿼리스트링을 사용하여 이동
+    } else if (statusKey === "trash") {
+      const trashMails = data.filter((mail) => mail.statue === "휴지통");
+      setMails(trashMails); // 휴지통 메일 데이터 설정
+      navigate(`/board?status=trash`); // 쿼리스트링을 사용하여 이동
+    } else {
+      const filteredMails = data.filter((mail) => mail.statue === statusKey);
+      setMails(filteredMails); // 필터링된 메일 데이터 상태 업데이트
+      navigate(`/board?status=${statusKey}`); // 쿼리스트링을 사용하여 이동
+    }
+  };
 
   const onClick = async (e) => {
     const statusKey = e.key;
-    const response = await axios.get("http://localhost:4000/mails");
-    console.log(response);
-    const filteredMails = response.data.filter(
-      (mail) => mail.statue === statusKey
-    );
-    setMails(filteredMails); // 필터링된 메일 데이터 상태 업데이트
-    navigate(`/board/${statusKey}`); // 필터링된 데이터와 함께 해당 경로로 이동
+    handleMenuClick(statusKey);
   };
 
-  // 토글 중요성 함수
-  const toggleImportant = (id, event) => {
+  const toggleImportant = async (id, event) => {
     event.stopPropagation();
-    const newData = data.map((item) =>
-      item.id === id ? { ...item, isImportant: !item.isImportant } : item
-    );
+    const newData = data.map((item) => {
+      if (item.id === id) {
+        item.isImportant = !item.isImportant;
+      }
+      return item;
+    });
+
+    const importantCount = newData.filter((item) => item.isImportant).length;
+    setCounts({ ...counts, important: importantCount });
     setData(newData);
+
+    try {
+      const updatedItem = newData.find((item) => item.id === id);
+      await axios.patch(`http://localhost:4000/mails/${id}`, {
+        isImportant: updatedItem.isImportant,
+      });
+    } catch (error) {
+      console.error("Error updating important status:", error);
+    }
   };
+
+  const handleTimeMenuClick = (e) => {
+    setTimeColumn(e.key);
+    setHeaderTitle(e.item.props.children);
+    setDropdownOpen(false); // 드롭다운 닫기
+  };
+  const menu = (
+    <Menu
+      items={[
+        { key: "sentAt", label: "의뢰 요청시간" },
+        { key: "time", label: "의뢰 가능시간" },
+      ]}
+      onClick={handleTimeMenuClick}
+    />
+  );
+
   const columns = [
-    // {
-    //   key: "important",
-    //   dataIndex: "important",
-    //   width: 48,
-    //   render: (_, record) => (
-    //     <Button
-    //       type="text"
-    //       style={{
-    //         height: "auto",
-    //         padding: "0px",
-    //         fontSize: "18px",
-    //         color: "#CDD8E2",
-    //       }}
-    //       onClick={(e) => {
-    //         e.stopPropagation();
-    //         toggleImportant(record.id, e);
-    //       }}
-    //       icon={record.isImportant ? <FaStar color="gold" /> : <FaRegStar />}
-    //     />
-    //   ),
-    // },
     {
       key: "important",
       dataIndex: "important",
@@ -152,7 +259,33 @@ const QuestPage = () => {
     { title: "분야", dataIndex: "category", key: "acategory", width: "10%" },
     { title: "세부 분야", dataIndex: "anytime", key: "anytime" },
     { title: "제목", dataIndex: "title", key: "title", width: "30%" },
-    { title: "의뢰 요청시간", dataIndex: "sentAt", key: "sentAt" },
+
+    {
+      title: (
+        <Dropdown
+          overlay={menu}
+          onVisibleChange={(visible) => setDropdownOpen(visible)}
+          trigger={["click"]}
+        >
+          <button
+            style={{
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+            }}
+            onClick={(e) => e.preventDefault()}
+          >
+            {headerTitle} {dropdownOpen ? <ArrowUp /> : <ArrowDown />}
+          </button>
+        </Dropdown>
+      ),
+      dataIndex: timeColumn,
+      key: "time",
+      render: (text) => <span>{text}</span>,
+    },
   ];
   const paginationConfig = {
     pageSize: 10, // Set the number of items per page
@@ -169,7 +302,7 @@ const QuestPage = () => {
           defaultSelectedKeys={["1"]}
           defaultOpenKeys={["sub1"]}
           mode="inline"
-          items={items}
+          items={menuItems}
           className="w-full border-e-0"
         />
       </div>
@@ -177,12 +310,12 @@ const QuestPage = () => {
       <div className="mt-6 mx-8 w-full">
         <h2 className=" font-bold text-[20px] pb-3">전체 의뢰함</h2>
         <Table
-          dataSource={data}
+          dataSource={mails}
           columns={columns}
           pagination={paginationConfig}
           onRow={(record, rowIndex) => {
             return {
-              onClick: () => navigate(`/detail/${rowIndex}`),
+              onClick: () => navigate(`/detail/${record.key}`),
             };
           }}
         />
