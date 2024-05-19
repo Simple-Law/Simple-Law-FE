@@ -10,6 +10,7 @@ import axios from "axios";
 import { useMessageApi } from "components/AppLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
+import { createMail } from "components/apis/mailsApi";
 
 const QuestPost = () => {
   const editorRef = useRef();
@@ -46,11 +47,8 @@ const QuestPost = () => {
       };
       try {
         // 에디터 내용과 셀렉트박스 값이 포함된 values를 서버로 전송
-        const response = await axios.post(
-          "http://localhost:4000/mails",
-          dataToSend
-        );
-        console.log("Server Response:", response.data);
+        const response = await createMail(dataToSend);
+        console.log("Server Response:", response);
         messageApi.success("게시글이 등록되었습니다!");
         formik.resetForm();
         navigate("/board");

@@ -10,9 +10,9 @@ import { ReactComponent as SearchIcon } from "assets/images/icons/search.svg";
 import { FaStar, FaRegStar, FaPlus } from "react-icons/fa";
 import { Button, Dropdown, Input, Menu, Table } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import moment from "moment"; // Import moment
 import StatusTag from "components/Tags";
 import styled from "styled-components";
+import { fetchMails, updateMailImportant } from "components/apis/mailsApi";
 const { Search } = Input;
 
 const Board = styled.div`
@@ -114,47 +114,25 @@ const QuestPage = () => {
     trash: 0,
   });
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/mails");
-        let formattedData = response.data.map((item) => ({
-          ...item,
-          key: item.id,
-          category: "Text",
-          rawSentAt: item.sentAt,
-          sentAt: moment(item.sentAt).format("YYYY. MM. DD"),
-          time: item.time,
-        }));
-        formattedData = formattedData.sort((a, b) =>
-          moment(b.rawSentAt).diff(moment(a.rawSentAt))
-        );
+      const { data, error } = await fetchMails();
+      if (error) return;
 
-        const nonTrashData = formattedData.filter(
-          (mail) => mail.statue !== "휴지통"
-        );
-        setData(formattedData);
-        setMails(nonTrashData); // 전체보기에는 휴지통 제외
+      const nonTrashData = data.filter((mail) => mail.statue !== "휴지통");
+      setData(data);
+      setMails(nonTrashData);
 
-        const counts = {
-          total: nonTrashData.length,
-          preparing: formattedData.filter((mail) => mail.statue === "preparing")
-            .length,
-          pending: formattedData.filter((mail) => mail.statue === "pending")
-            .length,
-          completed: formattedData.filter((mail) => mail.statue === "completed")
-            .length,
-          refuse: formattedData.filter((mail) => mail.statue === "refuse")
-            .length,
-          important: formattedData.filter((mail) => mail.isImportant).length,
-          trash: formattedData.filter((mail) => mail.statue === "휴지통")
-            .length,
-        };
-        setCounts(counts);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      const counts = {
+        total: nonTrashData.length,
+        preparing: data.filter((mail) => mail.statue === "preparing").length,
+        pending: data.filter((mail) => mail.statue === "pending").length,
+        completed: data.filter((mail) => mail.statue === "completed").length,
+        refuse: data.filter((mail) => mail.statue === "refuse").length,
+        important: data.filter((mail) => mail.isImportant).length,
+        trash: data.filter((mail) => mail.statue === "휴지통").length,
+      };
+      setCounts(counts);
     };
 
     fetchData();
@@ -287,7 +265,6 @@ const QuestPage = () => {
     },
   ];
   const handleMenuClick = (statusKey) => {
-    console.log(statusKey);
     if (statusKey === "All_request") {
       setMails(data); // 전체 데이터를 설정
       navigate(`/board?status=all`); // 쿼리스트링을 사용하여 이동
@@ -326,9 +303,7 @@ const QuestPage = () => {
 
     try {
       const updatedItem = newData.find((item) => item.id === id);
-      await axios.patch(`http://localhost:4000/mails/${id}`, {
-        isImportant: updatedItem.isImportant,
-      });
+      await updateMailImportant(id, updatedItem.isImportant);
     } catch (error) {
       console.error("Error updating important status:", error);
     }
