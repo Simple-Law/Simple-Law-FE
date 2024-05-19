@@ -44,3 +44,13 @@ export const createMail = async (mailData) => {
     throw error;
   }
 };
+
+export const getMailById = async (id) => {
+  try {
+    const response = await baseURL.get(`/mails/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching mail by id:", error);
+    throw error;
+  }
+};
