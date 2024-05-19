@@ -16,6 +16,15 @@ import { fetchMails } from "components/apis/mailsApi";
 const App = () => {
   const [mails, setMails] = useState([]);
   const [data, setData] = useState([]);
+  const [counts, setCounts] = useState({
+    total: 0,
+    preparing: 0,
+    pending: 0,
+    completed: 0,
+    refuse: 0,
+    important: 0,
+    trash: 0,
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,10 +34,28 @@ const App = () => {
       const nonTrashData = data.filter((mail) => mail.statue !== "휴지통");
       setData(data);
       setMails(nonTrashData);
+
+      updateCounts(data);
     };
 
     fetchData();
   }, []);
+
+  const updateCounts = (mails) => {
+    const nonTrashData = mails.filter((mail) => mail.statue !== "휴지통");
+
+    const counts = {
+      total: nonTrashData.length,
+      preparing: mails.filter((mail) => mail.statue === "preparing").length,
+      pending: mails.filter((mail) => mail.statue === "pending").length,
+      completed: mails.filter((mail) => mail.statue === "completed").length,
+      refuse: mails.filter((mail) => mail.statue === "refuse").length,
+      important: mails.filter((mail) => mail.isImportant).length,
+      trash: mails.filter((mail) => mail.statue === "휴지통").length,
+    };
+    setCounts(counts);
+  };
+
   const handleMenuClick = (filteredMails) => {
     setMails(filteredMails);
   };
@@ -49,11 +76,18 @@ const App = () => {
               element={
                 <LayoutWithSidebar
                   data={data}
+                  counts={counts}
                   handleMenuClick={handleMenuClick}
+                  updateCounts={updateCounts}
                 />
               }
             >
-              <Route path="/detail/:id" element={<DetailPage />} />
+              <Route
+                path="/detail/:id"
+                element={
+                  <DetailPage mails={data} updateCounts={updateCounts} />
+                }
+              />
               <Route
                 path="/board"
                 element={
@@ -72,6 +106,7 @@ const App = () => {
     </BrowserRouter>
   );
 };
+
 const LayoutWithHeader = () => {
   return (
     <>
@@ -80,10 +115,16 @@ const LayoutWithHeader = () => {
     </>
   );
 };
-const LayoutWithSidebar = ({ data, handleMenuClick }) => {
+
+const LayoutWithSidebar = ({ data, counts, handleMenuClick, updateCounts }) => {
   return (
-    <div className="flex  w-full pt-16">
-      <RightSideMenu data={data} onMenuClick={handleMenuClick} />
+    <div className="flex w-full pt-16">
+      <RightSideMenu
+        data={data}
+        counts={counts}
+        onMenuClick={handleMenuClick}
+        updateCounts={updateCounts}
+      />
       <div className="flex-grow">
         <Outlet />
       </div>

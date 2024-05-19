@@ -27,11 +27,11 @@ export const fetchMails = async () => {
   }
 };
 
-export const updateMailImportant = async (id, isImportant) => {
+export const updateMail = async (id, updateData) => {
   try {
-    await baseURL.patch(`/mails/${id}`, { isImportant });
+    await baseURL.patch(`/mails/${id}`, updateData);
   } catch (error) {
-    console.error("Error updating important status:", error);
+    console.error("Error updating mail:", error);
   }
 };
 

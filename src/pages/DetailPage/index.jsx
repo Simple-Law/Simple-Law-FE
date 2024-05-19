@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getMailById } from "components/apis/mailsApi";
+import { getMailById, updateMail } from "components/apis/mailsApi"; // updateMail을 가져옵니다
 import moment from "moment";
+import { FaStar, FaRegStar } from "react-icons/fa"; // 아이콘 가져오기
 
-const DetailPage = () => {
+const DetailPage = ({ updateCounts, mails }) => {
   const { id } = useParams();
   const [mail, setMail] = useState(null);
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchMail = async () => {
       try {
@@ -20,12 +22,44 @@ const DetailPage = () => {
     fetchMail();
   }, [id]);
 
+  const toggleImportant = async (id, event) => {
+    event.stopPropagation();
+    const updatedMail = { ...mail, isImportant: !mail.isImportant };
+    setMail(updatedMail);
+
+    try {
+      await updateMail(id, { isImportant: updatedMail.isImportant });
+
+      // 메일 데이터를 업데이트하여 최신 카운트 계산
+      const updatedMails = mails.map((m) =>
+        m.id === id ? { ...m, isImportant: updatedMail.isImportant } : m
+      );
+
+      // 카운트 업데이트
+      const counts = {
+        total: updatedMails.length,
+        preparing: updatedMails.filter((mail) => mail.statue === "preparing")
+          .length,
+        pending: updatedMails.filter((mail) => mail.statue === "pending")
+          .length,
+        completed: updatedMails.filter((mail) => mail.statue === "completed")
+          .length,
+        refuse: updatedMails.filter((mail) => mail.statue === "refuse").length,
+        important: updatedMails.filter((mail) => mail.isImportant).length,
+        trash: updatedMails.filter((mail) => mail.statue === "휴지통").length,
+      };
+      updateCounts(counts);
+    } catch (error) {
+      console.error("Error updating important status:", error);
+    }
+  };
+
   if (!mail) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className=" flex flex-col lowDesktop:min-w-[91.875rem] max-lg:w-[71rem]">
+    <div className="flex flex-col lowDesktop:min-w-[91.875rem] max-lg:w-[71rem]">
       <div className="lowDesktop:min-w-[91.875rem] max-lg:w-[69rem] h-[3.75rem] pt-[24px] pb-2 justify-between items-center inline-flex mb-[0.625rem] ml-[2rem] pr-[2.625rem] max-lg:pr-[0px]">
         <div className="w-[37.5rem] text-zinc-800 text-lg font-bold font-['Pretendard'] leading-[1.875rem]">
           <div
@@ -76,6 +110,13 @@ const DetailPage = () => {
       <div>
         <div className="w-[34.6875rem] h-[1.0625rem] ml-[3.75rem] mt-[0.5rem] justify-start items-center gap-2 inline-flex">
           <div className="text-gray-500 text-sm font-normal font-['Pretendard'] leading-tight">
+            <span onClick={(e) => toggleImportant(mail.id, e)}>
+              {mail.isImportant ? (
+                <FaStar style={{ color: "gold" }} />
+              ) : (
+                <FaRegStar style={{ color: "#CDD8E2" }} />
+              )}
+            </span>
             {mail.anytime} ∙ {mail.category}
           </div>
           <div className="w-px h-2.5 bg-zinc-300"></div>

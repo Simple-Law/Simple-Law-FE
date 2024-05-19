@@ -7,7 +7,7 @@ import { Dropdown, Input, Menu, Table } from "antd";
 import { useNavigate } from "react-router-dom";
 import StatusTag from "components/Tags";
 import styled from "styled-components";
-import { updateMailImportant } from "components/apis/mailsApi";
+import { updateMail } from "components/apis/mailsApi";
 
 const { Search } = Input;
 
@@ -114,7 +114,7 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
 
     try {
       const updatedItem = newData.find((item) => item.id === id);
-      await updateMailImportant(id, updatedItem.isImportant);
+      await updateMail(id, { isImportant: updatedItem.isImportant });
     } catch (error) {
       console.error("Error updating important status:", error);
     }
