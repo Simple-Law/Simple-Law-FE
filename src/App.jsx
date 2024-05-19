@@ -125,7 +125,7 @@ const LayoutWithSidebar = ({ data, counts, handleMenuClick, updateCounts }) => {
         onMenuClick={handleMenuClick}
         updateCounts={updateCounts}
       />
-      <div className="flex-grow">
+      <div className="mt-6 mx-8 w-full">
         <Outlet />
       </div>
     </div>

@@ -236,32 +236,30 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
 
   return (
     <Board>
-      <div className="mt-6 mx-8 w-full">
-        <div className="flex justify-between items-end mb-3">
-          <h2 className=" font-bold text-[20px]">전체 의뢰함</h2>
-          <PageSearch
-            placeholder="Placeholder"
-            onSearch={onSearch}
-            enterButton={<SearchIcon />}
-            style={{
-              width: 268,
-            }}
-          />
-        </div>
-        <Table
-          dataSource={mails}
-          columns={columns}
-          pagination={paginationConfig}
+      <div className="flex justify-between items-end mb-3">
+        <h2 className=" font-bold text-[20px]">전체 의뢰함</h2>
+        <PageSearch
+          placeholder="Placeholder"
+          onSearch={onSearch}
+          enterButton={<SearchIcon />}
           style={{
-            cursor: "pointer",
-          }}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: () => navigate(`/detail/${record.key}`),
-            };
+            width: 268,
           }}
         />
       </div>
+      <Table
+        dataSource={mails}
+        columns={columns}
+        pagination={paginationConfig}
+        style={{
+          cursor: "pointer",
+        }}
+        onRow={(record, rowIndex) => {
+          return {
+            onClick: () => navigate(`/detail/${record.key}`),
+          };
+        }}
+      />
     </Board>
   );
 };
