@@ -8,9 +8,9 @@ const baseURL = axios.create({
 export const fetchMails = async () => {
   try {
     const response = await baseURL.get("/mails");
-    console.log(response);
+
     const formattedData = response.data
-      .map((item) => ({
+      .map(item => ({
         ...item,
         key: item.id,
         category: "Text",
@@ -35,7 +35,7 @@ export const updateMail = async (id, updateData) => {
   }
 };
 
-export const createMail = async (mailData) => {
+export const createMail = async mailData => {
   try {
     const response = await baseURL.post("/mails", mailData);
     return response.data;
@@ -45,7 +45,7 @@ export const createMail = async (mailData) => {
   }
 };
 
-export const getMailById = async (id) => {
+export const getMailById = async id => {
   try {
     const response = await baseURL.get(`/mails/${id}`);
     return response.data;

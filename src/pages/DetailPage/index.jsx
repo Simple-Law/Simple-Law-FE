@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getMailById, updateMail } from "components/apis/mailsApi"; // updateMail을 가져옵니다
+import { fetchMails, getMailById, updateMail } from "components/apis/mailsApi"; // updateMail을 가져옵니다
 import moment from "moment";
 import { FaStar, FaRegStar } from "react-icons/fa"; // 아이콘 가져오기
+import { Button, Modal } from "antd";
 
-const DetailPage = ({ updateCounts, mails }) => {
+const DetailPage = ({ updateCounts, setMails, setData }) => {
   const { id } = useParams();
   const [mail, setMail] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,7 +20,6 @@ const DetailPage = ({ updateCounts, mails }) => {
         console.error("Error fetching mail:", error);
       }
     };
-
     fetchMail();
   }, [id]);
 
@@ -29,31 +30,36 @@ const DetailPage = ({ updateCounts, mails }) => {
 
     try {
       await updateMail(id, { isImportant: updatedMail.isImportant });
+      const { data: mailData } = await fetchMails();
 
-      // 메일 데이터를 업데이트하여 최신 카운트 계산
-      const updatedMails = mails.map((m) =>
-        m.id === id ? { ...m, isImportant: updatedMail.isImportant } : m
-      );
-
-      // 카운트 업데이트
-      const counts = {
-        total: updatedMails.length,
-        preparing: updatedMails.filter((mail) => mail.statue === "preparing")
-          .length,
-        pending: updatedMails.filter((mail) => mail.statue === "pending")
-          .length,
-        completed: updatedMails.filter((mail) => mail.statue === "completed")
-          .length,
-        refuse: updatedMails.filter((mail) => mail.statue === "refuse").length,
-        important: updatedMails.filter((mail) => mail.isImportant).length,
-        trash: updatedMails.filter((mail) => mail.statue === "휴지통").length,
-      };
-      updateCounts(counts);
+      updateCounts(mailData);
     } catch (error) {
       console.error("Error updating important status:", error);
     }
   };
 
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleOk = async () => {
+    setIsModalVisible(false);
+    try {
+      await updateMail(id, { statue: "휴지통" });
+      const { data: mailData } = await fetchMails();
+      updateCounts(mailData);
+      setData(mailData);
+      setMails(mailData.filter(mail => mail.statue !== "휴지통"));
+      navigate("/board");
+      // window.location.reload();
+    } catch (error) {
+      console.error("Error moving mail to trash:", error);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
   if (!mail) {
     return <div>Loading...</div>;
   }
@@ -101,40 +107,28 @@ const DetailPage = ({ updateCounts, mails }) => {
       <div className="border-solid bg-white border-b border-slate-200 ml-[2rem]"></div>
       <div className="flex items-center mt-[1.25rem] ml-[2rem] min-w-[1000px]">
         <div className="flex min-w-[500px]">
-          <div className="text-zinc-800 text-base font-medium font-['Pretendard'] leading-normal">
-            {mail.title}
-          </div>
+          <div className="text-zinc-800 text-base font-medium font-['Pretendard'] leading-normal">{mail.title}</div>
         </div>
         <div className="lowDesktop:ml-[55rem] max-lg:ml-[25rem] flex"></div>
       </div>
       <div>
         <div className="w-[34.6875rem] h-[1.0625rem] ml-[3.75rem] mt-[0.5rem] justify-start items-center gap-2 inline-flex">
           <div className="text-gray-500 text-sm font-normal font-['Pretendard'] leading-tight">
-            <span onClick={(e) => toggleImportant(mail.id, e)}>
-              {mail.isImportant ? (
-                <FaStar style={{ color: "gold" }} />
-              ) : (
-                <FaRegStar style={{ color: "#CDD8E2" }} />
-              )}
+            <span onClick={e => toggleImportant(mail.id, e)}>
+              {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
             {mail.anytime} ∙ {mail.category}
           </div>
           <div className="w-px h-2.5 bg-zinc-300"></div>
           <div className="justify-start items-center gap-1.5 flex">
-            <div className="text-gray-500 text-sm font-normal font-['Pretendard']">
-              의뢰자 :
-            </div>
-            <div className="text-gray-500 text-sm font-semibold font-['Pretendard']">
-              홍길동
-            </div>
+            <div className="text-gray-500 text-sm font-normal font-['Pretendard']">의뢰자 :</div>
+            <div className="text-gray-500 text-sm font-semibold font-['Pretendard']">홍길동</div>
           </div>
         </div>
       </div>
       <div className="w-[32.0625rem] ml-[3.75rem] mt-[1.25rem] h-[4.125rem] px-4 py-3 bg-slate-100 bg-opacity-30 rounded-md border border-solid border-slate-200 flex-col justify-start items-start gap-0.5 inline-flex">
         <div className="justify-start items-start gap-1 inline-flex">
-          <div className="text-gray-500 text-sm font-normal font-['Pretendard'] leading-tight">
-            의뢰 요청 시간 :
-          </div>
+          <div className="text-gray-500 text-sm font-normal font-['Pretendard'] leading-tight">의뢰 요청 시간 :</div>
           <div className="justify-start items-start gap-1 flex">
             <div className="text-gray-500 text-sm font-semibold font-['Pretendard'] leading-tight">
               {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
@@ -145,14 +139,10 @@ const DetailPage = ({ updateCounts, mails }) => {
           </div>
         </div>
         <div className="justify-start items-start gap-1 inline-flex">
-          <div className="text-gray-500 text-sm font-normal font-['Pretendard'] leading-tight">
-            제한 시간 :
-          </div>
+          <div className="text-gray-500 text-sm font-normal font-['Pretendard'] leading-tight">제한 시간 :</div>
           <div className="justify-start items-start gap-1 flex">
             <div className="text-gray-500 text-sm font-semibold font-['Pretendard'] leading-tight">
-              {moment(mail.sentAt)
-                .add(mail.time, "hours")
-                .format("YYYY년 MM월 DD일 (dd) LT")}
+              {moment(mail.sentAt).add(mail.time, "hours").format("YYYY년 MM월 DD일 (dd) LT")}
             </div>
           </div>
         </div>
@@ -192,19 +182,21 @@ const DetailPage = ({ updateCounts, mails }) => {
               첨부파일 3개
             </div>
           </div>
-          <div className="text-slate-400 text-sm font-normal font-['Pretendard'] leading-normal">
-            (35.2MB)
-          </div>
+          <div className="text-slate-400 text-sm font-normal font-['Pretendard'] leading-normal">(35.2MB)</div>
         </div>
         <div className="left-[10.125rem] top-[1.125rem] absolute text-blue-500 text-sm font-medium font-['Pretendard'] leading-tight">
           모두 저장
         </div>
       </div>
       <div className="ml-[2.125rem] w-full h-[12.5rem] relative border-t border-solid border-slate-100">
-        <div className="text-zinc-800 text-base font-normal font-['Pretendard'] mt-[24px]">
-          {mail.content}
-        </div>
+        <div className="text-zinc-800 text-base font-normal font-['Pretendard'] mt-[24px]">{mail.content}</div>
       </div>
+      <Button type="primary" onClick={showModal}>
+        삭제
+      </Button>
+      <Modal title="삭제 확인" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <p>진짜로 삭제하시겠습니까?</p>
+      </Modal>
     </div>
   );
 };

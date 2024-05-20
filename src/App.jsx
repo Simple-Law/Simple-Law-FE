@@ -31,32 +31,32 @@ const App = () => {
       const { data, error } = await fetchMails();
       if (error) return;
 
-      const nonTrashData = data.filter((mail) => mail.statue !== "휴지통");
+      const nonTrashData = data.filter(mail => mail.statue !== "휴지통");
       setData(data);
       setMails(nonTrashData);
-
       updateCounts(data);
     };
 
     fetchData();
   }, []);
 
-  const updateCounts = (mails) => {
-    const nonTrashData = mails.filter((mail) => mail.statue !== "휴지통");
+  const updateCounts = mails => {
+    const nonTrashData = mails.filter(mail => mail.statue !== "휴지통");
 
     const counts = {
       total: nonTrashData.length,
-      preparing: mails.filter((mail) => mail.statue === "preparing").length,
-      pending: mails.filter((mail) => mail.statue === "pending").length,
-      completed: mails.filter((mail) => mail.statue === "completed").length,
-      refuse: mails.filter((mail) => mail.statue === "refuse").length,
-      important: mails.filter((mail) => mail.isImportant).length,
-      trash: mails.filter((mail) => mail.statue === "휴지통").length,
+      preparing: nonTrashData.filter(mail => mail.statue === "preparing").length,
+      pending: nonTrashData.filter(mail => mail.statue === "pending").length,
+      completed: nonTrashData.filter(mail => mail.statue === "completed").length,
+      refuse: nonTrashData.filter(mail => mail.statue === "refuse").length,
+      important: nonTrashData.filter(mail => mail.isImportant).length,
+      trash: mails.filter(mail => mail.statue === "휴지통").length,
     };
+
     setCounts(counts);
   };
 
-  const handleMenuClick = (filteredMails) => {
+  const handleMenuClick = filteredMails => {
     setMails(filteredMails);
   };
 
@@ -69,7 +69,10 @@ const App = () => {
           <Route path="/findId" element={<FindUserId />} />
           <Route path="/admin" element={<Admin />}></Route>
           <Route path="/signup/:type" element={<SignUp />} />
-          <Route path="/mail/quest" element={<QuestPost />} />
+          <Route
+            path="/mail/quest"
+            element={<QuestPost setMails={setMails} setData={setData} updateCounts={updateCounts} />}
+          />
           <Route path="/" element={<LayoutWithHeader />}>
             <Route
               path="/"
@@ -84,18 +87,17 @@ const App = () => {
             >
               <Route
                 path="/detail/:id"
-                element={
-                  <DetailPage mails={data} updateCounts={updateCounts} />
-                }
+                element={<DetailPage setMails={setMails} setData={setData} updateCounts={updateCounts} />}
               />
               <Route
                 path="/board"
                 element={
                   <QuestPage
                     mails={mails}
-                    setMails={setMails}
                     data={data}
+                    setMails={setMails}
                     setData={setData}
+                    updateCounts={updateCounts}
                   />
                 }
               />
@@ -119,12 +121,7 @@ const LayoutWithHeader = () => {
 const LayoutWithSidebar = ({ data, counts, handleMenuClick, updateCounts }) => {
   return (
     <div className="flex w-full pt-16">
-      <RightSideMenu
-        data={data}
-        counts={counts}
-        onMenuClick={handleMenuClick}
-        updateCounts={updateCounts}
-      />
+      <RightSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} updateCounts={updateCounts} />
       <div className="mt-6 mx-8 w-full">
         <Outlet />
       </div>

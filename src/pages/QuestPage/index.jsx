@@ -4,53 +4,13 @@ import { ReactComponent as ArrowUp } from "assets/images/icons/arrowUp.svg";
 import { ReactComponent as SearchIcon } from "assets/images/icons/search.svg";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Dropdown, Input, Menu, Table } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import StatusTag from "components/Tags";
 import styled from "styled-components";
 import { updateMail } from "components/apis/mailsApi";
 
 const { Search } = Input;
 
-const Board = styled.div`
-  .right-side {
-    height: calc(100vh - 64px);
-    border-right: 1px solid #e3e9ee;
-    background: linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.6) 0%,
-        rgba(255, 255, 255, 0.6) 100%
-      ),
-      #f1f5f9;
-  }
-  .ant-menu {
-    background: linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.6) 0%,
-        rgba(255, 255, 255, 0.6) 100%
-      ),
-      #f1f5f9;
-  }
-  .ant-menu-item-divider {
-    background: #e3e9ee;
-    margin: 16px 0;
-  }
-  .ant-menu-submenu-title,
-  .ant-menu-item {
-    padding: 8px !important;
-  }
-  .ant-pagination-item-active {
-    border: transparent !important;
-  }
-  .ant-menu-item-only-child {
-    padding: 0 40px !important;
-  }
-  .ant-spin-container {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-`;
 const PageSearch = styled(Search)`
   width: 268px;
   & .ant-input {
@@ -95,15 +55,19 @@ const PageSearch = styled(Search)`
   }
 `;
 
-const QuestPage = ({ mails, setMails, data, setData }) => {
+const QuestPage = ({ mails, setMails, data, setData, updateCounts }) => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
+
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const statusKey = queryParams.get("status");
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
-    const newData = data.map((item) => {
+    const newData = data.map(item => {
       if (item.id === id) {
         item.isImportant = !item.isImportant;
       }
@@ -111,16 +75,22 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
     });
 
     setData(newData);
+    updateCounts(newData);
 
     try {
-      const updatedItem = newData.find((item) => item.id === id);
+      const updatedItem = newData.find(item => item.id === id);
       await updateMail(id, { isImportant: updatedItem.isImportant });
+
+      if (statusKey === "important" && !updatedItem.isImportant) {
+        const filteredMails = newData.filter(mail => mail.isImportant);
+        setMails(filteredMails);
+      }
     } catch (error) {
       console.error("Error updating important status:", error);
     }
   };
 
-  const handleTimeMenuClick = (e) => {
+  const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
     setHeaderTitle(e.item.props.children);
     setDropdownOpen(false); // 드롭다운 닫기
@@ -141,8 +111,8 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
       key: "important",
       dataIndex: "important",
       width: 48,
-      onCell: (record) => ({
-        onClick: (e) => {
+      onCell: record => ({
+        onClick: e => {
           e.stopPropagation(); // 이벤트 버블링 중지
           toggleImportant(record.id, e); // 중요 표시 토글 함수 호출
         },
@@ -165,17 +135,13 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
       width: 150,
       key: "statue",
       dataIndex: "statue",
-      render: (statue) => <StatusTag status={statue} />,
+      render: statue => <StatusTag status={statue} />,
     },
     {
       title: (
         <div>
           <span style={{ width: "27px", display: "inline-block" }}>분야</span>
-          <span
-            style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}
-          >
-            |
-          </span>
+          <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
           <span>세부 분야</span>
         </div>
       ),
@@ -184,14 +150,8 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
       width: 320,
       render: (_, record) => (
         <>
-          <span style={{ width: "27px", display: "inline-block" }}>
-            {record.category}
-          </span>
-          <span
-            style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}
-          >
-            |
-          </span>
+          <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
+          <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
           <span>{record.anytime}</span>
         </>
       ),
@@ -200,11 +160,7 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
 
     {
       title: (
-        <Dropdown
-          overlay={menu}
-          onVisibleChange={(visible) => setDropdownOpen(visible)}
-          trigger={["click"]}
-        >
+        <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
           <button
             style={{
               border: "none",
@@ -214,7 +170,7 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={(e) => e.preventDefault()}
+            onClick={e => e.preventDefault()}
           >
             {headerTitle} {dropdownOpen ? <ArrowUp /> : <ArrowDown />}
           </button>
@@ -223,7 +179,7 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
       width: 140,
       dataIndex: timeColumn,
       key: "time",
-      render: (text) => <span>{text}</span>,
+      render: text => <span>{text}</span>,
     },
   ];
 
@@ -235,7 +191,7 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
   return (
-    <Board>
+    <>
       <div className="flex justify-between items-end mb-3">
         <h2 className=" font-bold text-[20px]">전체 의뢰함</h2>
         <PageSearch
@@ -260,7 +216,7 @@ const QuestPage = ({ mails, setMails, data, setData }) => {
           };
         }}
       />
-    </Board>
+    </>
   );
 };
 

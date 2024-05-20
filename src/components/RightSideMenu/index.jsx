@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Button, Menu } from "antd";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -6,42 +6,47 @@ import { ReactComponent as Trash } from "assets/images/icons/trash.svg";
 import { ReactComponent as Mail } from "assets/images/icons/mail.svg";
 import { ReactComponent as MailStar } from "assets/images/icons/mailStar.svg";
 import { ReactComponent as MailAll } from "assets/images/icons/mailAll.svg";
+import styled from "styled-components";
+const Board = styled.div`
+  height: calc(100vh - 64px);
+  border-right: 1px solid #e3e9ee;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
 
-const RightSideMenu = ({ data, onMenuClick }) => {
-  const [counts, setCounts] = useState({
-    total: 0,
-    preparing: 0,
-    pending: 0,
-    completed: 0,
-    refuse: 0,
-    important: 0,
-    trash: 0,
-  });
+  .ant-menu {
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+  }
+  .ant-menu-item-divider {
+    background: #e3e9ee;
+    margin: 16px 0;
+  }
+  .ant-menu-submenu-title,
+  .ant-menu-item {
+    padding: 8px !important;
+  }
+  .ant-pagination-item-active {
+    border: transparent !important;
+  }
+  .ant-menu-item-only-child {
+    padding: 0 40px !important;
+  }
+  .ant-spin-container {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+`;
+const RightSideMenu = ({ data, onMenuClick, counts }) => {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const nonTrashData = data.filter((mail) => mail.statue !== "휴지통");
-
-    const counts = {
-      total: nonTrashData.length,
-      preparing: data.filter((mail) => mail.statue === "preparing").length,
-      pending: data.filter((mail) => mail.statue === "pending").length,
-      completed: data.filter((mail) => mail.statue === "completed").length,
-      refuse: data.filter((mail) => mail.statue === "refuse").length,
-      important: data.filter((mail) => mail.isImportant).length,
-      trash: data.filter((mail) => mail.statue === "휴지통").length,
-    };
-    setCounts(counts);
-  }, [data]);
-
-  const handleMenuClick = (statusKey) => {
+  const handleMenuClick = statusKey => {
     let filteredMails = data;
     if (statusKey === "important") {
-      filteredMails = data.filter((mail) => mail.isImportant);
+      filteredMails = data.filter(mail => mail.isImportant);
     } else if (statusKey === "trash") {
-      filteredMails = data.filter((mail) => mail.statue === "휴지통");
+      filteredMails = data.filter(mail => mail.statue === "휴지통");
     } else if (statusKey !== "All_request") {
-      filteredMails = data.filter((mail) => mail.statue === statusKey);
+      filteredMails = data.filter(mail => mail.statue === statusKey);
     }
 
     onMenuClick(filteredMails); // 부모 컴포넌트에 필터링된 데이터를 전달
@@ -54,11 +59,7 @@ const RightSideMenu = ({ data, onMenuClick }) => {
       label: (
         <span className="ml-2">
           전체 의뢰함
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {counts.total}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.total}</span>
         </span>
       ),
       icon: <MailAll />,
@@ -139,11 +140,7 @@ const RightSideMenu = ({ data, onMenuClick }) => {
       label: (
         <span>
           중요 의뢰함
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {counts.important}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("important"),
@@ -163,11 +160,7 @@ const RightSideMenu = ({ data, onMenuClick }) => {
       label: (
         <span>
           휴지통
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {counts.trash}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.trash}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("trash"),
@@ -175,13 +168,13 @@ const RightSideMenu = ({ data, onMenuClick }) => {
     },
   ];
 
-  const onClick = (e) => {
+  const onClick = e => {
     const statusKey = e.key;
     handleMenuClick(statusKey);
   };
 
   return (
-    <div className="w-[245px] px-4 border-e-[1px] shrink-0 right-side">
+    <Board className="w-[245px] px-4 border-e-[1px] shrink-0 ">
       <Button
         type="primary"
         block
@@ -199,7 +192,7 @@ const RightSideMenu = ({ data, onMenuClick }) => {
         items={menuItems}
         className="w-full border-e-0"
       />
-    </div>
+    </Board>
   );
 };
 
