@@ -53,16 +53,19 @@ const LayoutWithSidebar = () => {
   const { state, dispatch } = useMailContext();
   const { data, counts } = state;
 
-  const handleMenuClick = filteredMails => {
+  const handleMenuClick = (filteredMails) => {
     dispatch({ type: "SET_MAILS", payload: filteredMails });
   };
 
   return (
     <div className="flex w-full pt-16">
-      <RightSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
-      <div className="mt-6 mx-8 w-full">
-        <Outlet />
-      </div>
+      <RightSideMenu
+        data={data}
+        counts={counts}
+        onMenuClick={handleMenuClick}
+      />
+
+      <Outlet />
     </div>
   );
 };
