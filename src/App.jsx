@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Admin from "pages/Admin";
 import SignUp from "pages/SignUp";
@@ -11,101 +11,32 @@ import QuestPost from "pages/QuestPost";
 import FindUserId from "pages/ FindUserId";
 import DetailPage from "pages/DetailPage";
 import RightSideMenu from "components/RightSideMenu";
-import { fetchMails } from "components/apis/mailsApi";
+
+import { MailProvider } from "contexts/MailContexts";
+import { useMailContext } from "contexts/MailContexts";
 
 const App = () => {
-  const [mails, setMails] = useState([]);
-  const [data, setData] = useState([]);
-  const [counts, setCounts] = useState({
-    total: 0,
-    preparing: 0,
-    pending: 0,
-    completed: 0,
-    refuse: 0,
-    important: 0,
-    trash: 0,
-  });
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data, error } = await fetchMails();
-      if (error) return;
-
-      const nonTrashData = data.filter(mail => mail.statue !== "휴지통");
-      setData(data);
-      setMails(nonTrashData);
-      updateCounts(data);
-    };
-
-    fetchData();
-  }, []);
-
-  const updateCounts = mails => {
-    const nonTrashData = mails.filter(mail => mail.statue !== "휴지통");
-
-    const counts = {
-      total: nonTrashData.length,
-      preparing: nonTrashData.filter(mail => mail.statue === "preparing").length,
-      pending: nonTrashData.filter(mail => mail.statue === "pending").length,
-      completed: nonTrashData.filter(mail => mail.statue === "completed").length,
-      refuse: nonTrashData.filter(mail => mail.statue === "refuse").length,
-      important: nonTrashData.filter(mail => mail.isImportant).length,
-      trash: mails.filter(mail => mail.statue === "휴지통").length,
-    };
-
-    setCounts(counts);
-  };
-
-  const handleMenuClick = filteredMails => {
-    setMails(filteredMails);
-  };
-
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/login/:type" element={<Login />} />
-          <Route path="/findId" element={<FindUserId />} />
-          <Route path="/admin" element={<Admin />}></Route>
-          <Route path="/signup/:type" element={<SignUp />} />
-          <Route
-            path="/mail/quest"
-            element={<QuestPost setMails={setMails} setData={setData} updateCounts={updateCounts} />}
-          />
-          <Route path="/" element={<LayoutWithHeader />}>
-            <Route
-              path="/"
-              element={
-                <LayoutWithSidebar
-                  data={data}
-                  counts={counts}
-                  handleMenuClick={handleMenuClick}
-                  updateCounts={updateCounts}
-                />
-              }
-            >
-              <Route
-                path="/detail/:id"
-                element={<DetailPage setMails={setMails} setData={setData} updateCounts={updateCounts} />}
-              />
-              <Route
-                path="/board"
-                element={
-                  <QuestPage
-                    mails={mails}
-                    data={data}
-                    setMails={setMails}
-                    setData={setData}
-                    updateCounts={updateCounts}
-                  />
-                }
-              />
+    <MailProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<AppLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/login/:type" element={<Login />} />
+            <Route path="/findId" element={<FindUserId />} />
+            <Route path="/admin" element={<Admin />}></Route>
+            <Route path="/signup/:type" element={<SignUp />} />
+            <Route path="/mail/quest" element={<QuestPost />} />
+            <Route path="/" element={<LayoutWithHeader />}>
+              <Route path="/" element={<LayoutWithSidebar />}>
+                <Route path="/detail/:id" element={<DetailPage />} />
+                <Route path="/board" element={<QuestPage />} />
+              </Route>
             </Route>
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </MailProvider>
   );
 };
 
@@ -118,10 +49,17 @@ const LayoutWithHeader = () => {
   );
 };
 
-const LayoutWithSidebar = ({ data, counts, handleMenuClick, updateCounts }) => {
+const LayoutWithSidebar = () => {
+  const { state, dispatch } = useMailContext();
+  const { data, counts } = state;
+
+  const handleMenuClick = filteredMails => {
+    dispatch({ type: "SET_MAILS", payload: filteredMails });
+  };
+
   return (
     <div className="flex w-full pt-16">
-      <RightSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} updateCounts={updateCounts} />
+      <RightSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
       <div className="mt-6 mx-8 w-full">
         <Outlet />
       </div>

@@ -7,7 +7,8 @@ import { Dropdown, Input, Menu, Table } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatusTag from "components/Tags";
 import styled from "styled-components";
-import { updateMail } from "components/apis/mailsApi";
+import { updateMail } from "apis/mailsApi";
+import { useMailContext } from "contexts/MailContexts";
 
 const { Search } = Input;
 
@@ -55,7 +56,7 @@ const PageSearch = styled(Search)`
   }
 `;
 
-const QuestPage = ({ mails, setMails, data, setData, updateCounts }) => {
+const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
@@ -64,6 +65,9 @@ const QuestPage = ({ mails, setMails, data, setData, updateCounts }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const statusKey = queryParams.get("status");
+
+  const { state, dispatch } = useMailContext();
+  const { mails, data } = state;
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
@@ -74,8 +78,8 @@ const QuestPage = ({ mails, setMails, data, setData, updateCounts }) => {
       return item;
     });
 
-    setData(newData);
-    updateCounts(newData);
+    dispatch({ type: "SET_DATA", payload: newData });
+    dispatch({ type: "UPDATE_COUNTS", payload: newData });
 
     try {
       const updatedItem = newData.find(item => item.id === id);
@@ -83,7 +87,7 @@ const QuestPage = ({ mails, setMails, data, setData, updateCounts }) => {
 
       if (statusKey === "important" && !updatedItem.isImportant) {
         const filteredMails = newData.filter(mail => mail.isImportant);
-        setMails(filteredMails);
+        dispatch({ type: "SET_MAILS", payload: filteredMails });
       }
     } catch (error) {
       console.error("Error updating important status:", error);

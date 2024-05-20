@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchMails, getMailById, updateMail } from "components/apis/mailsApi"; // updateMail을 가져옵니다
+import { fetchMails, getMailById, updateMail } from "apis/mailsApi";
 import moment from "moment";
-import { FaStar, FaRegStar } from "react-icons/fa"; // 아이콘 가져오기
+import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Modal } from "antd";
+import { useMailContext } from "contexts/MailContexts";
 
-const DetailPage = ({ updateCounts, setMails, setData }) => {
+const DetailPage = () => {
   const { id } = useParams();
   const [mail, setMail] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
+
+  const { state, dispatch } = useMailContext();
 
   useEffect(() => {
     const fetchMail = async () => {
@@ -32,7 +35,8 @@ const DetailPage = ({ updateCounts, setMails, setData }) => {
       await updateMail(id, { isImportant: updatedMail.isImportant });
       const { data: mailData } = await fetchMails();
 
-      updateCounts(mailData);
+      dispatch({ type: "SET_DATA", payload: mailData });
+      dispatch({ type: "UPDATE_COUNTS", payload: mailData });
     } catch (error) {
       console.error("Error updating important status:", error);
     }
@@ -47,11 +51,10 @@ const DetailPage = ({ updateCounts, setMails, setData }) => {
     try {
       await updateMail(id, { statue: "휴지통" });
       const { data: mailData } = await fetchMails();
-      updateCounts(mailData);
-      setData(mailData);
-      setMails(mailData.filter(mail => mail.statue !== "휴지통"));
+      dispatch({ type: "SET_DATA", payload: mailData });
+      dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.statue !== "휴지통") });
+      dispatch({ type: "UPDATE_COUNTS", payload: mailData });
       navigate("/board");
-      // window.location.reload();
     } catch (error) {
       console.error("Error moving mail to trash:", error);
     }
@@ -60,6 +63,7 @@ const DetailPage = ({ updateCounts, setMails, setData }) => {
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+
   if (!mail) {
     return <div>Loading...</div>;
   }
@@ -189,7 +193,10 @@ const DetailPage = ({ updateCounts, setMails, setData }) => {
         </div>
       </div>
       <div className="ml-[2.125rem] w-full h-[12.5rem] relative border-t border-solid border-slate-100">
-        <div className="text-zinc-800 text-base font-normal font-['Pretendard'] mt-[24px]">{mail.content}</div>
+        <div className="text-zinc-800 text-base font-normal font-['Pretendard'] mt-[24px]">
+          {" "}
+          <div dangerouslySetInnerHTML={{ __html: mail.content }} />
+        </div>
       </div>
       <Button type="primary" onClick={showModal}>
         삭제
