@@ -5,6 +5,7 @@ import moment from "moment";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Modal } from "antd";
 import { useMailContext } from "contexts/MailContexts";
+import StatusTag from "components/Tags";
 
 const DetailPage = () => {
   const { id } = useParams();
@@ -150,6 +151,9 @@ const DetailPage = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        <StatusTag status={mail.statue} />
       </div>
       <div className="min-w-[50rem] h-[6.375rem] relative border-solid ml-[2rem] border-t border-slate-200 mt-[20px]">
         <div className="left-[1.125rem] top-[2.875rem] absolute justify-start items-start gap-2 inline-flex">
