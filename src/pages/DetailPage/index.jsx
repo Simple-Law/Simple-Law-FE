@@ -8,7 +8,8 @@ import { Button, Modal, Input } from "antd";
 import { useMailContext } from "contexts/MailContexts";
 import styled from "styled-components";
 import StatusTag from "components/Tags";
-import { ReactComponent as SearchIcon } from "assets/images/icons/search.svg";
+import SvgSearch from "components/Icons/Search";
+import SvgArrowDown from "components/Icons/ArrowDown";
 
 const { Search } = Input;
 const PageSearch = styled(Search)`
@@ -127,33 +128,14 @@ const DetailPage = () => {
           onClick={() => navigate(-1)}
           className="flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]"
         >
-          <span>
-            <svg
-              className="cursor-pointer mr-[5px]"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-            >
-              <g id="Icon">
-                <path
-                  id="Vector 2176 (Stroke)"
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M14.7803 6.21967C15.0732 6.51256 15.0732 6.98744 14.7803 7.28033L10.4357 11.625L14.7803 15.9697C15.0732 16.2626 15.0732 16.7374 14.7803 17.0303C14.4874 17.3232 14.0126 17.3232 13.7197 17.0303L8.84467 12.1553C8.55178 11.8624 8.55178 11.3876 8.84467 11.0947L13.7197 6.21967C14.0126 5.92678 14.4874 5.92678 14.7803 6.21967Z"
-                  fill="#121826"
-                ></path>
-              </g>
-            </svg>
-          </span>
+          <SvgArrowDown />
           <span>해결 진행 중 의뢰</span>
         </div>
 
         <PageSearch
           placeholder="Placeholder"
           onSearch={onSearch}
-          enterButton={<SearchIcon />}
+          enterButton={<SvgSearch />}
           style={{
             width: 268,
           }}
@@ -243,7 +225,7 @@ const DetailPage = () => {
       <Button type="primary" onClick={showModal}>
         삭제
       </Button>
-      <Modal title="삭제 확인" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+      <Modal title="삭제 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <p>진짜로 삭제하시겠습니까?</p>
       </Modal>
     </div>

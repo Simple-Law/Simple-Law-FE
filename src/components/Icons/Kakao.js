@@ -1,8 +1,9 @@
-const SvgKakao = (props) => (
+const SvgKakao = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={20}
-    height={20}
+    viewBox="0 0 20 20"
+    width={props.width || 20}
+    height={props.height || 20}
     fill="none"
     {...props}
   >
@@ -34,4 +35,5 @@ const SvgKakao = (props) => (
     </defs>
   </svg>
 );
+
 export default SvgKakao;

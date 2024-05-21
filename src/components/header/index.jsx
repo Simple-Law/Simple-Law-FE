@@ -1,8 +1,7 @@
 import React from "react";
 import Logo from "assets/images/icons/Logo.svg";
 import { Link } from "react-router-dom";
-import { Avatar } from "antd";
-import { ReactComponent as Profile } from "assets/images/icons/profile.svg";
+import SvgProfile from "components/Icons/Profile";
 
 const Header = () => {
   return (
@@ -16,7 +15,7 @@ const Header = () => {
         <div className="flex items-center pr-[32px]">
           <p>닉네임</p>
           <div>
-            <Avatar icon={<Profile />} />
+            <SvgProfile />
           </div>
         </div>
       </div>
