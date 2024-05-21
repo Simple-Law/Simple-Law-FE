@@ -1,31 +1,21 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Button, Menu } from "antd";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { ReactComponent as Trash } from "assets/images/icons/trash.svg";
-import { ReactComponent as Mail } from "assets/images/icons/mail.svg";
-import { ReactComponent as MailStar } from "assets/images/icons/mailStar.svg";
-import { ReactComponent as MailAll } from "assets/images/icons/mailAll.svg";
 import styled from "styled-components";
 import { useMailContext } from "contexts/MailContexts"; // import the context
+import SvgMailAll from "components/Icons/MailAll";
+import SvgMailStar from "components/Icons/MailStar";
+import SvgMail from "components/Icons/Mail";
+import SvgTrash from "components/Icons/Trash";
 
 const Board = styled.div`
   height: calc(100vh - 64px);
   border-right: 1px solid #e3e9ee;
-  background: linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.6) 0%,
-      rgba(255, 255, 255, 0.6) 100%
-    ),
-    #f1f5f9;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
 
   .ant-menu {
-    background: linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.6) 0%,
-        rgba(255, 255, 255, 0.6) 100%
-      ),
-      #f1f5f9;
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
   }
   .ant-menu-item-divider {
     background: #e3e9ee;
@@ -47,14 +37,14 @@ const RightSideMenu = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useMailContext(); // use context
 
-  const handleMenuClick = (statusKey) => {
+  const handleMenuClick = statusKey => {
     let filteredMails = state.data;
     if (statusKey === "important") {
-      filteredMails = state.data.filter((mail) => mail.isImportant);
+      filteredMails = state.data.filter(mail => mail.isImportant);
     } else if (statusKey === "trash") {
-      filteredMails = state.data.filter((mail) => mail.statue === "휴지통");
+      filteredMails = state.data.filter(mail => mail.statue === "휴지통");
     } else if (statusKey !== "All_request") {
-      filteredMails = state.data.filter((mail) => mail.statue === statusKey);
+      filteredMails = state.data.filter(mail => mail.statue === statusKey);
     }
 
     dispatch({ type: "SET_MAILS", payload: filteredMails }); // dispatch the action
@@ -67,14 +57,10 @@ const RightSideMenu = () => {
       label: (
         <span className="ml-2">
           전체 의뢰함
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {state.counts.total}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.total}</span>
         </span>
       ),
-      icon: <MailAll />,
+      icon: <SvgMailAll />,
       onTitleClick: () => handleMenuClick("All_request"),
       children: [
         {
@@ -152,20 +138,16 @@ const RightSideMenu = () => {
       label: (
         <span>
           중요 의뢰함
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {state.counts.important}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.important}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("important"),
-      icon: <MailStar />,
+      icon: <SvgMailStar />,
     },
     {
       key: "sub4",
       label: "종료된 의뢰함",
-      icon: <Mail />,
+      icon: <SvgMail />,
     },
 
     {
@@ -176,19 +158,15 @@ const RightSideMenu = () => {
       label: (
         <span>
           휴지통
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {state.counts.trash}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.trash}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("trash"),
-      icon: <Trash />,
+      icon: <SvgTrash />,
     },
   ];
 
-  const onClick = (e) => {
+  const onClick = e => {
     const statusKey = e.key;
     handleMenuClick(statusKey);
   };
