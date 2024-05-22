@@ -68,6 +68,7 @@ const DetailPage = () => {
     const fetchMail = async () => {
       try {
         const data = await getMailById(id);
+        console.log(data);
         setMail(data);
       } catch (error) {
         console.error("Error fetching mail:", error);
@@ -228,8 +229,28 @@ const DetailPage = () => {
       <Modal title="삭제 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <p>진짜로 삭제하시겠습니까?</p>
       </Modal>
+      <div>
+        {mail.replies && mail.replies.length > 0 ? (
+          mail.replies.map((reply, index) => (
+            <div className="ml-[2.125rem] w-full h-[12.5rem] relative border-t border-solid border-slate-100 mt-4">
+              <div key={index} className="mt-2 p-2 bg-gray-100 rounded-md">
+                <div className="text-gray-700">{reply.content}</div>
+                <div className="text-gray-500 text-sm">{moment(reply.createdAt).format("YYYY년 MM월 DD일 A h:mm")}</div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-gray-500"></div>
+        )}
+      </div>
     </div>
   );
 };
 
 export default DetailPage;
+
+// https://www.tagamall.com/board/product/write.html?board_no=6&product_no=95&cate_no=1&display_group=3
+// https://www.tagamall.com/board/product/read.html?no=6058&board_no=6
+
+// https://bkbros.cafe24.com/shop1/front/php/b/board_read.php?board_no=6&no=6495&is_pcver=T
+// https://bkbros.cafe24.com/board/product/reply.html?board_act=reply&no=6495&board_no=6&product_no=4   0
