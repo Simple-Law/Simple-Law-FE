@@ -129,7 +129,7 @@ const DetailPage = () => {
           onClick={() => navigate(-1)}
           className="flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]"
         >
-          <SvgArrowDown />
+          <SvgArrowDown className="rotate-90" />
           <span>해결 진행 중 의뢰</span>
         </div>
 
@@ -162,6 +162,9 @@ const DetailPage = () => {
             <div className="text-gray-500 text-sm font-normal ">의뢰자 :</div>
             <div className="text-gray-500 text-sm font-semibold ">홍길동</div>
           </div>
+          <Button type="primary" onClick={showModal}>
+            삭제
+          </Button>
         </div>
       </div>
       <div className="w-[32.0625rem] ml-[3.75rem] mt-[1.25rem] h-[4.125rem] px-4 py-3 bg-slate-100 bg-opacity-30 rounded-md border border-solid border-slate-200 flex-col justify-start items-start gap-0.5 inline-flex">
@@ -223,9 +226,7 @@ const DetailPage = () => {
           <div dangerouslySetInnerHTML={{ __html: mail.content }} />
         </div>
       </div>
-      <Button type="primary" onClick={showModal}>
-        삭제
-      </Button>
+
       <Modal title="삭제 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <p>진짜로 삭제하시겠습니까?</p>
       </Modal>
@@ -248,9 +249,3 @@ const DetailPage = () => {
 };
 
 export default DetailPage;
-
-// https://www.tagamall.com/board/product/write.html?board_no=6&product_no=95&cate_no=1&display_group=3
-// https://www.tagamall.com/board/product/read.html?no=6058&board_no=6
-
-// https://bkbros.cafe24.com/shop1/front/php/b/board_read.php?board_no=6&no=6495&is_pcver=T
-// https://bkbros.cafe24.com/board/product/reply.html?board_act=reply&no=6495&board_no=6&product_no=4   0
