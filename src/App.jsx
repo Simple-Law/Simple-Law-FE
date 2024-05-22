@@ -25,7 +25,7 @@ const App = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/login/:type" element={<Login />} />
             <Route path="/findId" element={<FindUserId />} />
-            <Route path="/admin" element={<Admin />}></Route>
+            <Route path="/admin/*" element={<Admin />}></Route>
             <Route path="/signup/:type" element={<SignUp />} />
             <Route path="/mail/quest" element={<QuestPost />} />
             <Route path="/" element={<LayoutWithHeader />}>
