@@ -123,139 +123,155 @@ const DetailPage = () => {
   }
   const onSearch = (value, _e, info) => console.log(info?.source, value);
   return (
-    <div className="w-full">
-      <div className="border-solid bg-white border-b border-slate-200 text-zinc-800 text-lg font-bold  flex items-end justify-between px-8 pt-6 pb-3">
-        <div
-          onClick={() => navigate(-1)}
-          className="flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]"
-        >
-          <SvgArrowDown className="rotate-90" />
-          <span>해결 진행 중 의뢰</span>
+    <>
+      <div className="w-full">
+        <div className="border-solid bg-white border-b border-slate-200 text-zinc-800 text-lg font-bold  flex items-end justify-between px-8 pt-6 pb-3">
+          <div
+            onClick={() => navigate(-1)}
+            className="flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]"
+          >
+            <SvgArrowDown className="rotate-90" />
+            <span>해결 진행 중 의뢰</span>
+          </div>
+
+          <PageSearch
+            placeholder="Placeholder"
+            onSearch={onSearch}
+            enterButton={<SvgSearch />}
+            style={{
+              width: 268,
+            }}
+          />
         </div>
+        <div className="mx-8 mt-[20px]">
+          <div className="flex items-center">
+            <span onClick={(e) => toggleImportant(mail.id, e)}>
+              {mail.isImportant ? (
+                <FaStar style={{ color: "gold" }} />
+              ) : (
+                <FaRegStar style={{ color: "#CDD8E2" }} />
+              )}
+            </span>
+            <div className="text-zinc-800 text-base font-medium  leading-normal">
+              {mail.title}
+            </div>
+            <StatusTag status={mail.statue} />
+          </div>
 
-        <PageSearch
-          placeholder="Placeholder"
-          onSearch={onSearch}
-          enterButton={<SvgSearch />}
-          style={{
-            width: 268,
-          }}
-        />
-      </div>
+          <div className="justify-start items-center gap-2 flex">
+            <div className="text-gray-500 text-sm font-normal  leading-tight">
+              {mail.anytime} ∙ {mail.category}
+            </div>
+            <div className="w-px h-2.5 bg-zinc-300"></div>
+            <div className="justify-start items-center gap-1.5 flex">
+              <div className="text-gray-500 text-sm font-normal ">의뢰자 :</div>
+              <div className="text-gray-500 text-sm font-semibold ">홍길동</div>
+            </div>
+            <Button type="primary" onClick={showModal}>
+              삭제
+            </Button>
+          </div>
 
-      <div className="flex items-center mt-[1.25rem] ml-[2rem] min-w-[1000px]">
-        <div className="flex items-center">
-          <span onClick={(e) => toggleImportant(mail.id, e)}>
-            {mail.isImportant ? (
-              <FaStar style={{ color: "gold" }} />
+          <div className="px-4 py-3 bg-slate-100 bg-opacity-30 rounded-md border border-solid border-slate-200 inline-block">
+            <div className="block">
+              <div className="text-gray-500 text-sm font-normal  leading-tight">
+                의뢰 요청 시간 :
+              </div>
+
+              <div className="text-gray-500 text-sm font-semibold  leading-tight">
+                {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
+              </div>
+              <div className="text-gray-500 text-sm font-semibold leading-tight">
+                {moment(mail.sentAt)
+                  .format("A h:mm")
+                  .replace("AM", "오전")
+                  .replace("PM", "오후")}
+              </div>
+            </div>
+            <div className="block">
+              <div className="text-gray-500 text-sm font-normal  leading-tight">
+                제한 시간 :
+              </div>
+
+              <div className="text-gray-500 text-sm font-semibold leading-tight">
+                {moment(mail.sentAt)
+                  .add(mail.time, "hours")
+                  .format("YYYY년 MM월 DD일 (dd) A h:mm")
+                  .replace("AM", "오전")
+                  .replace("PM", "오후")}
+              </div>
+            </div>
+          </div>
+
+          <div className="left-[1.125rem] top-[2.875rem] absolute justify-start items-start gap-2 inline-flex">
+            <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
+              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
+                파일_1.pdf
+              </div>
+              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
+                (35.2MB)
+              </div>
+            </div>
+            <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
+              <div className="w-6 h-6 relative"></div>
+              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
+                파일_1.pdf
+              </div>
+              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
+                (35.2MB)
+              </div>
+            </div>
+            <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
+              <div className="w-6 h-6 relative"></div>
+              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
+                파일_1.pdf
+              </div>
+              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
+                (35.2MB)
+              </div>
+            </div>
+          </div>
+          <div className="left-0 top-[1rem] absolute justify-start items-center gap-1 inline-flex">
+            <div className="justify-start items-center gap-0.5 flex">
+              <div className="text-neutral-600 text-sm font-semibold  leading-normal">
+                첨부파일 3개
+              </div>
+            </div>
+            <div className="text-slate-400 text-sm font-normal  leading-normal">
+              (35.2MB)
+            </div>
+          </div>
+          <div className="left-[10.125rem] top-[1.125rem] absolute text-blue-500 text-sm font-medium  leading-tight">
+            모두 저장
+          </div>
+
+          <div className="w-full h-[12.5rem] relative border-t border-solid border-slate-100">
+            <div className="text-zinc-800 text-base font-normal  mt-[24px]">
+              {" "}
+              <div dangerouslySetInnerHTML={{ __html: mail.content }} />
+            </div>
+          </div>
+
+          <div>
+            {mail.replies && mail.replies.length > 0 ? (
+              mail.replies.map((reply, index) => (
+                <div className="w-full h-[12.5rem] relative border-t border-solid border-slate-100 mt-4">
+                  <div key={index} className="mt-2 p-2 bg-gray-100 rounded-md">
+                    <div className="text-gray-700">{reply.content}</div>
+                    <div className="text-gray-500 text-sm">
+                      {moment(reply.createdAt).format(
+                        "YYYY년 MM월 DD일 A h:mm"
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
             ) : (
-              <FaRegStar style={{ color: "#CDD8E2" }} />
+              <div className="text-gray-500"></div>
             )}
-          </span>
-          <div className="text-zinc-800 text-base font-medium  leading-normal">
-            {mail.title}
-          </div>
-          <StatusTag status={mail.statue} />
-        </div>
-      </div>
-      <div>
-        <div className="w-[34.6875rem] h-[1.0625rem] ml-[3.75rem] mt-[0.5rem] justify-start items-center gap-2 inline-flex">
-          <div className="text-gray-500 text-sm font-normal  leading-tight">
-            {mail.anytime} ∙ {mail.category}
-          </div>
-          <div className="w-px h-2.5 bg-zinc-300"></div>
-          <div className="justify-start items-center gap-1.5 flex">
-            <div className="text-gray-500 text-sm font-normal ">의뢰자 :</div>
-            <div className="text-gray-500 text-sm font-semibold ">홍길동</div>
-          </div>
-          <Button type="primary" onClick={showModal}>
-            삭제
-          </Button>
-        </div>
-      </div>
-      <div className="w-[32.0625rem] ml-[3.75rem] mt-[1.25rem] h-[4.125rem] px-4 py-3 bg-slate-100 bg-opacity-30 rounded-md border border-solid border-slate-200 flex-col justify-start items-start gap-0.5 inline-flex">
-        <div className="justify-start items-start gap-1 inline-flex">
-          <div className="text-gray-500 text-sm font-normal  leading-tight">
-            의뢰 요청 시간 :
-          </div>
-          <div className="justify-start items-start gap-1 flex">
-            <div className="text-gray-500 text-sm font-semibold  leading-tight">
-              {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
-            </div>
-            <div className="text-gray-500 text-sm font-semibold leading-tight">
-              {moment(mail.sentAt)
-                .format("A h:mm")
-                .replace("AM", "오전")
-                .replace("PM", "오후")}
-            </div>
-          </div>
-        </div>
-        <div className="justify-start items-start gap-1 inline-flex">
-          <div className="text-gray-500 text-sm font-normal  leading-tight">
-            제한 시간 :
-          </div>
-          <div className="justify-start items-start gap-1 flex">
-            <div className="text-gray-500 text-sm font-semibold leading-tight">
-              {moment(mail.sentAt)
-                .add(mail.time, "hours")
-                .format("YYYY년 MM월 DD일 (dd) A h:mm")
-                .replace("AM", "오전")
-                .replace("PM", "오후")}
-            </div>
           </div>
         </div>
       </div>
-
-      <div className="min-w-[50rem] h-[6.375rem] relative border-solid ml-[2rem] border-t border-slate-200 mt-[20px]">
-        <div className="left-[1.125rem] top-[2.875rem] absolute justify-start items-start gap-2 inline-flex">
-          <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-            <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
-              파일_1.pdf
-            </div>
-            <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
-              (35.2MB)
-            </div>
-          </div>
-          <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-            <div className="w-6 h-6 relative"></div>
-            <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
-              파일_1.pdf
-            </div>
-            <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
-              (35.2MB)
-            </div>
-          </div>
-          <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-            <div className="w-6 h-6 relative"></div>
-            <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
-              파일_1.pdf
-            </div>
-            <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
-              (35.2MB)
-            </div>
-          </div>
-        </div>
-        <div className="left-0 top-[1rem] absolute justify-start items-center gap-1 inline-flex">
-          <div className="justify-start items-center gap-0.5 flex">
-            <div className="text-neutral-600 text-sm font-semibold  leading-normal">
-              첨부파일 3개
-            </div>
-          </div>
-          <div className="text-slate-400 text-sm font-normal  leading-normal">
-            (35.2MB)
-          </div>
-        </div>
-        <div className="left-[10.125rem] top-[1.125rem] absolute text-blue-500 text-sm font-medium  leading-tight">
-          모두 저장
-        </div>
-      </div>
-      <div className="ml-[2.125rem] w-full h-[12.5rem] relative border-t border-solid border-slate-100">
-        <div className="text-zinc-800 text-base font-normal  mt-[24px]">
-          {" "}
-          <div dangerouslySetInnerHTML={{ __html: mail.content }} />
-        </div>
-      </div>
-
       <Modal
         title="삭제 확인"
         open={isModalVisible}
@@ -264,23 +280,7 @@ const DetailPage = () => {
       >
         <p>진짜로 삭제하시겠습니까?</p>
       </Modal>
-      <div>
-        {mail.replies && mail.replies.length > 0 ? (
-          mail.replies.map((reply, index) => (
-            <div className="ml-[2.125rem] w-full h-[12.5rem] relative border-t border-solid border-slate-100 mt-4">
-              <div key={index} className="mt-2 p-2 bg-gray-100 rounded-md">
-                <div className="text-gray-700">{reply.content}</div>
-                <div className="text-gray-500 text-sm">
-                  {moment(reply.createdAt).format("YYYY년 MM월 DD일 A h:mm")}
-                </div>
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-gray-500"></div>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 
