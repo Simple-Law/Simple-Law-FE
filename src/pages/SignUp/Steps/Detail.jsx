@@ -23,6 +23,41 @@ const props = {
     console.log("Dropped files", e.dataTransfer.files);
   },
 };
+const formatPhoneNumber = value => {
+  if (!value) {
+    return "";
+  }
+
+  value = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+
+  let result = [];
+  let restNumber = "";
+
+  if (value.startsWith("02")) {
+    // 서울 02 지역번호
+    result.push(value.substr(0, 2));
+    restNumber = value.substring(2);
+  } else if (value.startsWith("1")) {
+    // 지역 번호가 없는 경우 (ex. 1577-xxxx)
+    restNumber = value;
+  } else {
+    // 나머지 3자리 지역번호 (ex. 031, 032)
+    result.push(value.substr(0, 3));
+    restNumber = value.substring(3);
+  }
+
+  if (restNumber.length === 7) {
+    // 7자리만 남았을 때는 xxx-yyyy
+    result.push(restNumber.substring(0, 3));
+    result.push(restNumber.substring(3));
+  } else {
+    result.push(restNumber.substring(0, 4));
+    result.push(restNumber.substring(4));
+  }
+
+  return result.filter(val => val).join("-");
+};
+
 const Detail = ({ handleData, nextStep }) => {
   const [form] = Form.useForm();
 
@@ -31,30 +66,25 @@ const Detail = ({ handleData, nextStep }) => {
   useEffect(() => {
     setClientReady(true);
   }, []);
+
   const handleChange = (fieldName, inputValue) => {
-    let newValue = inputValue.replace(/\D/g, "");
+    let newValue = inputValue;
     if (fieldName === "officetel") {
-      newValue = newValue.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
+      newValue = formatPhoneNumber(inputValue);
     }
-    // Form.Item의 값을 업데이트
     form.setFieldsValue({
       [fieldName]: newValue,
     });
   };
-  const onFinish = (values) => {
+
+  const onFinish = values => {
     console.log("결과값: ", values);
     handleData(values);
     nextStep();
   };
   return (
     <LoginForm title="변호사 회원가입">
-      <Form
-        className="flex gap-[20px] flex-col"
-        form={form}
-        name="validateOnly"
-        autoComplete="off"
-        onFinish={onFinish}
-      >
+      <Form className="flex gap-[20px] flex-col" form={form} name="validateOnly" autoComplete="off" onFinish={onFinish}>
         <div className="flex gap-2 flex-col">
           <p className="font-medium text-base">소속</p>
           <Form.Item
@@ -77,7 +107,7 @@ const Detail = ({ handleData, nextStep }) => {
           >
             <Input
               placeholder=" 소속 전화번호(‘-’ 제외하고 입력)"
-              onChange={(e) => handleChange("officetel", e.target.value)}
+              onChange={e => handleChange("officetel", e.target.value)}
               maxLength="13"
             />
           </Form.Item>
@@ -102,10 +132,7 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input
-              placeholder="시험 횟수"
-              onChange={(e) => handleChange("number", e.target.value)}
-            />
+            <Input placeholder="시험 횟수" onChange={e => handleChange("number", e.target.value)} />
           </Form.Item>
 
           <Form.Item
@@ -119,7 +146,7 @@ const Detail = ({ handleData, nextStep }) => {
             <Input
               placeholder="변호사 자격 획득연도"
               maxLength={4}
-              onChange={(e) => handleChange("year", e.target.value)}
+              onChange={e => handleChange("year", e.target.value)}
             />
           </Form.Item>
         </div>

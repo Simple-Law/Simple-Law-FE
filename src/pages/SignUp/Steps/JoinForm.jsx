@@ -9,8 +9,7 @@ const JoinForm = ({ handleData, nextStep }) => {
   const [form] = Form.useForm();
   const { type } = useParams();
   console.log(type);
-  const [showAuthenticationCodeField, setShowAuthenticationCodeField] =
-    useState(false);
+  const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
 
   const validPhoneNumber = (phoneNumberInput, value) => {
     if (!value || !value.startsWith("010")) {
@@ -20,34 +19,27 @@ const JoinForm = ({ handleData, nextStep }) => {
     }
   };
 
-  const handlePhoneNumberChange = (e) => {
+  const handlePhoneNumberChange = e => {
     const { value } = e.target;
     const phoneNumber = value.replace(/\D/g, "");
-    const formattedPhoneNumber = phoneNumber.replace(
-      /(\d{3})(\d{3,4})(\d{4})/,
-      "$1-$2-$3"
-    );
+    const formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
     form.setFieldsValue({ tel: formattedPhoneNumber });
   };
 
-  const onFinish = (values) => {
+  const onFinish = values => {
     console.log("결과값: ", values);
     handleData(values);
     nextStep();
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { value } = e.target;
     // 숫자 이외의 문자 제거
     const formattedValue = value.replace(/\D/g, "");
     // 구분자를 추가하여 출력
     const formattedDate = formattedValue
       .split("")
-      .reduce(
-        (acc, char, index) =>
-          index === 4 || index === 6 ? acc + "." + char : acc + char,
-        ""
-      );
+      .reduce((acc, char, index) => (index === 4 || index === 6 ? acc + "." + char : acc + char), "");
     // 폼 필드에 값을 설정
     form.setFieldsValue({ birthday: formattedDate });
   };
@@ -93,16 +85,13 @@ const JoinForm = ({ handleData, nextStep }) => {
                   const hasNumber = /[0-9]/.test(value);
                   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
                   const isValid =
-                    (hasUpperCase ? 1 : 0) +
-                      (hasLowerCase ? 1 : 0) +
-                      (hasNumber ? 1 : 0) +
-                      (hasSpecialChar ? 1 : 0) >=
+                    (hasUpperCase ? 1 : 0) + (hasLowerCase ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecialChar ? 1 : 0) >=
                     2;
                   if (value.length < 8 || value.length > 16 || !isValid) {
                     return Promise.reject(
                       new Error(
-                        "비밀번호 취약 : 8~16자의 영문 대/소문자, 숫자, 특수문자 중 2가지 이상을 사용해야 합니다."
-                      )
+                        "비밀번호 취약 : 8~16자의 영문 대/소문자, 숫자, 특수문자 중 2가지 이상을 사용해야 합니다.",
+                      ),
                     );
                   }
                   return Promise.resolve();
@@ -125,9 +114,7 @@ const JoinForm = ({ handleData, nextStep }) => {
                   if (!value || getFieldValue("password") === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(
-                    new Error("비밀번호가 일치하지 않습니다.")
-                  );
+                  return Promise.reject(new Error("비밀번호가 일치하지 않습니다."));
                 },
               }),
             ]}
@@ -176,26 +163,18 @@ const JoinForm = ({ handleData, nextStep }) => {
                 validator(_, value) {
                   const birthDate = moment(value, "YYYY.MM.DD");
                   if (!birthDate.isValid()) {
-                    return Promise.reject(
-                      new Error("올바른 날짜 형식이 아닙니다.")
-                    );
+                    return Promise.reject(new Error("올바른 날짜 형식이 아닙니다."));
                   }
                   const age = moment().diff(birthDate, "years");
                   if (age < 14) {
-                    return Promise.reject(
-                      new Error("14세 미만은 가입이 불가능합니다.")
-                    );
+                    return Promise.reject(new Error("14세 미만은 가입이 불가능합니다."));
                   }
                   return Promise.resolve();
                 },
               }),
             ]}
           >
-            <Input
-              placeholder="생년월일 8자리"
-              maxLength="10"
-              onChange={handleInputChange}
-            />
+            <Input placeholder="생년월일 8자리" maxLength="10" onChange={handleInputChange} />
           </Form.Item>
           <Form.Item
             name="tel"
@@ -210,17 +189,10 @@ const JoinForm = ({ handleData, nextStep }) => {
             ]}
             validateTrigger="onBlur"
           >
-            <Input
-              placeholder="휴대전회번호('-' 제외하고 입력)"
-              onChange={handlePhoneNumberChange}
-              maxLength="13"
-            />
+            <Input placeholder="휴대전회번호('-' 제외하고 입력)" onChange={handlePhoneNumberChange} maxLength="13" />
           </Form.Item>
           <Form.Item name="gender">
-            <Radio.Group
-              buttonStyle="solid"
-              className="w-full grid grid-cols-3 text-center"
-            >
+            <Radio.Group buttonStyle="solid" className="w-full grid grid-cols-3 text-center">
               <Radio.Button value="man" className="!rounded-l-md">
                 남자
               </Radio.Button>
