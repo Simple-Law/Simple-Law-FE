@@ -6,14 +6,17 @@ const StyledButton = styled.button`
   padding: 10px 20px;
   background-color: ${(props) => props.backgroundcolor};
   color: #000;
-  border: ${(props) => (props.hasborder ? "1px solid #e4e9f1" : "none")};
+  border: ${(props) =>
+    props.hasborder === "true" ? "1px solid #e4e9f1" : "none"};
   border-radius: 6px;
   cursor: pointer;
   display: block;
   width: 100%;
 
   /* 배경 이미지 스타일 */
-  background-image: url(${(props) => props.backgroundImage});
+  background-image: ${(props) => `url(${props.backgroundimage})`};
+
+  /* 배경 이미지 추가적인 스타일 */
   background-size: 20px;
   background-position: 18px 50%;
   background-repeat: no-repeat;
@@ -38,7 +41,7 @@ const StyledButton = styled.button`
 
 const MyButton = ({ backgroundimage, text, ...rest }) => {
   return (
-    <StyledButton {...rest} backgroundImage={backgroundimage}>
+    <StyledButton {...rest} backgroundimage={backgroundimage}>
       {text}
     </StyledButton>
   );
