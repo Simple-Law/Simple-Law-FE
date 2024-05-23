@@ -82,7 +82,7 @@ const QuestPage = () => {
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
-    const newData = data.map((item) => {
+    const newData = data.map(item => {
       if (item.id === id) {
         item.isImportant = !item.isImportant;
       }
@@ -93,11 +93,11 @@ const QuestPage = () => {
     dispatch({ type: "UPDATE_COUNTS", payload: newData });
 
     try {
-      const updatedItem = newData.find((item) => item.id === id);
+      const updatedItem = newData.find(item => item.id === id);
       await updateMail(id, { isImportant: updatedItem.isImportant });
 
       if (statusKey === "important" && !updatedItem.isImportant) {
-        const filteredMails = newData.filter((mail) => mail.isImportant);
+        const filteredMails = newData.filter(mail => mail.isImportant);
         dispatch({ type: "SET_MAILS", payload: filteredMails });
       }
     } catch (error) {
@@ -105,7 +105,7 @@ const QuestPage = () => {
     }
   };
 
-  const handleTimeMenuClick = (e) => {
+  const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
     setHeaderTitle(e.item.props.children);
     setDropdownOpen(false); // 드롭다운 닫기
@@ -126,8 +126,8 @@ const QuestPage = () => {
       key: "important",
       dataIndex: "important",
       width: 48,
-      onCell: (record) => ({
-        onClick: (e) => {
+      onCell: record => ({
+        onClick: e => {
           e.stopPropagation(); // 이벤트 버블링 중지
           toggleImportant(record.id, e); // 중요 표시 토글 함수 호출
         },
@@ -150,17 +150,13 @@ const QuestPage = () => {
       width: 150,
       key: "statue",
       dataIndex: "statue",
-      render: (statue) => <StatusTag status={statue} />,
+      render: statue => <StatusTag status={statue} />,
     },
     {
       title: (
         <div>
           <span style={{ width: "27px", display: "inline-block" }}>분야</span>
-          <span
-            style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}
-          >
-            |
-          </span>
+          <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
           <span>세부 분야</span>
         </div>
       ),
@@ -169,14 +165,8 @@ const QuestPage = () => {
       width: 320,
       render: (_, record) => (
         <>
-          <span style={{ width: "27px", display: "inline-block" }}>
-            {record.category}
-          </span>
-          <span
-            style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}
-          >
-            |
-          </span>
+          <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
+          <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
           <span>{record.anytime}</span>
         </>
       ),
@@ -185,11 +175,7 @@ const QuestPage = () => {
 
     {
       title: (
-        <Dropdown
-          overlay={menu}
-          onVisibleChange={(visible) => setDropdownOpen(visible)}
-          trigger={["click"]}
-        >
+        <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
           <button
             style={{
               border: "none",
@@ -199,7 +185,7 @@ const QuestPage = () => {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={(e) => e.preventDefault()}
+            onClick={e => e.preventDefault()}
           >
             {headerTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
           </button>
@@ -208,7 +194,7 @@ const QuestPage = () => {
       width: 140,
       dataIndex: timeColumn,
       key: "time",
-      render: (text) => <span>{text}</span>,
+      render: text => <span>{text}</span>,
     },
   ];
 

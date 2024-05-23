@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "assets/images/icons/Logo.svg";
-import { Input, Form, Select, Button, Checkbox, Modal } from "antd";
-import ReactQuill from "react-quill";
+import { Form, Select, Checkbox, Modal } from "antd";
+
 import "react-quill/dist/quill.snow.css";
 import { useFormik } from "formik";
 
@@ -10,6 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { createMail, fetchMails } from "apis/mailsApi";
 import { useMailContext } from "contexts/MailContexts";
+import CommonForm from "components/CommonForm";
 
 const QuestPost = () => {
   const editorRef = useRef();
@@ -93,9 +94,9 @@ const QuestPost = () => {
   };
 
   return (
-    <div className=" overflow-hidden">
-      <div className=" border-b-[1px] w-full  h-[100px] fixed bg-white top-0 left-0 z-[1000] ">
-        <div className="flex justify-between items-center w-[1300px] mx-auto  h-[100px]">
+    <div className="overflow-hidden">
+      <div className="border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]">
+        <div className="flex justify-between items-center w-[1300px] mx-auto h-[100px]">
           <div>
             <Link to="/">
               <img src={Logo} alt="" className="mx-auto w-[140px]" />
@@ -260,72 +261,7 @@ const QuestPost = () => {
             </div>
           </div>
 
-          <div className="mt-[77px] ml-10 right-side">
-            <Form.Item className="mb-8">
-              <p>의뢰 제목</p>
-              <Input
-                name="title"
-                onChange={formik.handleChange}
-                value={formik.values.title}
-                placeholder="제목을 입력하세요"
-              />
-            </Form.Item>
-            <Form.Item>
-              <p>
-                의뢰 내용<span>(100자 이상)</span>
-              </p>
-              <ReactQuill
-                ref={editorRef}
-                theme="snow"
-                value={formik.values.content}
-                onChange={(content, delta, source, editor) => formik.setFieldValue("content", editor.getHTML())}
-                modules={{
-                  toolbar: [
-                    ["bold", "italic", "underline", "strike"],
-                    ["blockquote", "code-block"],
-                    [{ list: "ordered" }, { list: "bullet" }],
-                    [{ script: "sub" }, { script: "super" }],
-                    [{ indent: "-1" }, { indent: "+1" }],
-                    [{ direction: "rtl" }],
-                    [{ size: ["small", false, "large", "huge"] }],
-                    [{ header: [1, 2, 3, 4, 5, 6, false] }],
-                    [{ color: [] }, { background: [] }],
-                    [{ font: [] }],
-                    [{ align: [] }],
-                    ["clean"],
-                    ["link", "image"],
-                  ],
-                }}
-                formats={[
-                  "header",
-                  "bold",
-                  "italic",
-                  "underline",
-                  "strike",
-                  "blockquote",
-                  "code-block",
-                  "list",
-                  "bullet",
-                  "script",
-                  "indent",
-                  "direction",
-                  "size",
-                  "header",
-                  "color",
-                  "background",
-                  "font",
-                  "align",
-                  "link",
-                  "image",
-                ]}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button className="mt-[40px] w-[150px]" type="primary" htmlType="submit" disabled={!isCheckboxChecked}>
-                의뢰 요청하기
-              </Button>
-            </Form.Item>
-          </div>
+          <CommonForm formik={formik} editorRef={editorRef} isCheckboxChecked={isCheckboxChecked} />
         </Form>
         <Modal title="제출 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
           <p>진짜로 제출하시겠습니까?</p>
@@ -334,6 +270,7 @@ const QuestPost = () => {
     </div>
   );
 };
+
 const FormDiv = styled.div`
   p:not(.toastui-editor-defaultUI p) {
     font-size: 16px;
@@ -362,6 +299,7 @@ const FormDiv = styled.div`
     position: relative; /* 필요에 따라 위치 설정 */
   }
 `;
+
 const StyledList = styled.ul`
   counter-reset: list-number;
 

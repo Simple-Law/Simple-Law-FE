@@ -14,6 +14,7 @@ import RightSideMenu from "components/RightSideMenu";
 
 import { MailProvider } from "contexts/MailContexts";
 import { useMailContext } from "contexts/MailContexts";
+import ReQuestion from "pages/ReQuestion";
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
             <Route path="/admin/*" element={<Admin />}></Route>
             <Route path="/signup/:type" element={<SignUp />} />
             <Route path="/mail/quest" element={<QuestPost />} />
+            <Route path="/requestion/:id" element={<ReQuestion />} />
             <Route path="/" element={<LayoutWithHeader />}>
               <Route path="/" element={<LayoutWithSidebar />}>
                 <Route path="/detail/:id" element={<DetailPage />} />
