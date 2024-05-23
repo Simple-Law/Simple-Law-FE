@@ -8,7 +8,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { state } = useMailContext();
   const { mails } = state;
-
+  console.log(mails);
   const columns = [
     {
       title: "상태",

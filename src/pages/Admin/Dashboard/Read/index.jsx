@@ -24,6 +24,7 @@ const Read = () => {
     const fetchMail = async () => {
       try {
         const data = await getMailById(id);
+        console.log(data);
         // replies가 정의되지 않은 경우 빈 배열로 초기화
         setMail({ ...data, replies: data.replies || [] });
       } catch (error) {
@@ -41,11 +42,17 @@ const Read = () => {
   const handleOk = async () => {
     setIsModalVisible(false);
     try {
-      // replies가 배열인지 확인하고 업데이트
-      const updatedMail = {
-        ...mail,
-        replies: [...(mail.replies || []), { content: replyContent, createdAt: new Date().toISOString() }],
-      };
+      let updatedMail = { ...mail };
+      if (actionType === "승인") {
+        updatedMail.statue = "pending";
+      } else if (actionType === "거절") {
+        updatedMail.statue = "refuse";
+      } else if (actionType === "답변") {
+        updatedMail = {
+          ...mail,
+          replies: [...(mail.replies || []), { content: replyContent, createdAt: new Date().toISOString() }],
+        };
+      }
       await updateMail(id, updatedMail);
       setMail(updatedMail);
       const { data: mailData } = await fetchMails();
@@ -121,13 +128,17 @@ const Read = () => {
         </div>
       </div>
 
+      {mail.statue === "preparing" && (
+        <div className="flex space-x-2 mt-4">
+          <Button type="primary" onClick={() => showModal("승인")}>
+            승인
+          </Button>
+          <Button type="danger" onClick={() => showModal("거절")}>
+            거절
+          </Button>
+        </div>
+      )}
       <div className="flex space-x-2 mt-4">
-        <Button type="primary" onClick={() => showModal("승인")}>
-          승인
-        </Button>
-        <Button type="danger" onClick={() => showModal("거절")}>
-          거절
-        </Button>
         <Button type="default" onClick={() => showModal("답변")}>
           답변
         </Button>
