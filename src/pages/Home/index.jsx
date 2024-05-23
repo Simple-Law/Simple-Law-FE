@@ -12,12 +12,7 @@ const Home = () => {
         <Button block onClick={() => navigate("/login/quest")}>
           의뢰인
         </Button>
-        <Button
-          type="primary"
-          block
-          onClick={() => navigate("/login/lawyer")}
-          className="mt-1"
-        >
+        <Button type="primary" block onClick={() => navigate("/login/lawyer")} className="mt-1">
           변호사
         </Button>
         <Button block className="mt-1" onClick={() => navigate("/board")}>
@@ -25,6 +20,9 @@ const Home = () => {
         </Button>
         <Button block className="mt-1" onClick={() => navigate("/mail/quest")}>
           글작성
+        </Button>
+        <Button block className="mt-1" onClick={() => navigate("/admin/board")}>
+          어드민
         </Button>
       </LoginForm>
     </>
