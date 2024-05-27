@@ -12,7 +12,7 @@ const Header = () => {
             <img src={Logo} alt="" className="mx-auto w-[115px]" />
           </Link>
         </div>
-        <div className="flex items-center pr-[32px]">
+        <div className="flex items-center pr-[32px] gap-[10px]">
           <p>닉네임</p>
           <div>
             <SvgProfile />
