@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Dropdown, Input, Menu, Table } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -80,6 +80,25 @@ const QuestPage = () => {
   const { state, dispatch } = useMailContext();
   const { mails, data } = state;
 
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    const combinedData = [];
+    data.forEach(item => {
+      combinedData.push(item);
+      if (item.replies && item.replies.length > 0) {
+        item.replies.forEach((reply, index) => {
+          combinedData.push({
+            ...reply,
+            parentTitle: item.title,
+            key: `${item.id}-${index}`,
+          });
+        });
+      }
+    });
+    setTableData(combinedData);
+  }, [data]);
+
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
     const newData = data.map(item => {
@@ -148,9 +167,9 @@ const QuestPage = () => {
     {
       title: "상태",
       width: 150,
-      key: "statue",
-      dataIndex: "statue",
-      render: statue => <StatusTag status={statue} />,
+      key: "status",
+      dataIndex: "status",
+      render: status => <StatusTag status={status} />,
     },
     {
       title: (
@@ -171,7 +190,22 @@ const QuestPage = () => {
         </>
       ),
     },
-    { title: "제목", dataIndex: "title", key: "title" },
+    {
+      title: "제목",
+      dataIndex: "title",
+      key: "title",
+      render: (_, record) =>
+        record.parentTitle ? (
+          <div>
+            {record.parentTitle}
+            <div style={{ marginLeft: 20 }}>
+              <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
+            </div>
+          </div>
+        ) : (
+          record.title
+        ),
+    },
 
     {
       title: (
@@ -219,7 +253,7 @@ const QuestPage = () => {
         />
       </div>
       <Table
-        dataSource={mails}
+        dataSource={tableData}
         columns={columns}
         pagination={paginationConfig}
         style={{

@@ -42,9 +42,9 @@ const RightSideMenu = () => {
     if (statusKey === "important") {
       filteredMails = state.data.filter(mail => mail.isImportant);
     } else if (statusKey === "trash") {
-      filteredMails = state.data.filter(mail => mail.statue === "휴지통");
+      filteredMails = state.data.filter(mail => mail.status === "휴지통");
     } else if (statusKey !== "All_request") {
-      filteredMails = state.data.filter(mail => mail.statue === statusKey);
+      filteredMails = state.data.filter(mail => mail.status === statusKey);
     }
 
     dispatch({ type: "SET_MAILS", payload: filteredMails }); // dispatch the action

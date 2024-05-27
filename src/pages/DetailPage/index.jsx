@@ -100,12 +100,12 @@ const DetailPage = () => {
   const handleOk = async () => {
     setIsModalVisible(false);
     try {
-      await updateMail(id, { statue: "휴지통" });
+      await updateMail(id, { status: "휴지통" });
       const { data: mailData } = await fetchMails();
       dispatch({ type: "SET_DATA", payload: mailData });
       dispatch({
         type: "SET_MAILS",
-        payload: mailData.filter((mail) => mail.statue !== "휴지통"),
+        payload: mailData.filter(mail => mail.status !== "휴지통"),
       });
       dispatch({ type: "UPDATE_COUNTS", payload: mailData });
       navigate("/board");
@@ -145,17 +145,11 @@ const DetailPage = () => {
         </div>
         <div className="mx-8 mt-[20px]">
           <div className="flex items-center gap-1">
-            <span onClick={(e) => toggleImportant(mail.id, e)}>
-              {mail.isImportant ? (
-                <FaStar style={{ color: "gold" }} />
-              ) : (
-                <FaRegStar style={{ color: "#CDD8E2" }} />
-              )}
+            <span onClick={e => toggleImportant(mail.id, e)}>
+              {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
-            <div className="text-zinc-800 text-base font-medium  leading-normal">
-              {mail.title}
-            </div>
-            <StatusTag status={mail.statue} />
+            <div className="text-zinc-800 text-base font-medium  leading-normal">{mail.title}</div>
+            <StatusTag status={mail.status} />
           </div>
 
           <div className="justify-start items-center gap-2 flex pl-7 mb-[18px] mt-2">
@@ -176,10 +170,7 @@ const DetailPage = () => {
                 의뢰 요청 시간 :
                 <span className="text-gray-500 text-sm font-semibold leading-tight">
                   {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
-                  {moment(mail.sentAt)
-                    .format("A h:mm")
-                    .replace("AM", "오전")
-                    .replace("PM", "오후")}
+                  {moment(mail.sentAt).format("A h:mm").replace("AM", "오전").replace("PM", "오후")}
                 </span>
               </div>
               <div className="text-gray-500 text-sm font-normal  leading-tight">
@@ -197,43 +188,27 @@ const DetailPage = () => {
 
           <div className="left-0 top-[1rem] justify-start items-center gap-1 inline-flex mt-4 mb-[6px]">
             <div className="justify-start items-center gap-0.5 flex">
-              <div className="text-neutral-600 text-sm font-semibold  leading-normal">
-                첨부파일 3개
-              </div>
+              <div className="text-neutral-600 text-sm font-semibold  leading-normal">첨부파일 3개</div>
             </div>
-            <div className="text-slate-400 text-sm font-normal  leading-normal">
-              (35.2MB)
-            </div>
+            <div className="text-slate-400 text-sm font-normal  leading-normal">(35.2MB)</div>
           </div>
           <div className="left-[10.125rem] top-[1.125rem] absolute text-blue-500 text-sm font-medium  leading-tight">
             모두 저장
           </div>
           <div className="justify-start items-start gap-2 inline-flex">
             <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
-                파일_1.pdf
-              </div>
-              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
-                (35.2MB)
-              </div>
+              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">파일_1.pdf</div>
+              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">(35.2MB)</div>
             </div>
             <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
               <div className="w-6 h-6 relative"></div>
-              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
-                파일_1.pdf
-              </div>
-              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
-                (35.2MB)
-              </div>
+              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">파일_1.pdf</div>
+              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">(35.2MB)</div>
             </div>
             <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
               <div className="w-6 h-6 relative"></div>
-              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
-                파일_1.pdf
-              </div>
-              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
-                (35.2MB)
-              </div>
+              <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">파일_1.pdf</div>
+              <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">(35.2MB)</div>
             </div>
           </div>
 
@@ -244,16 +219,11 @@ const DetailPage = () => {
           <div>
             {mail.replies && mail.replies.length > 0 ? (
               mail.replies.map((reply, index) => (
-                <div
-                  key={index}
-                  className="w-full h-[12.5rem] relative border-t border-solid border-slate-100 mt-4"
-                >
+                <div key={index} className="w-full h-[12.5rem] relative border-t border-solid border-slate-100 mt-4">
                   <div className="mt-2 p-2 bg-gray-100 rounded-md">
                     <div className="text-gray-700">{reply.content}</div>
                     <div className="text-gray-500 text-sm">
-                      {moment(reply.createdAt).format(
-                        "YYYY년 MM월 DD일 A h:mm"
-                      )}
+                      {moment(reply.createdAt).format("YYYY년 MM월 DD일 A h:mm")}
                     </div>
                     <Link to={`/requestion/${mail.id}`}>
                       <Button type="link">재질문하기</Button>
@@ -267,12 +237,7 @@ const DetailPage = () => {
           </div>
         </div>
       </div>
-      <Modal
-        title="삭제 확인"
-        open={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
+      <Modal title="삭제 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <p>진짜로 삭제하시겠습니까?</p>
       </Modal>
     </>

@@ -47,7 +47,7 @@ const QuestPost = () => {
       content: "",
       category: "",
       time: "",
-      statue: "preparing",
+      status: "preparing",
     },
     onSubmit: async values => {
       const currentTime = new Date().toISOString(); // ISO 8601 포맷의 문자열로 날짜와 시간을 가져옵니다.
@@ -63,7 +63,7 @@ const QuestPost = () => {
 
         const { data: mailData } = await fetchMails();
         dispatch({ type: "SET_DATA", payload: mailData });
-        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.statue !== "휴지통") });
+        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.status !== "휴지통") });
         dispatch({ type: "UPDATE_COUNTS", payload: mailData });
 
         formik.resetForm();
