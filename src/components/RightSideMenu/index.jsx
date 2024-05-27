@@ -185,10 +185,17 @@ const RightSideMenu = () => {
       <Menu
         onClick={onClick}
         defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["sub1"]}
+        defaultOpenKeys={["main"]}
         mode="inline"
-        items={menuItems}
+        // items={menuItems}
         className="w-full border-e-0"
+        items={[
+          {
+            key: "main",
+            label: "내 의뢰함",
+            children: menuItems,
+          },
+        ]}
       />
     </Board>
   );
