@@ -187,7 +187,6 @@ const RightSideMenu = () => {
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["main"]}
         mode="inline"
-        // items={menuItems}
         className="w-full border-e-0"
         items={[
           {
