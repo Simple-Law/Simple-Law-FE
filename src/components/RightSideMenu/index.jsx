@@ -12,10 +12,20 @@ import SvgTrash from "components/Icons/Trash";
 const Board = styled.div`
   height: calc(100vh - 64px);
   border-right: 1px solid #e3e9ee;
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+  background: linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.6) 0%,
+      rgba(255, 255, 255, 0.6) 100%
+    ),
+    #f1f5f9;
 
   .ant-menu {
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+    background: linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.6) 0%,
+        rgba(255, 255, 255, 0.6) 100%
+      ),
+      #f1f5f9;
   }
   .ant-menu-item-divider {
     background: #e3e9ee;
@@ -37,14 +47,14 @@ const RightSideMenu = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useMailContext(); // use context
 
-  const handleMenuClick = statusKey => {
+  const handleMenuClick = (statusKey) => {
     let filteredMails = state.data;
     if (statusKey === "important") {
-      filteredMails = state.data.filter(mail => mail.isImportant);
+      filteredMails = state.data.filter((mail) => mail.isImportant);
     } else if (statusKey === "trash") {
-      filteredMails = state.data.filter(mail => mail.status === "휴지통");
+      filteredMails = state.data.filter((mail) => mail.status === "휴지통");
     } else if (statusKey !== "All_request") {
-      filteredMails = state.data.filter(mail => mail.status === statusKey);
+      filteredMails = state.data.filter((mail) => mail.status === statusKey);
     }
 
     dispatch({ type: "SET_MAILS", payload: filteredMails }); // dispatch the action
@@ -55,9 +65,13 @@ const RightSideMenu = () => {
     {
       key: "All_request",
       label: (
-        <span className="ml-2">
+        <span className="ml-2 text-stone-950">
           전체 의뢰함
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.total}</span>
+          <span
+            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
+          >
+            {state.counts.total}
+          </span>
         </span>
       ),
       icon: <SvgMailAll />,
@@ -67,7 +81,7 @@ const RightSideMenu = () => {
           key: "preparing",
           label: (
             <span>
-              신청중
+              컨택 요청 중
               <span
                 style={{
                   marginLeft: "8px",
@@ -84,7 +98,7 @@ const RightSideMenu = () => {
           key: "pending",
           label: (
             <span>
-              보류중
+              해결 진행 중
               <span
                 style={{
                   marginLeft: "8px",
@@ -101,7 +115,7 @@ const RightSideMenu = () => {
           key: "completed",
           label: (
             <span>
-              신청완료
+              해결 완료
               <span
                 style={{
                   marginLeft: "8px",
@@ -136,9 +150,13 @@ const RightSideMenu = () => {
     {
       key: "important",
       label: (
-        <span>
+        <span className="text-stone-950">
           중요 의뢰함
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.important}</span>
+          <span
+            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
+          >
+            {state.counts.important}
+          </span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("important"),
@@ -146,7 +164,7 @@ const RightSideMenu = () => {
     },
     {
       key: "sub4",
-      label: "종료된 의뢰함",
+      label: <span className="text-stone-950">종료된 의뢰함</span>,
       icon: <SvgMail />,
     },
 
@@ -156,9 +174,13 @@ const RightSideMenu = () => {
     {
       key: "trash",
       label: (
-        <span>
+        <span className="text-stone-950">
           휴지통
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.trash}</span>
+          <span
+            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
+          >
+            {state.counts.trash}
+          </span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("trash"),
@@ -166,7 +188,7 @@ const RightSideMenu = () => {
     },
   ];
 
-  const onClick = e => {
+  const onClick = (e) => {
     const statusKey = e.key;
     handleMenuClick(statusKey);
   };
@@ -191,7 +213,11 @@ const RightSideMenu = () => {
         items={[
           {
             key: "main",
-            label: "내 의뢰함",
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }}>
+                내 의뢰함
+              </span>
+            ),
             children: menuItems,
           },
         ]}
