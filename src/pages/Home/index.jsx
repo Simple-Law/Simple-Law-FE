@@ -8,12 +8,9 @@ const Home = () => {
 
   return (
     <>
-      <LoginForm title="로그인을 하려면 가입해!">
+      <LoginForm>
         <Button block onClick={() => navigate("/login/quest")}>
-          의뢰인
-        </Button>
-        <Button type="primary" block onClick={() => navigate("/login/lawyer")} className="mt-1">
-          변호사
+          로그인
         </Button>
         <Button block className="mt-1" onClick={() => navigate("/board")}>
           의뢰자메일
