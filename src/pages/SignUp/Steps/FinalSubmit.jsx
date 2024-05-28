@@ -11,8 +11,9 @@ const FinalSubmit = ({ formData, type }) => {
 
   const handleSubmit = async () => {
     console.log("Form Data:", { ...formData, type });
+    const status = type === "lawyer" ? "pending" : "approved"; // 변호사일 경우 status를 pending으로 설정
     try {
-      const response = await registerUser({ ...formData, type });
+      const response = await registerUser({ ...formData, type, status });
       console.log("Saved data", response);
       alert("Registration successful!");
       navigate("/"); // 홈으로 리다이렉트

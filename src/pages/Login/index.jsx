@@ -26,7 +26,11 @@ const Login = () => {
       navigate("/board"); // 홈으로 이동
     } catch (error) {
       console.error("로그인 실패:", error);
-      message.error("로그인에 실패했습니다.");
+      if (error.message === "pending-approval") {
+        message.warning("가입 승인 중입니다.");
+      } else {
+        message.error(error.message || "로그인에 실패했습니다.");
+      }
     }
   };
   return (

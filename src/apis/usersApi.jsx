@@ -27,9 +27,11 @@ export const loginUser = async (credentials, userType) => {
     const user = users.find(u => u.id === id && u.password === password && u.type === userType);
 
     if (!user) {
-      throw new Error("Invalid credentials");
+      throw new Error("존재하지 않는 아이디입니다.");
     }
-
+    if (user.status !== "approved") {
+      throw new Error("가입 승인 중입니다.");
+    }
     // 로그인 성공 시, 토큰 대신 사용자 정보를 반환
     return { token: "mock-token", user };
   } catch (error) {
