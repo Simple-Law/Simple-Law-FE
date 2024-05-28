@@ -12,7 +12,7 @@ const Login = () => {
   const { type } = useParams();
   const isLawyerLogin = type === "lawyer";
   const title = isLawyerLogin ? "변호사 로그인" : "의뢰인 로그인";
-  const toggleType = isLawyerLogin ? "" : "lawyer";
+  const toggleType = isLawyerLogin ? "quest" : "lawyer";
   const toggleText = isLawyerLogin ? "의뢰인이신가요?" : "변호사이신가요?";
 
   return (
@@ -23,13 +23,9 @@ const Login = () => {
           <Input.Password
             className=" px-4 py-3 my-2"
             placeholder="비밀번호 입력"
-            iconRender={(visible) => (visible ? <SvgEye /> : <SvgEyeclose />)}
+            iconRender={visible => (visible ? <SvgEye /> : <SvgEyeclose />)}
           />
-          <Button
-            type="primary"
-            block
-            className=" px-4 py-3 h-12 text-base font-medium"
-          >
+          <Button type="primary" block className=" px-4 py-3 h-12 text-base font-medium">
             로그인
           </Button>
         </div>
@@ -41,17 +37,11 @@ const Login = () => {
             회원가입
           </Link>
           <div className="w-px h-3 bg-zinc-300"></div>
-          <Link
-            to="/findId"
-            className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
-          >
+          <Link to="/findId" className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
             아이디 찾기
           </Link>
           <div className="w-px h-3 bg-zinc-300"></div>
-          <Link
-            to="/"
-            className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
-          >
+          <Link to="/" className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
             <span>비밀번호 찾기</span>
           </Link>
         </div>
@@ -77,10 +67,7 @@ const Login = () => {
             <SvgGoogle width="24px" height="24px" fill="#FFF" />
           </div>
         </div>
-        <Link
-          to={`/login/${toggleType}`}
-          className="text-base font-normal text-center text-Base-Blue underline"
-        >
+        <Link to={`/login/${toggleType}`} className="text-base font-normal text-center text-Base-Blue underline">
           {toggleText}
         </Link>
       </div>
