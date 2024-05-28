@@ -1,32 +1,37 @@
 import React from "react";
-// import axios from "axios";
-import { Button } from "antd";
+import { Button, Form } from "antd";
 import LoginForm from "components/LoginForm";
+import { useNavigate } from "react-router-dom";
 
-const FinalSubmit = ({ formData }) => {
-  const handleSubmit = (value) => {
-    console.log(value);
+import { registerUser } from "apis/usersApi";
+
+const FinalSubmit = ({ formData, type }) => {
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+
+  const handleSubmit = async () => {
+    console.log("Form Data:", { ...formData, type });
+    const status = type === "lawyer" ? "pending" : "approved"; // 변호사일 경우 status를 pending으로 설정
+    try {
+      const response = await registerUser({ ...formData, type, status });
+      console.log("Saved data", response);
+      alert("Registration successful!");
+      navigate("/"); // 홈으로 리다이렉트
+    } catch (error) {
+      console.error("Registration failed:", error);
+      alert("Registration failed!");
+    }
   };
-  //   console.log("Final form data:", formData);
-  //   try {
-  //     // json-server로 데이터 보내기
-  //     const response = await axios.post(
-  //       "http://localhost:3001/users",
-  //       formData
-  //     );
-  //     console.log("Saved data", response.data);
-  //     alert("Registration successful!");
-  //   } catch (error) {
-  //     console.error("Registration failed:", error);
-  //     alert("Registration failed!");
-  //   }
-  // };
 
   return (
     <LoginForm title="가입완료">
-      <Button block type="primary" onClick={handleSubmit}>
-        제출하세용
-      </Button>
+      <Form form={form} onFinish={handleSubmit}>
+        <Form.Item className="mt-8">
+          <Button block type="primary" htmlType="submit">
+            제출하세용
+          </Button>
+        </Form.Item>
+      </Form>
     </LoginForm>
   );
 };

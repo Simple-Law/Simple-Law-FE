@@ -44,9 +44,9 @@ const Read = () => {
     try {
       let updatedMail = { ...mail };
       if (actionType === "승인") {
-        updatedMail.statue = "pending";
+        updatedMail.status = "pending";
       } else if (actionType === "거절") {
-        updatedMail.statue = "refuse";
+        updatedMail.status = "refuse";
       } else if (actionType === "답변") {
         updatedMail = {
           ...mail,
@@ -128,7 +128,7 @@ const Read = () => {
         </div>
       </div>
 
-      {mail.statue === "preparing" && (
+      {mail.status === "preparing" && (
         <div className="flex space-x-2 mt-4">
           <Button type="primary" onClick={() => showModal("승인")}>
             승인

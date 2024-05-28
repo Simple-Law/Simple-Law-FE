@@ -28,15 +28,15 @@ const reducer = (state, action) => {
       return { ...state, data: action.payload };
     case "UPDATE_COUNTS":
       const mails = action.payload;
-      const nonTrashData = mails.filter(mail => mail.statue !== "휴지통");
+      const nonTrashData = mails.filter(mail => mail.status !== "휴지통");
       const counts = {
         total: nonTrashData.length,
-        preparing: nonTrashData.filter(mail => mail.statue === "preparing").length,
-        pending: nonTrashData.filter(mail => mail.statue === "pending").length,
-        completed: nonTrashData.filter(mail => mail.statue === "completed").length,
-        refuse: nonTrashData.filter(mail => mail.statue === "refuse").length,
+        preparing: nonTrashData.filter(mail => mail.status === "preparing").length,
+        pending: nonTrashData.filter(mail => mail.status === "pending").length,
+        completed: nonTrashData.filter(mail => mail.status === "completed").length,
+        refuse: nonTrashData.filter(mail => mail.status === "refuse").length,
         important: nonTrashData.filter(mail => mail.isImportant).length,
-        trash: mails.filter(mail => mail.statue === "휴지통").length,
+        trash: mails.filter(mail => mail.status === "휴지통").length,
       };
       return { ...state, counts };
     default:
@@ -53,7 +53,7 @@ export const MailProvider = ({ children }) => {
       if (error) return;
 
       dispatch({ type: "SET_DATA", payload: data });
-      dispatch({ type: "SET_MAILS", payload: data.filter(mail => mail.statue !== "휴지통") });
+      dispatch({ type: "SET_MAILS", payload: data.filter(mail => mail.status !== "휴지통") });
       dispatch({ type: "UPDATE_COUNTS", payload: data });
     };
 

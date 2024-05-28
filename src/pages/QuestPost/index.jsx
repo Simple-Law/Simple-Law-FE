@@ -11,12 +11,13 @@ import { styled } from "styled-components";
 import { createMail, fetchMails } from "apis/mailsApi";
 import { useMailContext } from "contexts/MailContexts";
 import CommonForm from "components/CommonForm";
+import { useAuth } from "contexts/AuthContext";
 
 const QuestPost = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
   const { dispatch } = useMailContext();
-
+  const { user } = useAuth(); // 로그인한 사용자 정보 가져오기
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const messageApi = useMessageApi();
@@ -38,14 +39,17 @@ const QuestPost = () => {
       content: "",
       category: "",
       time: "",
-      statue: "preparing",
+      status: "preparing",
     },
     onSubmit: async values => {
       const currentTime = new Date().toISOString(); // ISO 8601 포맷의 문자열로 날짜와 시간을 가져옵니다.
       const dataToSend = {
         ...values,
-        statue: values.statue || "preparing",
+        status: values.status || "preparing",
         sentAt: currentTime, // 데이터 객체에 현재 시간 필드를 추가합니다.
+        userId: user.id, // 로그인한 사용자의 아이디 추가
+        userName: user.name, // 로그인한 사용자의 이름 추가
+        userType: user.type, // 로그인한 사용자의 타입 추가
       };
       try {
         // 에디터 내용과 셀렉트박스 값이 포함된 values를 서버로 전송
@@ -55,7 +59,7 @@ const QuestPost = () => {
 
         const { data: mailData } = await fetchMails();
         dispatch({ type: "SET_DATA", payload: mailData });
-        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.statue !== "휴지통") });
+        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.status !== "휴지통") });
         dispatch({ type: "UPDATE_COUNTS", payload: mailData });
 
         formik.resetForm();
@@ -110,32 +114,6 @@ const QuestPost = () => {
             <div className="w-[400px] pt-[40px]">
               <h2 className="text-2xl font-bold mb-6">의뢰 요청서</h2>
               <div className="flex flex-col gap-8">
-                <Form.Item>
-                  <p>상태</p>
-                  <Select
-                    name="statue"
-                    placeholder="상태"
-                    onChange={value => formik.setFieldValue("statue", value)}
-                    options={[
-                      {
-                        value: "preparing",
-                        label: "매칭준비중",
-                      },
-                      {
-                        value: "pending",
-                        label: "매칭보류",
-                      },
-                      {
-                        value: "completed",
-                        label: "매칭완",
-                      },
-                      {
-                        value: "refuse",
-                        label: "매칭거절",
-                      },
-                    ]}
-                  />
-                </Form.Item>
                 <Form.Item>
                   <p>분야 선택</p>
                   <Select

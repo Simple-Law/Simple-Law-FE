@@ -13,9 +13,9 @@ const Dashboard = () => {
     {
       title: "상태",
       width: 150,
-      key: "statue",
-      dataIndex: "statue",
-      render: statue => <StatusTag status={statue} />,
+      key: "status",
+      dataIndex: "status",
+      render: status => <StatusTag status={status} />,
     },
     {
       title: (

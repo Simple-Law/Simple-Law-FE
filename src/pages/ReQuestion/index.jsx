@@ -46,14 +46,14 @@ const ReQuestion = () => {
       content: "",
       category: "",
       time: "",
-      statue: "preparing",
+      status: "preparing",
       parentId: id,
     },
     onSubmit: async values => {
       const currentTime = new Date().toISOString();
       const dataToSend = {
         ...values,
-        statue: values.statue || "preparing",
+        status: values.status || "preparing",
         sentAt: currentTime,
       };
       try {
@@ -63,7 +63,7 @@ const ReQuestion = () => {
 
         const { data: mailData } = await fetchMails();
         dispatch({ type: "SET_DATA", payload: mailData });
-        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.statue !== "휴지통") });
+        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.status !== "휴지통") });
         dispatch({ type: "UPDATE_COUNTS", payload: mailData });
 
         formik.resetForm();
