@@ -13,3 +13,10 @@ body {
 button {
   font-family: "Pretendard";
 }
+/* 메시지 컨테이너를 하단에 위치시키는 CSS */
+.ant-message {
+  top: auto !important;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+}
