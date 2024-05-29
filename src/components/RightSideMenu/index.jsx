@@ -9,55 +9,22 @@ import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
 import SvgTrash from "components/Icons/Trash";
 
-const Board = styled.div`
-  height: calc(100vh - 64px);
-  border-right: 1px solid #e3e9ee;
-  background: linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.6) 0%,
-      rgba(255, 255, 255, 0.6) 100%
-    ),
-    #f1f5f9;
-
-  .ant-menu {
-    background: linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.6) 0%,
-        rgba(255, 255, 255, 0.6) 100%
-      ),
-      #f1f5f9;
-  }
-  .ant-menu-item-divider {
-    background: #e3e9ee;
-    margin: 16px 0;
-  }
-  .ant-menu-submenu-title,
-  .ant-menu-item {
-    padding: 8px !important;
-  }
-  .ant-pagination-item-active {
-    border: transparent !important;
-  }
-  .ant-menu-item-only-child {
-    padding: 0 40px !important;
-  }
-`;
-
 const RightSideMenu = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useMailContext(); // use context
 
-  const handleMenuClick = (statusKey) => {
+  const handleMenuClick = statusKey => {
     let filteredMails = state.data;
     if (statusKey === "important") {
-      filteredMails = state.data.filter((mail) => mail.isImportant);
+      filteredMails = state.data.filter(mail => mail.isImportant);
     } else if (statusKey === "trash") {
-      filteredMails = state.data.filter((mail) => mail.status === "휴지통");
+      filteredMails = state.data.filter(mail => mail.status === "휴지통");
     } else if (statusKey !== "All_request") {
-      filteredMails = state.data.filter((mail) => mail.status === statusKey);
+      filteredMails = state.data.filter(mail => mail.status === statusKey);
     }
 
     dispatch({ type: "SET_MAILS", payload: filteredMails }); // dispatch the action
+    dispatch({ type: "SET_TABLE_DATA", payload: filteredMails }); // 추가: tableData 업데이트
     navigate(`/board?status=${statusKey}`);
   };
 
@@ -67,11 +34,7 @@ const RightSideMenu = () => {
       label: (
         <span className="ml-2 text-stone-950">
           전체 의뢰함
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {state.counts.total}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.total}</span>
         </span>
       ),
       icon: <SvgMailAll />,
@@ -152,11 +115,7 @@ const RightSideMenu = () => {
       label: (
         <span className="text-stone-950">
           중요 의뢰함
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {state.counts.important}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.important}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("important"),
@@ -176,11 +135,7 @@ const RightSideMenu = () => {
       label: (
         <span className="text-stone-950">
           휴지통
-          <span
-            style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}
-          >
-            {state.counts.trash}
-          </span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.trash}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("trash"),
@@ -188,7 +143,7 @@ const RightSideMenu = () => {
     },
   ];
 
-  const onClick = (e) => {
+  const onClick = e => {
     const statusKey = e.key;
     handleMenuClick(statusKey);
   };
@@ -213,11 +168,7 @@ const RightSideMenu = () => {
         items={[
           {
             key: "main",
-            label: (
-              <span style={{ fontSize: "12px", fontWeight: "600" }}>
-                내 의뢰함
-              </span>
-            ),
+            label: <span style={{ fontSize: "12px", fontWeight: "600" }}>내 의뢰함</span>,
             children: menuItems,
           },
         ]}
@@ -227,3 +178,27 @@ const RightSideMenu = () => {
 };
 
 export default RightSideMenu;
+
+const Board = styled.div`
+  height: calc(100vh - 64px);
+  border-right: 1px solid #e3e9ee;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+
+  .ant-menu {
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+  }
+  .ant-menu-item-divider {
+    background: #e3e9ee;
+    margin: 16px 0;
+  }
+  .ant-menu-submenu-title,
+  .ant-menu-item {
+    padding: 8px !important;
+  }
+  .ant-pagination-item-active {
+    border: transparent !important;
+  }
+  .ant-menu-item-only-child {
+    padding: 0 40px !important;
+  }
+`;

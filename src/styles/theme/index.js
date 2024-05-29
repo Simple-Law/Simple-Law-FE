@@ -75,6 +75,14 @@ const theme = {
       colorPrimary: "rgb(40, 127, 255)",
       colorBgContainer: "#e9f2ff",
     },
+    Message: {
+      contentBg: "rgb(24, 24, 24)",
+      colorText: "rgb(255, 255, 255)",
+      colorError: "rgb(255, 255, 255)",
+      colorInfo: "rgb(255, 255, 255)",
+      colorSuccess: "rgb(255, 255, 255)",
+      colorWarning: "rgb(255, 255, 255)",
+    },
   },
 };
 export default theme;

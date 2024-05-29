@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Input, Button, Form, message } from "antd";
+import { Input, Button, Form } from "antd";
 import LoginForm from "components/LoginForm";
 import SvgEye from "components/Icons/Eye";
 import SvgEyeclose from "components/Icons/Eyeclose";
@@ -9,11 +9,13 @@ import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
 import { useAuth } from "contexts/AuthContext";
 import { loginUser } from "apis/usersApi";
+import { useMessageApi } from "components/AppLayout";
 
 const Login = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const { login } = useAuth(); // login 함수 사용
+  const messageApi = useMessageApi();
   const isLawyerLogin = type === "lawyer";
   const title = isLawyerLogin ? "변호사 로그인" : "의뢰인 로그인";
   const toggleType = isLawyerLogin ? "quest" : "lawyer";
@@ -22,15 +24,16 @@ const Login = () => {
     try {
       const response = await loginUser(values, type);
       login(response.token, response.user); // 토큰 및 사용자 정보 저장
-      message.success("로그인 성공!");
+      messageApi.success("로그인 성공!");
       navigate("/board"); // 홈으로 이동
     } catch (error) {
-      console.error("로그인 실패:", error);
+      messageApi.error(error.message);
       if (error.message === "pending-approval") {
-        message.warning("가입 승인 중입니다.");
-      } else {
-        message.error(error.message || "로그인에 실패했습니다.");
+        messageApi.warning("가입 승인 중입니다.");
       }
+      // else {
+      //   messageApi.error(error.message || "로그인에 실패했습니다.");
+      // }
     }
   };
   return (

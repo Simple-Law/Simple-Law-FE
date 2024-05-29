@@ -1,4 +1,3 @@
-// contexts/MailContext.js
 import React, { createContext, useContext, useReducer, useEffect } from "react";
 import { fetchMails } from "apis/mailsApi";
 
@@ -18,6 +17,7 @@ const initialState = {
     important: 0,
     trash: 0,
   },
+  tableData: [], // 추가: tableData 초기 상태
 };
 
 const reducer = (state, action) => {
@@ -39,6 +39,8 @@ const reducer = (state, action) => {
         trash: mails.filter(mail => mail.status === "휴지통").length,
       };
       return { ...state, counts };
+    case "SET_TABLE_DATA": // 추가: tableData 액션 처리
+      return { ...state, tableData: action.payload };
     default:
       return state;
   }
@@ -55,6 +57,7 @@ export const MailProvider = ({ children }) => {
       dispatch({ type: "SET_DATA", payload: data });
       dispatch({ type: "SET_MAILS", payload: data.filter(mail => mail.status !== "휴지통") });
       dispatch({ type: "UPDATE_COUNTS", payload: data });
+      dispatch({ type: "SET_TABLE_DATA", payload: data }); // 추가: 초기 테이블 데이터 설정
     };
 
     fetchData();
