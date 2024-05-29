@@ -68,7 +68,7 @@ const Header = () => {
       </div>
       <Modal
         title="로그아웃"
-        visible={isModalVisible}
+        open={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         okText="예"
