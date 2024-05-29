@@ -9,30 +9,6 @@ import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
 import SvgTrash from "components/Icons/Trash";
 
-const Board = styled.div`
-  height: calc(100vh - 64px);
-  border-right: 1px solid #e3e9ee;
-  background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
-
-  .ant-menu {
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
-  }
-  .ant-menu-item-divider {
-    background: #e3e9ee;
-    margin: 16px 0;
-  }
-  .ant-menu-submenu-title,
-  .ant-menu-item {
-    padding: 8px !important;
-  }
-  .ant-pagination-item-active {
-    border: transparent !important;
-  }
-  .ant-menu-item-only-child {
-    padding: 0 40px !important;
-  }
-`;
-
 const RightSideMenu = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useMailContext(); // use context
@@ -48,6 +24,7 @@ const RightSideMenu = () => {
     }
 
     dispatch({ type: "SET_MAILS", payload: filteredMails }); // dispatch the action
+    dispatch({ type: "SET_TABLE_DATA", payload: filteredMails }); // 추가: tableData 업데이트
     navigate(`/board?status=${statusKey}`);
   };
 
@@ -201,3 +178,27 @@ const RightSideMenu = () => {
 };
 
 export default RightSideMenu;
+
+const Board = styled.div`
+  height: calc(100vh - 64px);
+  border-right: 1px solid #e3e9ee;
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+
+  .ant-menu {
+    background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+  }
+  .ant-menu-item-divider {
+    background: #e3e9ee;
+    margin: 16px 0;
+  }
+  .ant-menu-submenu-title,
+  .ant-menu-item {
+    padding: 8px !important;
+  }
+  .ant-pagination-item-active {
+    border: transparent !important;
+  }
+  .ant-menu-item-only-child {
+    padding: 0 40px !important;
+  }
+`;

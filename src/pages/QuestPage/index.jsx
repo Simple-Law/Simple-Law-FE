@@ -12,61 +12,6 @@ import SvgArrowDown from "components/Icons/ArrowDown";
 
 const { Search } = Input;
 
-const BoardDiv = styled.div`
-  .ant-spin-container {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .ant-pagination .ant-pagination-item-active {
-    border-color: transparent;
-  }
-`;
-const PageSearch = styled(Search)`
-  width: 268px;
-  & .ant-input {
-    height: 40px;
-    border-radius: 4px 0 0 4px;
-    &:hover {
-      border-color: rgb(228, 233, 241);
-    }
-    &:focus {
-      border-color: rgb(228, 233, 241);
-    }
-  }
-  &:hover {
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-  }
-  & .ant-btn-primary {
-    height: 40px;
-    border-radius: 0 4px 4px 0;
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb(228, 233, 241);
-    border-left: none;
-    background: #fff;
-    &:hover {
-      background: #fff !important;
-    }
-    & svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-  &.ant-input-search {
-    .ant-input-group-addon {
-      background: none;
-      border: none;
-    }
-    .ant-input-wrapper {
-      background: #ffffff;
-      border: 1px solid rgb(228, 233, 241);
-      border-radius: 4px;
-    }
-  }
-`;
-
 const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -78,13 +23,13 @@ const QuestPage = () => {
   const statusKey = queryParams.get("status");
 
   const { state, dispatch } = useMailContext();
-  const { mails, data } = state;
-
-  const [tableData, setTableData] = useState([]);
+  // const { mails, data } = state;
+  const { mails, tableData } = state; // tableData를 사용
+  // const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const combinedData = [];
-    data.forEach(item => {
+    mails.forEach(item => {
       combinedData.push(item);
       if (item.replies && item.replies.length > 0) {
         item.replies.forEach((reply, index) => {
@@ -96,12 +41,12 @@ const QuestPage = () => {
         });
       }
     });
-    setTableData(combinedData);
-  }, [data]);
+    dispatch({ type: "SET_TABLE_DATA", payload: combinedData });
+  }, [mails, dispatch]);
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
-    const newData = data.map(item => {
+    const newData = state.data.map(item => {
       if (item.id === id) {
         item.isImportant = !item.isImportant;
       }
@@ -118,6 +63,7 @@ const QuestPage = () => {
       if (statusKey === "important" && !updatedItem.isImportant) {
         const filteredMails = newData.filter(mail => mail.isImportant);
         dispatch({ type: "SET_MAILS", payload: filteredMails });
+        dispatch({ type: "SET_TABLE_DATA", payload: filteredMails }); // 추가: tableData 업데이트
       }
     } catch (error) {
       console.error("Error updating important status:", error);
@@ -270,3 +216,58 @@ const QuestPage = () => {
 };
 
 export default QuestPage;
+
+const BoardDiv = styled.div`
+  .ant-spin-container {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .ant-pagination .ant-pagination-item-active {
+    border-color: transparent;
+  }
+`;
+const PageSearch = styled(Search)`
+  width: 268px;
+  & .ant-input {
+    height: 40px;
+    border-radius: 4px 0 0 4px;
+    &:hover {
+      border-color: rgb(228, 233, 241);
+    }
+    &:focus {
+      border-color: rgb(228, 233, 241);
+    }
+  }
+  &:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  }
+  & .ant-btn-primary {
+    height: 40px;
+    border-radius: 0 4px 4px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(228, 233, 241);
+    border-left: none;
+    background: #fff;
+    &:hover {
+      background: #fff !important;
+    }
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  &.ant-input-search {
+    .ant-input-group-addon {
+      background: none;
+      border: none;
+    }
+    .ant-input-wrapper {
+      background: #ffffff;
+      border: 1px solid rgb(228, 233, 241);
+      border-radius: 4px;
+    }
+  }
+`;
