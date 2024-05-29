@@ -27,7 +27,7 @@ export const loginUser = async (credentials, userType) => {
     const user = users.find(u => u.id === id && u.password === password && u.type === userType);
 
     if (!user) {
-      throw new Error("존재하지 않는 아이디입니다.");
+      throw new Error("로그인에 실패했습니다.");
     }
     if (user.status !== "approved") {
       throw new Error("가입 승인 중입니다.");
