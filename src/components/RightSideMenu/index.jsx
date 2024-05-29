@@ -32,7 +32,7 @@ const RightSideMenu = () => {
     {
       key: "All_request",
       label: (
-        <span className="ml-2">
+        <span className="ml-2 text-stone-950">
           전체 의뢰함
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.total}</span>
         </span>
@@ -44,7 +44,7 @@ const RightSideMenu = () => {
           key: "preparing",
           label: (
             <span>
-              신청중
+              컨택 요청 중
               <span
                 style={{
                   marginLeft: "8px",
@@ -61,7 +61,7 @@ const RightSideMenu = () => {
           key: "pending",
           label: (
             <span>
-              보류중
+              해결 진행 중
               <span
                 style={{
                   marginLeft: "8px",
@@ -78,7 +78,7 @@ const RightSideMenu = () => {
           key: "completed",
           label: (
             <span>
-              신청완료
+              해결 완료
               <span
                 style={{
                   marginLeft: "8px",
@@ -113,7 +113,7 @@ const RightSideMenu = () => {
     {
       key: "important",
       label: (
-        <span>
+        <span className="text-stone-950">
           중요 의뢰함
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.important}</span>
         </span>
@@ -123,7 +123,7 @@ const RightSideMenu = () => {
     },
     {
       key: "sub4",
-      label: "종료된 의뢰함",
+      label: <span className="text-stone-950">종료된 의뢰함</span>,
       icon: <SvgMail />,
     },
 
@@ -133,7 +133,7 @@ const RightSideMenu = () => {
     {
       key: "trash",
       label: (
-        <span>
+        <span className="text-stone-950">
           휴지통
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.trash}</span>
         </span>
@@ -168,7 +168,7 @@ const RightSideMenu = () => {
         items={[
           {
             key: "main",
-            label: "내 의뢰함",
+            label: <span style={{ fontSize: "12px", fontWeight: "600" }}>내 의뢰함</span>,
             children: menuItems,
           },
         ]}

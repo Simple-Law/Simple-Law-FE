@@ -129,7 +129,7 @@ const DetailPage = () => {
         <div className="border-solid bg-white border-b border-slate-200 text-zinc-800 text-lg font-bold  flex items-end justify-between px-8 pt-6 pb-3">
           <div
             onClick={() => navigate(-1)}
-            className="flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]"
+            className="cursor-pointer flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]"
           >
             <SvgArrowDown className="rotate-90" />
             <span>해결 진행 중 의뢰</span>
@@ -172,8 +172,11 @@ const DetailPage = () => {
 
           <div className="border-b">
             <div className="px-4 py-3 bg-slate-100 bg-opacity-30 rounded-md border border-solid border-slate-200 inline-block ml-[20px] mb-[20px]">
-              <div className="text-gray-500 text-sm font-normal  leading-tight">
-                의뢰 요청 시간 :
+              <div className="text-gray-500 text-sm font-normal leading-tight">
+                의뢰 요청 시간
+                <span className="text-gray-500 text-sm font-normal px-1">
+                  :
+                </span>
                 <span className="text-gray-500 text-sm font-semibold leading-tight">
                   {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
                   {moment(mail.sentAt)
@@ -183,7 +186,10 @@ const DetailPage = () => {
                 </span>
               </div>
               <div className="text-gray-500 text-sm font-normal  leading-tight">
-                배정 완료 후 작업 기한 :
+                배정 완료 후 작업 기한
+                <span className="text-gray-500 text-sm font-normal px-1">
+                  :
+                </span>
                 <span className="text-gray-500 text-sm font-semibold leading-tight">
                   {moment(mail.sentAt)
                     .add(mail.time, "hours")
@@ -196,20 +202,20 @@ const DetailPage = () => {
           </div>
 
           <div className="mt-4 mb-6 pl-[20px]">
-            <div className="justify-start items-center gap-0.5 flex mb-[10px]">
-              <div className="text-neutral-600 text-sm font-semibold  leading-normal">
+            <div className="justify-start items-center gap-3 flex mb-[10px]">
+              <div className="text-gray-500 text-sm font-semibold  leading-normal">
                 첨부파일 3개
+                <span className="text-slate-400 text-sm font-normal  leading-normal">
+                  (35.2MB)
+                </span>
               </div>
-              <div className="text-slate-400 text-sm font-normal  leading-normal">
-                (35.2MB)
-              </div>
-              <div className="left-[10.125rem] top-[1.125rem] absolute text-blue-500 text-sm font-medium  leading-tight">
+              <div className="text-blue-500 text-sm font-medium  leading-tight">
                 모두 저장
               </div>
             </div>
             <div className="justify-start items-start gap-2 inline-flex">
               <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-                <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
+                <div className="text-gray-500 text-[0.8125rem] font-normal  leading-normal">
                   파일_1.pdf
                 </div>
                 <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
@@ -217,7 +223,7 @@ const DetailPage = () => {
                 </div>
               </div>
               <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-                <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
+                <div className="text-gray-500 text-[0.8125rem] font-normal  leading-normal">
                   파일_1.pdf
                 </div>
                 <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">
@@ -225,7 +231,7 @@ const DetailPage = () => {
                 </div>
               </div>
               <div className="px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex">
-                <div className="text-neutral-600 text-[0.8125rem] font-normal  leading-normal">
+                <div className="text-gray-500 text-[0.8125rem] font-normal  leading-normal">
                   파일_1.pdf
                 </div>
                 <div className="text-slate-400 text-[0.8125rem] font-normal  leading-normal">

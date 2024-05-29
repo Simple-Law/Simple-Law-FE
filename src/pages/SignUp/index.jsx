@@ -10,12 +10,9 @@ const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const { type } = useParams();
-  const handleData = newData => {
-    console.log("이상하네", newData);
-
-    setFormData(prev => ({ ...prev, ...newData }));
+  const handleData = (newData) => {
+    setFormData((prev) => ({ ...prev, ...newData }));
   };
-  console.log(" 나와", formData);
 
   const nextStep = () => {
     const nextIndex = currentStep + 1;
