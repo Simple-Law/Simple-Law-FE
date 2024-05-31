@@ -1,13 +1,15 @@
 import axios from "axios";
-
+const isProduction = process.env.NODE_ENV === "production";
 const baseURL = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
 });
 const joinURL = axios.create({
-  baseURL: "http://api.simplelaw.co.kr",
+  baseURL: isProduction
+    ? "https://api.simplelaw.co.kr"
+    : "http://api.simplelaw.co.kr",
 });
 // Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
-joinURL.interceptors.request.use(config => {
+joinURL.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -15,10 +17,13 @@ joinURL.interceptors.request.use(config => {
   return config;
 });
 // 회원가입 API 함수
-export const registerUser = async userData => {
+export const registerUser = async (userData) => {
   try {
     const endpoint = userData.type === "lawyer" ? "lawyers" : "members";
-    const response = await joinURL.post(`/api/v1/${endpoint}/sign-up/email`, userData);
+    const response = await joinURL.post(
+      `/api/v1/${endpoint}/sign-up/email`,
+      userData
+    );
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error.response?.data || error);
@@ -41,7 +46,10 @@ export const sendAuthCode = async (phoneNumber, type) => {
 export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
   const endpoint = type === "lawyer" ? "lawyers" : "members";
   try {
-    await joinURL.post(`/api/v1/${endpoint}/sign-up/verify-sms`, { phoneNumber, verificationCode });
+    await joinURL.post(`/api/v1/${endpoint}/sign-up/verify-sms`, {
+      phoneNumber,
+      verificationCode,
+    });
   } catch (error) {
     console.error("Error verifying auth code:", error.response?.data || error);
     throw error;
@@ -55,7 +63,9 @@ export const loginUser = async (credentials, userType) => {
     const users = response.data;
 
     const { id, password } = credentials;
-    const user = users.find(u => u.id === id && u.password === password && u.type === userType);
+    const user = users.find(
+      (u) => u.id === id && u.password === password && u.type === userType
+    );
 
     if (!user) {
       throw new Error("로그인에 실패했습니다.");
@@ -71,7 +81,8 @@ export const loginUser = async (credentials, userType) => {
   }
 };
 // 파일 업로드 API 함수
-export const uploadFile = async formData => {
+
+export const uploadFile = async (formData) => {
   try {
     const response = await joinURL.post("/api/v1/files", formData, {
       headers: {
