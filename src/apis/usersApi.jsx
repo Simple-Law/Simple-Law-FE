@@ -1,12 +1,10 @@
 import axios from "axios";
-const isProduction = process.env.NODE_ENV === "production";
+
 const baseURL = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
 });
 const joinURL = axios.create({
-  baseURL: isProduction
-    ? "https://api.simplelaw.co.kr"
-    : "http://api.simplelaw.co.kr",
+  baseURL: "http://api.simplelaw.co.kr",
 });
 // Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
 joinURL.interceptors.request.use((config) => {
