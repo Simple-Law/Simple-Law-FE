@@ -17,6 +17,7 @@ import { MailProvider } from "contexts/MailContexts";
 import { useMailContext } from "contexts/MailContexts";
 import { AuthProvider } from "contexts/AuthContext";
 import PrivateRoute from "router/PrivateRoute";
+import ImgUpload from "pages/SignUp/imgUpload";
 
 const App = () => {
   return (
@@ -26,6 +27,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<AppLayout />}>
               <Route path="/" element={<Home />} />
+              <Route path="/img" element={<ImgUpload />} />
               <Route path="/login" element={<Login />} />
               <Route path="/login/:type" element={<Login />} />
               <Route path="/findId" element={<FindUserId />} />

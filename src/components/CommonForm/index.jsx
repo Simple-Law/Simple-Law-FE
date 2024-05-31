@@ -24,50 +24,52 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked }) => {
           ref={editorRef}
           theme="snow"
           value={formik.values.content}
-          onChange={(content, delta, source, editor) => formik.setFieldValue("content", editor.getHTML())}
+          onChange={(content, delta, source, editor) =>
+            formik.setFieldValue("content", editor.getHTML())
+          }
           modules={{
             toolbar: [
-              ["bold", "italic", "underline", "strike"],
-              ["blockquote", "code-block"],
-              [{ list: "ordered" }, { list: "bullet" }],
-              [{ script: "sub" }, { script: "super" }],
-              [{ indent: "-1" }, { indent: "+1" }],
-              [{ direction: "rtl" }],
               [{ size: ["small", false, "large", "huge"] }],
-              [{ header: [1, 2, 3, 4, 5, 6, false] }],
-              [{ color: [] }, { background: [] }],
-              [{ font: [] }],
               [{ align: [] }],
-              ["clean"],
-              ["link", "image"],
+              ["bold", "italic", "underline", "strike"],
+              [{ list: "ordered" }, { list: "bullet" }],
+              [
+                {
+                  color: [],
+                },
+                { background: [] },
+              ],
             ],
           }}
           formats={[
+            "font",
             "header",
             "bold",
             "italic",
             "underline",
             "strike",
             "blockquote",
-            "code-block",
             "list",
             "bullet",
-            "script",
             "indent",
-            "direction",
-            "size",
-            "header",
+            "link",
+            "align",
             "color",
             "background",
-            "font",
-            "align",
-            "link",
-            "image",
+            "size",
+            "h1",
           ]}
+          className="custom-quill"
+          placeholder="내용을 입력하세요"
         />
       </Form.Item>
       <Form.Item>
-        <Button className="mt-[40px] w-[150px]" type="primary" htmlType="submit" disabled={!isCheckboxChecked}>
+        <Button
+          className="mt-[40px] w-[150px]"
+          type="primary"
+          htmlType="submit"
+          disabled={!isCheckboxChecked}
+        >
           의뢰 요청하기
         </Button>
       </Form.Item>

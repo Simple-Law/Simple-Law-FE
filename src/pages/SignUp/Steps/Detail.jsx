@@ -1,34 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import LoginForm from "components/LoginForm";
-import { Form, Input, Upload, message, Button } from "antd";
+import { Upload, Button, Form, Input } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
-// import SubmitButton from "components/SubmitButton";
+import { useMessageApi } from "components/AppLayout";
+import { uploadFile } from "apis/usersApi";
+
 const { Dragger } = Upload;
-const props = {
-  name: "file",
-  multiple: true,
-  action: "https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload",
-  onChange(info) {
-    const { status } = info.file;
-    if (status !== "uploading") {
-      console.log(info.file);
-    }
-    if (status === "done") {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === "error") {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  },
-  onDrop(e) {
-    console.log("Dropped files", e.dataTransfer.files);
-  },
-};
+
+// 사무실 번호 지역번호 하이픈 추가
 const formatPhoneNumber = value => {
   if (!value) {
     return "";
   }
-
-  value = value.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+  value = value.replace(/[^0-9]/g, "");
 
   let result = [];
   let restNumber = "";
@@ -60,36 +44,103 @@ const formatPhoneNumber = value => {
 
 const Detail = ({ handleData, nextStep }) => {
   const [form] = Form.useForm();
+  const [fileList, setFileList] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [fileUploadId, setFileUploadId] = useState("");
+  const [pendingFiles, setPendingFiles] = useState([]); // 임시 파일 상태
+  const messageApi = useMessageApi();
 
-  const [clientReady, setClientReady] = useState(false);
-  // To disable submit button at the beginning.
-  useEffect(() => {
-    setClientReady(true);
-  }, []);
+  const uploadToServer = async file => {
+    const formData = new FormData();
+    formData.append("files", file);
 
-  const handleChange = (fieldName, inputValue) => {
-    let newValue = inputValue;
-    if (fieldName === "officetel") {
-      newValue = formatPhoneNumber(inputValue);
+    try {
+      setLoading(true);
+
+      const response = await uploadFile(formData);
+      const { fileUploadId } = response;
+      console.log("데이터 오나?", response);
+      setFileUploadId(fileUploadId);
+      messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
+    } catch (error) {
+      messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
+      console.error("Error uploading file:", error);
+    } finally {
+      setLoading(false);
     }
-    form.setFieldsValue({
-      [fieldName]: newValue,
-    });
   };
 
-  const onFinish = values => {
-    console.log("결과값: ", values);
-    handleData(values);
-    nextStep();
+  const handleChange = info => {
+    const newFileList = info.fileList.slice(-1); // 최신 파일만 유지
+    setFileList(newFileList);
+
+    if (info.file && info.file.status === "removed") {
+      setPendingFiles([]);
+    } else if (info.fileList) {
+      setPendingFiles(info.fileList.map(file => file.originFileObj)); // 임시 파일 리스트에 저장
+    }
   };
+
+  const handleSubmit = async () => {
+    if (pendingFiles.length === 0) {
+      messageApi.error("파일을 업로드해 주세요.");
+      return;
+    }
+    for (let file of pendingFiles) {
+      await uploadToServer(file);
+    }
+    setPendingFiles([]); // 제출 후 임시 파일 리스트 초기화
+    setFileList([]); // 파일 리스트 초기화
+    form.resetFields(); // 폼 필드 초기화
+    nextStep(); // 다음 스텝으로 이동
+  };
+
+  const handlePhoneNumberChange = e => {
+    const { value } = e.target;
+    const formattedPhoneNumber = formatPhoneNumber(value);
+    form.setFieldsValue({ companyPhone: formattedPhoneNumber });
+  };
+
+  const handleNumberChange = (fieldName, e) => {
+    const { value } = e.target;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    form.setFieldsValue({ [fieldName]: numericValue });
+  };
+
+  const onFinish = async values => {
+    console.log("결과값: ", values);
+    await handleSubmit();
+    handleData({ ...values, fileUploadId }); // fileUploadId를 포함한 데이터를 전달
+    nextStep(); // 파일 업로드 없이 바로 다음 스텝으로 이동
+  };
+
+  const beforeUpload = file => {
+    const isValidType = ["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(file.type);
+    const isLt10M = file.size / 1024 / 1024 < 10;
+
+    if (!isValidType) {
+      messageApi.error("png, jpg, jpeg, gif 파일만 업로드할 수 있습니다.");
+    }
+
+    if (!isLt10M) {
+      messageApi.error("파일 크기는 10MB 이하만 가능합니다.");
+    }
+
+    return isValidType && isLt10M;
+  };
+
   return (
     <LoginForm title="변호사 회원가입">
       <Form className="flex gap-[20px] flex-col" form={form} name="validateOnly" autoComplete="off" onFinish={onFinish}>
         <div className="flex gap-2 flex-col">
           <p className="font-medium text-base">소속</p>
           <Form.Item
-            name="office"
+            name="companyName"
             rules={[
+              {
+                required: true,
+                message: "소속을 입력해 주세요.",
+              },
               {
                 whitespace: true,
               },
@@ -98,25 +149,29 @@ const Detail = ({ handleData, nextStep }) => {
             <Input placeholder="소속(사무소,회사)" />
           </Form.Item>
           <Form.Item
-            name="officetel"
+            name="companyPhone"
             rules={[
+              {
+                required: true,
+                message: "소속 전화번호를 입력해 주세요.",
+              },
               {
                 whitespace: true,
               },
             ]}
           >
-            <Input
-              placeholder=" 소속 전화번호(‘-’ 제외하고 입력)"
-              onChange={e => handleChange("officetel", e.target.value)}
-              maxLength="13"
-            />
+            <Input placeholder="소속 전화번호(‘-’ 제외하고 입력)" onChange={handlePhoneNumberChange} maxLength="13" />
           </Form.Item>
         </div>
         <div className="flex gap-2 flex-col">
           <p className="font-medium text-base">출신 시험</p>
           <Form.Item
-            name="ancestry"
+            name="barExam"
             rules={[
+              {
+                required: true,
+                message: "출신 시험을 입력해 주세요.",
+              },
               {
                 whitespace: true,
               },
@@ -125,19 +180,27 @@ const Detail = ({ handleData, nextStep }) => {
             <Input placeholder="출신 시험" />
           </Form.Item>
           <Form.Item
-            name="number"
+            name="barExamCount"
             rules={[
+              {
+                required: true,
+                message: "시험 횟수를 입력해 주세요.",
+              },
               {
                 whitespace: true,
               },
             ]}
           >
-            <Input placeholder="시험 횟수" onChange={e => handleChange("number", e.target.value)} />
+            <Input placeholder="시험 횟수" onChange={e => handleNumberChange("barExamCount", e)} />
           </Form.Item>
 
           <Form.Item
-            name="year"
+            name="yearOfPassing"
             rules={[
+              {
+                required: true,
+                message: "변호사 자격 획득연도를 입력해 주세요.",
+              },
               {
                 whitespace: true,
               },
@@ -146,7 +209,7 @@ const Detail = ({ handleData, nextStep }) => {
             <Input
               placeholder="변호사 자격 획득연도"
               maxLength={4}
-              onChange={e => handleChange("year", e.target.value)}
+              onChange={e => handleNumberChange("yearOfPassing", e)}
             />
           </Form.Item>
         </div>
@@ -161,48 +224,37 @@ const Detail = ({ handleData, nextStep }) => {
             </label>
           </p>
           <Form.Item
-            name="identification"
+            name="fileUploadId"
             rules={[
               {
-                whitespace: true,
+                required: true,
+                message: "파일을 업로드해 주세요.",
               },
             ]}
           >
-            <Dragger {...props}>
+            <Dragger
+              name="files"
+              multiple={false}
+              fileList={fileList}
+              beforeUpload={beforeUpload}
+              customRequest={({ file, onSuccess }) => {
+                setTimeout(() => {
+                  onSuccess("ok");
+                }, 0);
+              }}
+              onChange={handleChange}
+              disabled={loading}
+            >
               <p className="mb-[8px]">
                 <UploadFile className="mx-auto my-auto mt-[10px]" />
               </p>
-
               <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
                 최대 10mb 이하 png, jpg, jpeg, gif
               </p>
             </Dragger>
           </Form.Item>
         </div>
-        {/* <Form.Item>
-          <SubmitButton className="mt-8" form={form}>
-            다음
-          </SubmitButton>
-        </Form.Item> */}
-
-        {/* <Form.Item shouldUpdate>
-          {() => (
-            <Button
-              block
-              type="primary"
-              htmlType="submit"
-              disabled={
-                !clientReady ||
-                !form.isFieldsTouched(true) ||
-                !!form.getFieldsError().filter(({ errors }) => errors.length)
-                  .length
-              }
-            >
-              다음
-            </Button>
-          )}
-        </Form.Item> */}
-        <Button type="primary" htmlType="submit" block className="mt-8">
+        <Button type="primary" htmlType="submit" block className="mt-8" disabled={loading}>
           다음
         </Button>
       </Form>

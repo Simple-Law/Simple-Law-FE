@@ -20,3 +20,30 @@ button {
   left: 50%;
   transform: translateX(-50%);
 }
+.custom-quill .ql-editor {
+  height: 400px;
+  font-weight: normal;
+  border-radius: 0px 0px 6px 6px;
+}
+.ql-toolbar {
+  border-radius: 6px 6px 0px 0px;
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+}
+.ql-container.ql-snow {
+  border: 1px solid rgba(148, 163, 184, 0.22) !important;
+  border-top: none !important;
+  font-weight: normal;
+  border-radius: 0px 0px 6px 6px;
+}
+.ql-editor {
+  border-radius: 0px 0px 6px 6px;
+}
+/* Placeholder 스타일 설정 */
+.custom-quill .ql-editor::before {
+  color: #b8c7d5 !important;
+  font-size: 16px;
+  font-style: normal !important;
+  font-weight: 400;
+  line-height: 20px; /* 125% */
+  letter-spacing: -0.32px;
+}

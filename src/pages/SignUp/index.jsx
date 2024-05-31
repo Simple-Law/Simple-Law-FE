@@ -10,8 +10,8 @@ const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const { type } = useParams();
-  const handleData = (newData) => {
-    setFormData((prev) => ({ ...prev, ...newData }));
+  const handleData = newData => {
+    setFormData(prev => ({ ...prev, ...newData }));
   };
 
   const nextStep = () => {
@@ -19,7 +19,6 @@ const SignUp = () => {
     if (type === "lawyer" && currentStep === 1) {
       setCurrentStep(nextIndex);
     } else if (type !== "lawyer" && currentStep === 1) {
-      // setCurrentStep(3);
       setCurrentStep(4);
     } else {
       setCurrentStep(nextIndex);
@@ -28,7 +27,7 @@ const SignUp = () => {
 
   const steps = [
     <Agreement handleData={handleData} nextStep={nextStep} />,
-    <JoinForm handleData={handleData} nextStep={nextStep} />,
+    <JoinForm handleData={handleData} nextStep={nextStep} type={type} />,
     <Detail handleData={handleData} nextStep={nextStep} />,
     <Choice handleData={handleData} nextStep={nextStep} />,
     <FinalSubmit formData={formData} type={type} />,
