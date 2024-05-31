@@ -23,6 +23,7 @@ button {
 .custom-quill .ql-editor {
   height: 400px;
   font-weight: normal;
+  border-radius: 0px 0px 6px 6px;
 }
 .ql-toolbar {
   border-radius: 6px 6px 0px 0px;
@@ -31,6 +32,8 @@ button {
 .ql-container.ql-snow {
   border: 1px solid rgba(148, 163, 184, 0.22) !important;
   border-top: none !important;
+  font-weight: normal;
+  border-radius: 0px 0px 6px 6px;
 }
 .ql-editor {
   border-radius: 0px 0px 6px 6px;
