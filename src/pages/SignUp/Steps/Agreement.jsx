@@ -47,8 +47,12 @@ const Agreement = ({ handleData, nextStep }) => {
   };
 
   const onFinish = values => {
-    console.log("결과값: ", values);
-    handleData(values);
+    const data = {
+      ...values,
+      isMarketingConsent: checkedList.includes("marketing"),
+    };
+    console.log("결과값: ", data);
+    handleData(data);
     nextStep();
   };
   return (

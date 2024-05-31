@@ -1,18 +1,49 @@
 import axios from "axios";
-import moment from "moment";
 
 const baseURL = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
 });
-
+const joinURL = axios.create({
+  baseURL: "http://api.simplelaw.co.kr",
+});
+// Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
+joinURL.interceptors.request.use(config => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 // 회원가입 API 함수
 export const registerUser = async userData => {
   try {
-    const registrationDate = moment().format("YYYY-MM-DD HH:mm:ss");
-    const response = await baseURL.post("/users", { ...userData, registrationDate });
+    const endpoint = userData.type === "lawyer" ? "lawyers" : "members";
+    const response = await joinURL.post(`/api/v1/${endpoint}/sign-up/email`, userData);
     return response.data;
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error("Error registering user:", error.response?.data || error);
+    throw error;
+  }
+};
+
+// 인증번호 발송 API 함수
+export const sendAuthCode = async (phoneNumber, type) => {
+  const endpoint = type === "lawyer" ? "lawyers" : "members";
+  try {
+    await joinURL.post(`/api/v1/${endpoint}/sign-up/send-sms`, { phoneNumber });
+  } catch (error) {
+    console.error("Error sending auth code:", error.response?.data || error);
+    throw error;
+  }
+};
+
+// 인증번호 확인 API 함수
+export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
+  const endpoint = type === "lawyer" ? "lawyers" : "members";
+  try {
+    await joinURL.post(`/api/v1/${endpoint}/sign-up/verify-sms`, { phoneNumber, verificationCode });
+  } catch (error) {
+    console.error("Error verifying auth code:", error.response?.data || error);
     throw error;
   }
 };
@@ -36,6 +67,20 @@ export const loginUser = async (credentials, userType) => {
     return { token: "mock-token", user };
   } catch (error) {
     console.error("Error logging in:", error);
+    throw error;
+  }
+};
+// 파일 업로드 API 함수
+export const uploadFile = async formData => {
+  try {
+    const response = await joinURL.post("/api/v1/files", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error uploading file:", error.response?.data || error);
     throw error;
   }
 };
