@@ -4,6 +4,7 @@ import LoginForm from "components/LoginForm";
 import { Upload, Button, Form, Input } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import { useMessageApi } from "components/AppLayout";
+import { uploadFile } from "apis/usersApi";
 
 const { Dragger } = Upload;
 
@@ -56,13 +57,10 @@ const Detail = ({ handleData, nextStep }) => {
 
     try {
       setLoading(true);
-      const response = await axios.post(`http://api.simplelaw.co.kr/api/v1/files`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("데이터 오나?", response.data);
-      const { fileUploadId } = response.data;
+
+      const response = await uploadFile(formData);
+      const { fileUploadId } = response;
+      console.log("데이터 오나?", response);
       setFileUploadId(fileUploadId);
       messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
     } catch (error) {
