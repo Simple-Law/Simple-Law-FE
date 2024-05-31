@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import LoginForm from "components/LoginForm";
 import { Upload, Button, Form, Input } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
