@@ -104,6 +104,12 @@ const Detail = ({ handleData, nextStep }) => {
     form.setFieldsValue({ companyPhone: formattedPhoneNumber });
   };
 
+  const handleNumberChange = (fieldName, e) => {
+    const { value } = e.target;
+    const numericValue = value.replace(/[^0-9]/g, "");
+    form.setFieldsValue({ [fieldName]: numericValue });
+  };
+
   const onFinish = async values => {
     console.log("결과값: ", values);
     await handleSubmit();
@@ -188,7 +194,7 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input placeholder="시험 횟수" />
+            <Input placeholder="시험 횟수" onChange={e => handleNumberChange("barExamCount", e)} />
           </Form.Item>
 
           <Form.Item
@@ -203,7 +209,11 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input placeholder="변호사 자격 획득연도" maxLength={4} />
+            <Input
+              placeholder="변호사 자격 획득연도"
+              maxLength={4}
+              onChange={e => handleNumberChange("yearOfPassing", e)}
+            />
           </Form.Item>
         </div>
         <div className="flex gap-2 flex-col">
