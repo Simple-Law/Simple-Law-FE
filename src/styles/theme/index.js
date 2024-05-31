@@ -76,7 +76,7 @@ const theme = {
       colorBgContainer: "#e9f2ff",
     },
     Message: {
-      contentBg: "rgb(24, 24, 24)",
+      contentBg: "rgba(37, 40, 43, 0.80)",
       colorText: "rgb(255, 255, 255)",
       colorError: "rgb(255, 255, 255)",
       colorInfo: "rgb(255, 255, 255)",
