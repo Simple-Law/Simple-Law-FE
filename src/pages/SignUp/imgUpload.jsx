@@ -5,14 +5,21 @@ import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import { useMessageApi } from "components/AppLayout";
 
 const { Dragger } = Upload;
-
+// 이미지 업로드 예시
 const ImgUpload = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [fileUploadId, setFileUploadId] = useState("");
   const [pendingFiles, setPendingFiles] = useState([]); // 추가: 임시 파일 상태
   const useMessage = useMessageApi();
+
+  const getCurrentDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   const uploadToServer = async file => {
     const formData = new FormData();
@@ -25,10 +32,11 @@ const ImgUpload = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("데이터 오나?", response.data);
-      const { fileUploadId } = response.data;
-      setFileUploadId(fileUploadId);
+      console.log("데이터 오나?", response.data); // 서버 응답 구조 확인을 위한 로그
+      const fileUploadId = response.data?.data?.payload[0]?.fileUploadId; // 서버 응답에서 fileUploadId 추출
+      console.log("fileUploadId:", fileUploadId); // fileUploadId 확인
       useMessage.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
+      return fileUploadId; // 추가: 업로드된 파일 ID 반환
     } catch (error) {
       useMessage.error(`${file.name} 파일 업로드에 실패했습니다.`);
       console.error("Error uploading file:", error);
@@ -38,13 +46,9 @@ const ImgUpload = () => {
   };
 
   const handleChange = info => {
-    const newFileList = (info.fileList || []).slice(-1); // 최신 파일만 유지
+    const newFileList = info.fileList;
     setFileList(newFileList);
-    if (info.file.status === "removed") {
-      setPendingFiles([]);
-    } else {
-      setPendingFiles(info.fileList.map(file => file.originFileObj)); // 추가: 임시 파일 리스트에 저장
-    }
+    setPendingFiles(newFileList.map(file => file.originFileObj)); // 추가: 임시 파일 리스트에 저장
   };
 
   const handleSubmit = async () => {
@@ -52,8 +56,14 @@ const ImgUpload = () => {
       useMessage.error("파일을 업로드해 주세요.");
       return;
     }
+    const currentDate = getCurrentDate();
     for (let file of pendingFiles) {
-      await uploadToServer(file);
+      const fileUploadId = await uploadToServer(file);
+      console.log("fileUploadId after uploadToServer:", fileUploadId); // fileUploadId 확인
+      if (fileUploadId) {
+        const fileUrl = `https://prod-simplelaw-api-server-bucket.s3.ap-northeast-2.amazonaws.com/TEMP/${currentDate}/${fileUploadId}.jpg`;
+        console.log("Uploaded file URL:", fileUrl); // 파일 URL 출력 (필요에 따라 처리)
+      }
     }
     setPendingFiles([]); // 제출 후 임시 파일 리스트 초기화
     setFileList([]); // 파일 리스트 초기화
@@ -80,7 +90,7 @@ const ImgUpload = () => {
         >
           <Dragger
             name="files"
-            multiple={false}
+            multiple={true} // 다중 파일 업로드를 허용하도록 수정
             fileList={fileList}
             customRequest={({ file, onSuccess }) => {
               setTimeout(() => {
