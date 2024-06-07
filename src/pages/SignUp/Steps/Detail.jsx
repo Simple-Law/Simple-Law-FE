@@ -4,11 +4,12 @@ import { Upload, Button, Form, Input } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import { useMessageApi } from "components/AppLayout";
 import { uploadFile } from "apis/usersApi";
+import styled from "styled-components";
 
 const { Dragger } = Upload;
 
 // 사무실 번호 지역번호 하이픈 추가
-const formatPhoneNumber = (value) => {
+const formatPhoneNumber = value => {
   if (!value) {
     return "";
   }
@@ -39,7 +40,7 @@ const formatPhoneNumber = (value) => {
     result.push(restNumber.substring(4));
   }
 
-  return result.filter((val) => val).join("-");
+  return result.filter(val => val).join("-");
 };
 
 const Detail = ({ handleData, nextStep }) => {
@@ -50,7 +51,7 @@ const Detail = ({ handleData, nextStep }) => {
   const [pendingFiles, setPendingFiles] = useState([]); // 임시 파일 상태
   const messageApi = useMessageApi();
 
-  const uploadToServer = async (file) => {
+  const uploadToServer = async file => {
     const formData = new FormData();
     formData.append("files", file);
 
@@ -70,14 +71,14 @@ const Detail = ({ handleData, nextStep }) => {
     }
   };
 
-  const handleChange = (info) => {
+  const handleChange = info => {
     const newFileList = info.fileList.slice(-1); // 최신 파일만 유지
     setFileList(newFileList);
 
     if (info.file && info.file.status === "removed") {
       setPendingFiles([]);
     } else if (info.fileList) {
-      setPendingFiles(info.fileList.map((file) => file.originFileObj)); // 임시 파일 리스트에 저장
+      setPendingFiles(info.fileList.map(file => file.originFileObj)); // 임시 파일 리스트에 저장
     }
   };
 
@@ -95,7 +96,7 @@ const Detail = ({ handleData, nextStep }) => {
     nextStep(); // 다음 스텝으로 이동
   };
 
-  const handlePhoneNumberChange = (e) => {
+  const handlePhoneNumberChange = e => {
     const { value } = e.target;
     const formattedPhoneNumber = formatPhoneNumber(value);
     form.setFieldsValue({ companyPhone: formattedPhoneNumber });
@@ -107,20 +108,15 @@ const Detail = ({ handleData, nextStep }) => {
     form.setFieldsValue({ [fieldName]: numericValue });
   };
 
-  const onFinish = async (values) => {
+  const onFinish = async values => {
     console.log("결과값: ", values);
     await handleSubmit();
     handleData({ ...values, fileUploadId }); // fileUploadId를 포함한 데이터를 전달
     nextStep(); // 파일 업로드 없이 바로 다음 스텝으로 이동
   };
 
-  const beforeUpload = (file) => {
-    const isValidType = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "image/gif",
-    ].includes(file.type);
+  const beforeUpload = file => {
+    const isValidType = ["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(file.type);
     const isLt10M = file.size / 1024 / 1024 < 10;
 
     if (!isValidType) {
@@ -136,13 +132,7 @@ const Detail = ({ handleData, nextStep }) => {
 
   return (
     <LoginForm title="변호사 회원가입">
-      <Form
-        className="flex gap-[20px] flex-col"
-        form={form}
-        name="validateOnly"
-        autoComplete="off"
-        onFinish={onFinish}
-      >
+      <Form className="flex gap-[20px] flex-col" form={form} name="validateOnly" autoComplete="off" onFinish={onFinish}>
         <div className="flex gap-2 flex-col">
           <p className="font-medium text-base">소속</p>
           <Form.Item
@@ -171,11 +161,7 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input
-              placeholder="소속 전화번호(‘-’ 제외하고 입력)"
-              onChange={handlePhoneNumberChange}
-              maxLength="13"
-            />
+            <Input placeholder="소속 전화번호(‘-’ 제외하고 입력)" onChange={handlePhoneNumberChange} maxLength="13" />
           </Form.Item>
         </div>
         <div className="flex gap-2 flex-col">
@@ -206,10 +192,7 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input
-              placeholder="시험 횟수"
-              onChange={(e) => handleNumberChange("barExamCount", e)}
-            />
+            <Input placeholder="시험 횟수" onChange={e => handleNumberChange("barExamCount", e)} />
           </Form.Item>
 
           <Form.Item
@@ -227,7 +210,7 @@ const Detail = ({ handleData, nextStep }) => {
             <Input
               placeholder="변호사 자격 획득연도"
               maxLength={4}
-              onChange={(e) => handleNumberChange("yearOfPassing", e)}
+              onChange={e => handleNumberChange("yearOfPassing", e)}
             />
           </Form.Item>
         </div>
@@ -262,23 +245,30 @@ const Detail = ({ handleData, nextStep }) => {
               }}
               onChange={handleChange}
               disabled={loading}
+              className="file-uploader"
             >
-              <p className="mb-[8px]">
-                <UploadFile className="mx-auto my-auto mt-[10px]" />
-              </p>
-              <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
-                최대 10mb 이하 png, jpg, jpeg, gif
-              </p>
+              {fileList.length === 0 ? (
+                <>
+                  <p className="mb-[8px]">
+                    <UploadFile className="mx-auto my-auto mt-[10px]" />
+                  </p>
+                  <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
+                    최대 10mb 이하 png, jpg, jpeg, gif
+                  </p>
+                </>
+              ) : (
+                <div className="uploaded-image-preview">
+                  <img
+                    src={URL.createObjectURL(fileList[0].originFileObj)}
+                    alt="uploaded file"
+                    style={{ margin: "0 auto" }}
+                  />
+                </div>
+              )}
             </Dragger>
           </Form.Item>
         </div>
-        <Button
-          type="primary"
-          htmlType="submit"
-          block
-          className="mt-8"
-          disabled={loading}
-        >
+        <Button type="primary" htmlType="submit" block className="mt-8" disabled={loading}>
           다음
         </Button>
       </Form>
