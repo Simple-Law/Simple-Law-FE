@@ -95,16 +95,19 @@ const JoinForm = ({ handleData, nextStep, type }) => {
   };
 
   return (
-    <LoginForm title="회원가입">
+    <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
       <Form form={form} name="validateOnly" onFinish={onFinish} onValuesChange={handleFormChange}>
         <div className="flex gap-2 flex-col">
           <Form.Item
             name="id"
             rules={[
               {
-                whitespace: true,
                 required: true,
                 message: "아이디는 필수로 입력해야 합니다!",
+              },
+              {
+                pattern: /^[a-z0-9]{4,16}$/,
+                message: "아이디는 영문 소문자와 숫자로 이루어진 4~16자로 입력해야 합니다!",
               },
             ]}
             validateTrigger="onBlur"
@@ -114,11 +117,11 @@ const JoinForm = ({ handleData, nextStep, type }) => {
           <Form.Item
             name="password"
             rules={[
-              { whitespace: true, required: true },
+              { whitespace: true, required: true, message: "비밀번호를 입력해주세요" },
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value) {
-                    return Promise.reject(new Error("비밀번호를 입력해주세요"));
+                    return Promise.resolve(); // 이미 required rule에서 메시지를 처리하므로 여기서는 resolve
                   }
                   const hasUpperCase = /[A-Z]/.test(value);
                   const hasLowerCase = /[a-z]/.test(value);
@@ -173,6 +176,10 @@ const JoinForm = ({ handleData, nextStep, type }) => {
                 type: "email",
                 message: "올바른 이메일 양식이 아닙니다.",
               },
+              {
+                pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                message: "이메일은 영문자와 숫자로만 이루어져야 합니다.",
+              },
             ]}
             validateTrigger="onBlur"
           >
@@ -204,7 +211,7 @@ const JoinForm = ({ handleData, nextStep, type }) => {
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   const birthDate = moment(value, "YYYY.MM.DD");
-                  if (!birthDate.isValid()) {
+                  if (!birthDate.isValid() || moment().diff(birthDate, "years") >= 200) {
                     return Promise.reject(new Error("올바른 날짜 형식이 아닙니다."));
                   }
                   const age = moment().diff(birthDate, "years");
