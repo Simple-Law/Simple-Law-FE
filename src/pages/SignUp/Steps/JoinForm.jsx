@@ -210,6 +210,9 @@ const JoinForm = ({ handleData, nextStep, type }) => {
               },
               ({ getFieldValue }) => ({
                 validator(_, value) {
+                  if (!value) {
+                    return Promise.resolve(); // 이미 required rule에서 메시지를 처리하므로 여기서는 resolve
+                  }
                   const birthDate = moment(value, "YYYY.MM.DD");
                   if (!birthDate.isValid() || moment().diff(birthDate, "years") >= 200) {
                     return Promise.reject(new Error("올바른 날짜 형식이 아닙니다."));
@@ -222,6 +225,7 @@ const JoinForm = ({ handleData, nextStep, type }) => {
                 },
               }),
             ]}
+            validateTrigger="onBlur"
           >
             <Input placeholder="생년월일 8자리" maxLength="10" onChange={handleBirthdayChange} />
           </Form.Item>
