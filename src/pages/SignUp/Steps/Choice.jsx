@@ -11,7 +11,7 @@ import Fight from "assets/images/icons/fight.svg";
 import LawQuestion from "assets/images/icons/lawQuestion.svg";
 import Document from "assets/images/icons/document.svg";
 
-const Choice = ({ handleData, nextStep }) => {
+const Choice = ({ handleData, handleSubmit }) => {
   const [selectedValues, setSelectedValues] = useState([]);
   const [form] = Form.useForm();
 
@@ -39,7 +39,7 @@ const Choice = ({ handleData, nextStep }) => {
     };
     console.log("결과값: ", data);
     handleData(data);
-    nextStep();
+    handleSubmit();
   };
 
   return (

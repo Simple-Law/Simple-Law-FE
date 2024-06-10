@@ -5,7 +5,7 @@ import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
 import { useMessageApi } from "components/AppLayout";
 
-const JoinForm = ({ handleData, nextStep, type }) => {
+const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
@@ -30,11 +30,17 @@ const JoinForm = ({ handleData, nextStep, type }) => {
   };
 
   // 회원가입 폼 제출
-  const onFinish = values => {
+  const onFinish = async values => {
     console.log("결과값: ", values);
     handleData(values);
-    nextStep();
+
+    if (type !== "lawyer") {
+      await handleSubmit();
+    } else {
+      nextStep();
+    }
   };
+
   const handleFormChange = (changedValues, allValues) => {
     const isAllFieldsFilled = Object.keys(allValues).every(key => allValues[key]);
     setIsFormFilled(isAllFieldsFilled);
