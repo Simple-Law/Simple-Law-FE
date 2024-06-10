@@ -25,6 +25,9 @@ button {
   font-weight: normal;
   border-radius: 0px 0px 6px 6px;
 }
+.custom-quill .ql-container {
+  height: 350px; /* 에디터의 컨테이너 높이 설정 */
+}
 .ql-toolbar {
   border-radius: 6px 6px 0px 0px;
   border: 1px solid rgba(148, 163, 184, 0.22) !important;

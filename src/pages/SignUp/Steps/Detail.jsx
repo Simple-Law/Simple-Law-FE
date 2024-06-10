@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import LoginForm from "components/LoginForm";
-import { Upload, Button, Form, Input } from "antd";
-import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
+import { Button, Form, Input } from "antd";
 import { useMessageApi } from "components/AppLayout";
 import { uploadFile } from "apis/usersApi";
-
-const { Dragger } = Upload;
+import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 
 // 사무실 번호 지역번호 하이픈 추가
 const formatPhoneNumber = (value) => {
@@ -47,8 +45,8 @@ const Detail = ({ handleData, nextStep }) => {
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [fileUploadId, setFileUploadId] = useState("");
-  const [pendingFiles, setPendingFiles] = useState([]); // 임시 파일 상태
   const messageApi = useMessageApi();
+  const dropAreaRef = useRef(null);
 
   const uploadToServer = async (file) => {
     const formData = new FormData();
@@ -70,26 +68,33 @@ const Detail = ({ handleData, nextStep }) => {
     }
   };
 
-  const handleChange = (info) => {
-    const newFileList = info.fileList.slice(-1); // 최신 파일만 유지
-    setFileList(newFileList);
-
-    if (info.file && info.file.status === "removed") {
-      setPendingFiles([]);
-    } else if (info.fileList) {
-      setPendingFiles(info.fileList.map((file) => file.originFileObj)); // 임시 파일 리스트에 저장
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      handleFileChange(files[0]);
     }
   };
 
+  const handleFileChange = (file) => {
+    if (beforeUpload(file)) {
+      const newFileList = [file]; // 최신 파일만 유지
+      setFileList(newFileList);
+    }
+  };
+
+  const handleRemove = () => {
+    setFileList([]);
+  };
+
   const handleSubmit = async () => {
-    if (pendingFiles.length === 0) {
+    if (fileList.length === 0) {
       messageApi.error("파일을 업로드해 주세요.");
       return;
     }
-    for (let file of pendingFiles) {
+    for (let file of fileList) {
       await uploadToServer(file);
     }
-    setPendingFiles([]); // 제출 후 임시 파일 리스트 초기화
     setFileList([]); // 파일 리스트 초기화
     form.resetFields(); // 폼 필드 초기화
     nextStep(); // 다음 스텝으로 이동
@@ -125,13 +130,15 @@ const Detail = ({ handleData, nextStep }) => {
 
     if (!isValidType) {
       messageApi.error("png, jpg, jpeg, gif 파일만 업로드할 수 있습니다.");
+      return false;
     }
 
     if (!isLt10M) {
       messageApi.error("파일 크기는 10MB 이하만 가능합니다.");
+      return false;
     }
 
-    return isValidType && isLt10M;
+    return true;
   };
 
   return (
@@ -231,54 +238,64 @@ const Detail = ({ handleData, nextStep }) => {
             />
           </Form.Item>
         </div>
-        <div className="flex gap-2 flex-col">
-          <p className="font-medium text-base flex items-center">
-            변호사 신분증 사진 업로드
-            <label
-              htmlFor="file-upload"
-              className="bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]"
-            >
-              내 PC
-            </label>
-          </p>
-          <Form.Item
-            name="fileUploadId"
-            rules={[
-              {
-                required: true,
-                message: "파일을 업로드해 주세요.",
-              },
-            ]}
-          >
-            <Dragger
-              name="files"
-              multiple={false}
-              fileList={fileList}
-              beforeUpload={beforeUpload}
-              customRequest={({ file, onSuccess }) => {
-                setTimeout(() => {
-                  onSuccess("ok");
-                }, 0);
-              }}
-              onChange={handleChange}
-              disabled={loading}
-            >
-              <p className="mb-[8px]">
-                <UploadFile className="mx-auto my-auto mt-[10px]" />
-              </p>
-              <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
-                최대 10mb 이하 png, jpg, jpeg, gif
-              </p>
-            </Dragger>
-          </Form.Item>
-        </div>
-        <Button
-          type="primary"
-          htmlType="submit"
-          block
-          className="mt-8"
-          disabled={loading}
+        <Form.Item
+          name="fileUploadId"
+          rules={[
+            {
+              required: true,
+              message: "파일을 업로드해 주세요.",
+            },
+          ]}
         >
+          <div
+            ref={dropAreaRef}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            style={{ position: "relative" }}
+          >
+            <p className="font-medium text-base flex items-center">
+              변호사 신분증 사진 업로드
+              <input
+                type="file"
+                id="file-upload"
+                style={{ display: "none" }}
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    handleFileChange(file);
+                  }
+                }}
+              />
+              <label
+                htmlFor="file-upload"
+                className="bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]"
+                style={{ cursor: "pointer" }}
+              >
+                내 PC
+              </label>
+            </p>
+            {fileList.length === 0 ? (
+              <div className="h-[180px] text-center rounded-md border border-dashed border-gray-200 bg-gray-50 mt-2 flex flex-col items-center justify-center">
+                <UploadFile className="mx-auto" />
+                <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
+                  최대 10mb 이하 png, jpg, jpeg, gif
+                </p>
+              </div>
+            ) : (
+              <div className="uploaded-file-list">
+                {fileList.map((file, index) => (
+                  <div key={index} className="uploaded-file-item">
+                    <span>{file.name}</span>
+                    <Button onClick={handleRemove} type="link" danger>
+                      삭제
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </Form.Item>
+        <Button type="primary" htmlType="submit" block disabled={loading}>
           다음
         </Button>
       </Form>

@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Logo from "assets/images/icons/Logo.svg";
 import { Form, Select, Checkbox, Modal } from "antd";
-
-import "react-quill/dist/quill.snow.css";
 import { useFormik } from "formik";
-
 import { useMessageApi } from "components/AppLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
@@ -12,27 +9,68 @@ import { createMail, fetchMails } from "apis/mailsApi";
 import { useMailContext } from "contexts/MailContexts";
 import CommonForm from "components/CommonForm";
 import { useAuth } from "contexts/AuthContext";
+import axios from "axios";
 
 const QuestPost = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
   const { dispatch } = useMailContext();
-  const { user } = useAuth(); // 로그인한 사용자 정보 가져오기
+  const { user } = useAuth();
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [pendingImages, setPendingImages] = useState([]); // 첨부된 이미지 파일 임시 저장
+  const [deletedImages, setDeletedImages] = useState([]); // 삭제된 이미지 파일 URL 임시 저장
   const messageApi = useMessageApi();
 
   useEffect(() => {
-    // 컴포넌트가 마운트되면 실행
-    document.body.style.overflow = "hidden"; // 스크롤 비활성화
+    document.body.style.overflow = "hidden";
 
     return () => {
-      // 컴포넌트가 언마운트되면 실행
-      document.body.style.overflow = "auto"; // 스크롤 활성화
+      document.body.style.overflow = "auto";
     };
   }, []);
 
-  // Formik hook을 사용하여 폼 상태 관리
+  const uploadImagesToServer = async () => {
+    const imageUrls = [];
+    const currentDate = new Date().toISOString().split("T")[0];
+    for (const file of pendingImages) {
+      const fileUploadId = await uploadToServer(file);
+      if (fileUploadId) {
+        const fileUrl = `https://prod-simplelaw-api-server-bucket.s3.ap-northeast-2.amazonaws.com/TEMP/${currentDate}/${fileUploadId}.jpg`;
+        imageUrls.push(fileUrl);
+      }
+    }
+    return imageUrls;
+  };
+
+  const uploadToServer = async file => {
+    const formData = new FormData();
+    formData.append("files", file);
+
+    try {
+      const response = await axios.post(`http://api.simplelaw.co.kr/api/v1/files`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const fileUploadId = response.data?.data?.payload[0]?.fileUploadId;
+      return fileUploadId;
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  const deleteImagesFromServer = async () => {
+    for (const url of deletedImages) {
+      try {
+        await axios.delete("http://api.simplelaw.co.kr/api/v1/files", { data: { url } });
+        console.log("Image deleted:", url);
+      } catch (error) {
+        console.error("Error deleting image:", error);
+      }
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -42,19 +80,28 @@ const QuestPost = () => {
       status: "preparing",
     },
     onSubmit: async values => {
-      const currentTime = new Date().toISOString(); // ISO 8601 포맷의 문자열로 날짜와 시간을 가져옵니다.
+      await deleteImagesFromServer();
+      const imageUrls = await uploadImagesToServer();
+      const contentWithImages = editorRef.current
+        .getEditor()
+        .root.innerHTML.replace(/<img src="data:([^"]*)">/g, (match, p1, offset, string) => {
+          const url = imageUrls.shift();
+          return `<img src="${url}">`;
+        });
+
+      const currentTime = new Date().toISOString();
       const dataToSend = {
         ...values,
+        content: contentWithImages,
         status: values.status || "preparing",
-        sentAt: currentTime, // 데이터 객체에 현재 시간 필드를 추가합니다.
-        userId: user.id, // 로그인한 사용자의 아이디 추가
-        userName: user.name, // 로그인한 사용자의 이름 추가
-        userType: user.type, // 로그인한 사용자의 타입 추가
+        sentAt: currentTime,
+        userId: user.id,
+        userName: user.name,
+        userType: user.type,
       };
+
       try {
-        // 에디터 내용과 셀렉트박스 값이 포함된 values를 서버로 전송
         const response = await createMail(dataToSend);
-        console.log("Server Response:", response);
         messageApi.success("게시글이 등록되었습니다!");
 
         const { data: mailData } = await fetchMails();
@@ -71,26 +118,21 @@ const QuestPost = () => {
     },
   });
 
-  // 모달을 열기
   const showModal = () => {
     setIsModalVisible(true);
   };
 
-  // 모달에서 '확인'을 누르면
   const handleOk = () => {
     setIsModalVisible(false);
-    formik.handleSubmit(); // 폼 제출
+    formik.handleSubmit();
   };
 
-  // 모달에서 '취소'를 누르면
   const handleCancel = () => {
     setIsModalVisible(false);
   };
 
   const handleSubmit = () => {
-    const markdown = editorRef.current.getEditor().root.innerHTML;
-    formik.setFieldValue("content", markdown, false);
-    showModal(); // 제출 전 모달 보여주기
+    showModal();
   };
 
   const handleCheckboxChange = e => {
@@ -121,22 +163,10 @@ const QuestPost = () => {
                     placeholder="분야 선택"
                     onChange={value => formik.setFieldValue("anytime", value)}
                     options={[
-                      {
-                        value: "계약서 검토/작성",
-                        label: "계약서 검토/작성",
-                      },
-                      {
-                        value: "약관 검토/작성",
-                        label: "약관 검토/작성",
-                      },
-                      {
-                        value: "개인정보 처리방침 검토/작성",
-                        label: "개인정보 처리방침 검토/작성",
-                      },
-                      {
-                        value: "법률검토 의견서 작성",
-                        label: "법률검토 의견서 작성",
-                      },
+                      { value: "계약서 검토/작성", label: "계약서 검토/작성" },
+                      { value: "약관 검토/작성", label: "약관 검토/작성" },
+                      { value: "개인정보 처리방침 검토/작성", label: "개인정보 처리방침 검토/작성" },
+                      { value: "법률검토 의견서 작성", label: "법률검토 의견서 작성" },
                       { value: "내용 증명 작성", label: "내용 증명 작성" },
                       { value: "분쟁 해결 자문", label: "분쟁 해결 자문" },
                       { value: "등기", label: "등기" },
@@ -239,7 +269,13 @@ const QuestPost = () => {
             </div>
           </div>
 
-          <CommonForm formik={formik} editorRef={editorRef} isCheckboxChecked={isCheckboxChecked} />
+          <CommonForm
+            formik={formik}
+            editorRef={editorRef}
+            isCheckboxChecked={isCheckboxChecked}
+            setPendingImages={setPendingImages}
+            setDeletedImages={setDeletedImages}
+          />
         </Form>
         <Modal title="제출 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
           <p>진짜로 제출하시겠습니까?</p>

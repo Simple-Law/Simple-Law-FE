@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Logo from "assets/images/icons/Logo.svg";
 import styled from "styled-components";
 import { Checkbox, Form, Button } from "antd";
@@ -12,42 +12,48 @@ import LawQuestion from "assets/images/icons/lawQuestion.svg";
 import Document from "assets/images/icons/document.svg";
 
 const Choice = ({ handleData, nextStep }) => {
-  const onChange = (checkedValues) => {
-    console.log("checkedValues:", checkedValues);
-  };
-  const radioOptions = [
-    { value: "Contract", text: "계약서 검토/작성", img: Contract },
-    { value: "Agree", text: "약관 검토/작성", img: Agree },
-    { value: "Person", text: "개인정보 처리방침\n검토 / 작성", img: Person },
-    { value: "LawCheck", text: "법률 검토\n의견서 작성", img: LawCheck },
-    { value: "Show", text: "내용 증명 작성", img: Show },
-    { value: "Fight", text: "분쟁 해결 자문", img: Fight },
-    { value: "LawQuestion", text: "법률 검토 질의", img: LawQuestion },
-    { value: "Document", text: "등기", img: Document },
-  ];
+  const [selectedValues, setSelectedValues] = useState([]);
   const [form] = Form.useForm();
-  const onFinish = (values) => {
-    console.log("결과값: ", values);
-    handleData(values);
+
+  const onChange = checkedValues => {
+    console.log("checkedValues:", checkedValues);
+    setSelectedValues(checkedValues);
+  };
+
+  const radioOptions = [
+    { value: "1", text: "계약서 검토/작성", img: Contract },
+    { value: "2", text: "약관 검토/작성", img: Agree },
+    { value: "3", text: "개인정보 처리방침\n검토 / 작성", img: Person },
+    { value: "4", text: "법률 검토\n의견서 작성", img: LawCheck },
+    { value: "5", text: "내용 증명 작성", img: Show },
+    { value: "6", text: "분쟁 해결 자문", img: Fight },
+    { value: "7", text: "법률 검토 질의", img: LawQuestion },
+    { value: "8", text: "등기", img: Document },
+  ];
+
+  const onFinish = values => {
+    const caseCategoryKeyList = selectedValues.map(Number); // String을 Number로 변환
+    const data = {
+      ...values,
+      caseCategoryKeyList,
+    };
+    console.log("결과값: ", data);
+    handleData(data);
     nextStep();
   };
+
   return (
     <div className="min-h-screen relative flex flex-col justify-center">
       <div className="relative w-[600px] mb-[100px]  mx-auto px-6">
         <div className="w-full relative  mt-[20px]">
           <div className="mb-6">
             <img src={Logo} alt="" className="mx-auto w-[226px]" />
-            <h1 className="text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]">
-              담당 의뢰 분야 선택
-            </h1>
+            <h1 className="text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]">담당 의뢰 분야 선택</h1>
           </div>
           <Form form={form} onFinish={onFinish}>
-            <Form.Item>
-              <StyledCheckGroup
-                onChange={onChange}
-                className="grid grid-cols-4 gap-x-6 gap-y-5 text-center"
-              >
-                {radioOptions.map((option) => (
+            <Form.Item name="caseCategoryKeyList">
+              <StyledCheckGroup onChange={onChange} className="grid grid-cols-4 gap-x-6 gap-y-5 text-center">
+                {radioOptions.map(option => (
                   <Checkbox key={option.value} value={option.value}>
                     <div className="check-img-wrapper">
                       <img src={option.img} alt={option.text} />
@@ -68,6 +74,7 @@ const Choice = ({ handleData, nextStep }) => {
 };
 
 export default Choice;
+
 const StyledCheckGroup = styled(Checkbox.Group)`
   label {
     height: max-content;
