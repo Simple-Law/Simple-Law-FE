@@ -110,7 +110,6 @@ const StyledCheckGroup = styled(Checkbox.Group)`
       margin-top: 12px;
       color: #272c3b;
       text-align: center;
-      font-family: Pretendard;
       font-size: 15px;
       font-style: normal;
       font-weight: 500;
