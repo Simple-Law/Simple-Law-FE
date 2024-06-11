@@ -3,7 +3,8 @@ import JoinForm from "./Steps/JoinForm";
 import Detail from "./Steps/Detail";
 import Choice from "./Steps/Choice";
 import Agreement from "./Steps/Agreement";
-import { useParams, useNavigate } from "react-router-dom";
+import FinalStep from "./Steps/FinalStep"; // FinalStep 컴포넌트 추가
+import { useParams } from "react-router-dom";
 import { registerUser } from "apis/usersApi";
 import { useMessageApi } from "components/AppLayout";
 import { useAuth } from "contexts/AuthContext"; // AuthContext import
@@ -12,7 +13,6 @@ const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const { type } = useParams();
-  const navigate = useNavigate();
   const messageApi = useMessageApi();
   const { login } = useAuth(); // AuthContext의 login 함수 사용
 
@@ -81,7 +81,7 @@ const SignUp = () => {
       // login({ accessToken, refreshToken, accessTokenExpiredAt, refreshTokenExpiredAt }, user);
 
       messageApi.success("가입이 완료되었습니다!");
-      navigate("/"); // 홈으로 리다이렉트
+      nextStep(); // 가입 완료 후 다음 단계로 이동
     } catch (error) {
       messageApi.error("가입에 실패했습니다.");
     }
@@ -92,6 +92,7 @@ const SignUp = () => {
     <JoinForm handleData={handleData} nextStep={nextStep} type={type} handleSubmit={handleSubmit} />,
     type === "lawyer" && <Detail handleData={handleData} nextStep={nextStep} />,
     type === "lawyer" && <Choice handleData={handleData} nextStep={nextStep} handleSubmit={handleSubmit} />,
+    <FinalStep type={type} />, // FinalStep 추가
   ].filter(Boolean); // 조건부 렌더링으로 undefined 요소 제거
 
   return <div>{steps[currentStep]}</div>;

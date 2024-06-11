@@ -136,6 +136,15 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                   const isValid =
                     (hasUpperCase ? 1 : 0) + (hasLowerCase ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecialChar ? 1 : 0) >=
                     2;
+
+                  console.log(`비밀번호 검증:
+                    대문자 포함: ${hasUpperCase},
+                    소문자 포함: ${hasLowerCase},
+                    숫자 포함: ${hasNumber},
+                    특수문자 포함: ${hasSpecialChar},
+                    유효성: ${isValid}
+                  `);
+
                   if (value.length < 8 || value.length > 16 || !isValid) {
                     return Promise.reject(
                       new Error(
