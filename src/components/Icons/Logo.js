@@ -1,8 +1,9 @@
-const SvgLogo = (props) => (
+const SvgLogo = props => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={140}
-    height={36}
+    viewBox="0 0 140 36"
+    width={props.width || 140}
+    height={props.height || 36}
     fill="none"
     {...props}
   >

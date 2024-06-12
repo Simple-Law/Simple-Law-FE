@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import Logo from "assets/images/icons/Logo.svg";
+import SvgLogo from "components/Icons/Logo";
 import { Form, Select, Checkbox, Modal } from "antd";
 import { useFormik } from "formik";
 import { useMessageApi } from "components/AppLayout";
@@ -145,7 +145,7 @@ const QuestPost = () => {
         <div className="flex justify-between items-center w-[1300px] mx-auto h-[100px]">
           <div>
             <Link to="/">
-              <img src={Logo} alt="" className="mx-auto w-[140px]" />
+              <SvgLogo width="140px" height="auto" className="mx-auto" />
             </Link>
           </div>
         </div>

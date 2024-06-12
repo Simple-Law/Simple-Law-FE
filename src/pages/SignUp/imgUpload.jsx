@@ -5,7 +5,7 @@ import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import { useMessageApi } from "components/AppLayout";
 
 const { Dragger } = Upload;
-// 이미지 업로드 예시
+// 이미지 업로드 테스터
 const ImgUpload = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
@@ -74,7 +74,7 @@ const ImgUpload = () => {
     <Form form={form} name="validateOnly" autoComplete="off" className="flex gap-[20px] flex-col">
       <div className="flex gap-2 flex-col">
         <p className="font-medium text-base flex items-center">
-          사진 업로드
+          파일 업로드
           <label
             htmlFor="file-upload"
             className="bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]"
@@ -99,12 +99,13 @@ const ImgUpload = () => {
             }}
             onChange={handleChange}
             disabled={loading}
+            accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.hwp" // 허용할 파일 유형 추가
           >
             <p className="mb-[8px]">
               <UploadFile className="mx-auto my-auto mt-[10px]" />
             </p>
             <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
-              최대 10mb 이하 png, jpg, jpeg, gif
+              최대 10mb 이하 png, jpg, jpeg, gif, pdf, doc, docx, hwp 파일을 업로드할 수 있습니다.
             </p>
           </Dragger>
         </Form.Item>

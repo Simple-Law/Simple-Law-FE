@@ -5,7 +5,7 @@ import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
 import { useMessageApi } from "components/AppLayout";
 
-const JoinForm = ({ handleData, nextStep, type }) => {
+const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
@@ -30,11 +30,17 @@ const JoinForm = ({ handleData, nextStep, type }) => {
   };
 
   // 회원가입 폼 제출
-  const onFinish = values => {
+  const onFinish = async values => {
     console.log("결과값: ", values);
     handleData(values);
-    nextStep();
+
+    if (type !== "lawyer") {
+      await handleSubmit();
+    } else {
+      nextStep();
+    }
   };
+
   const handleFormChange = (changedValues, allValues) => {
     const isAllFieldsFilled = Object.keys(allValues).every(key => allValues[key]);
     setIsFormFilled(isAllFieldsFilled);
@@ -130,6 +136,15 @@ const JoinForm = ({ handleData, nextStep, type }) => {
                   const isValid =
                     (hasUpperCase ? 1 : 0) + (hasLowerCase ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecialChar ? 1 : 0) >=
                     2;
+
+                  console.log(`비밀번호 검증:
+                    대문자 포함: ${hasUpperCase},
+                    소문자 포함: ${hasLowerCase},
+                    숫자 포함: ${hasNumber},
+                    특수문자 포함: ${hasSpecialChar},
+                    유효성: ${isValid}
+                  `);
+
                   if (value.length < 8 || value.length > 16 || !isValid) {
                     return Promise.reject(
                       new Error(
