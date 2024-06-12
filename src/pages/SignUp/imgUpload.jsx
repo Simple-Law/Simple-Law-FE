@@ -5,7 +5,7 @@ import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import { useMessageApi } from "components/AppLayout";
 
 const { Dragger } = Upload;
-// 이미지 업로드 예시
+// 이미지 업로드 테스터
 const ImgUpload = () => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
