@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import Logo from "assets/images/icons/Logo.svg";
+import SvgLogo from "components/Icons/Logo";
 import styled from "styled-components";
 import { Checkbox, Form, Button } from "antd";
-import Contract from "assets/images/icons/contract.svg";
-import Agree from "assets/images/icons/agree.svg";
-import Person from "assets/images/icons/person.svg";
-import LawCheck from "assets/images/icons/lawCheck.svg";
-import Show from "assets/images/icons/show.svg";
-import Fight from "assets/images/icons/fight.svg";
-import LawQuestion from "assets/images/icons/lawQuestion.svg";
-import Document from "assets/images/icons/document.svg";
+import { Link } from "react-router-dom";
+import SvgContract from "components/Icons/Contract";
+import SvgAgree from "components/Icons/Agree";
+import SvgPerson from "components/Icons/Person";
+import SvgLawCheck from "components/Icons/LawCheck";
+import SvgShow from "components/Icons/Show";
+import SvgFight from "components/Icons/Fight";
+import SvgLawQuestion from "components/Icons/LawQuestion";
+import SvgDocument from "components/Icons/Document";
 
 const Choice = ({ handleData, handleSubmit }) => {
   const [selectedValues, setSelectedValues] = useState([]);
@@ -21,14 +22,14 @@ const Choice = ({ handleData, handleSubmit }) => {
   };
 
   const radioOptions = [
-    { value: "1", text: "계약서 검토/작성", img: Contract },
-    { value: "2", text: "약관 검토/작성", img: Agree },
-    { value: "3", text: "개인정보 처리방침\n검토 / 작성", img: Person },
-    { value: "4", text: "법률 검토\n의견서 작성", img: LawCheck },
-    { value: "5", text: "내용 증명 작성", img: Show },
-    { value: "6", text: "분쟁 해결 자문", img: Fight },
-    { value: "7", text: "법률 검토 질의", img: LawQuestion },
-    { value: "8", text: "등기", img: Document },
+    { value: "1", text: "계약서 검토/작성", img: SvgContract },
+    { value: "2", text: "약관 검토/작성", img: SvgAgree },
+    { value: "3", text: "개인정보 처리방침\n검토 / 작성", img: SvgPerson },
+    { value: "4", text: "법률 검토\n의견서 작성", img: SvgLawCheck },
+    { value: "5", text: "내용 증명 작성", img: SvgShow },
+    { value: "6", text: "분쟁 해결 자문", img: SvgFight },
+    { value: "7", text: "법률 검토 질의", img: SvgLawQuestion },
+    { value: "8", text: "등기", img: SvgDocument },
   ];
 
   const onFinish = values => {
@@ -44,10 +45,12 @@ const Choice = ({ handleData, handleSubmit }) => {
 
   return (
     <div className="min-h-screen relative flex flex-col justify-center">
-      <div className="relative w-[600px] mb-[100px]  mx-auto px-6">
-        <div className="w-full relative  mt-[20px]">
+      <div className="relative w-[600px] mb-[100px] mx-auto px-6">
+        <div className="w-full relative mt-[20px]">
           <div className="mb-6">
-            <img src={Logo} alt="" className="mx-auto w-[226px]" />
+            <Link to="/">
+              <SvgLogo width="226px" height="auto" className="mx-auto" />
+            </Link>
             <h1 className="text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]">담당 의뢰 분야 선택</h1>
           </div>
           <Form form={form} onFinish={onFinish}>
@@ -56,7 +59,7 @@ const Choice = ({ handleData, handleSubmit }) => {
                 {radioOptions.map(option => (
                   <Checkbox key={option.value} value={option.value}>
                     <div className="check-img-wrapper">
-                      <img src={option.img} alt={option.text} />
+                      <option.img />
                     </div>
                     <p>{option.text}</p>
                   </Checkbox>
@@ -101,10 +104,6 @@ const StyledCheckGroup = styled(Checkbox.Group)`
       box-sizing: border-box;
       height: 120px;
       align-items: center;
-      img {
-        width: 80px;
-        height: 80px;
-      }
     }
     .check-img-wrapper + p {
       margin-top: 12px;

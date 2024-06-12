@@ -25,7 +25,7 @@
 
 // export default Header;
 import React, { useState } from "react";
-import Logo from "assets/images/icons/Logo.svg";
+import SvgLogo from "components/Icons/Logo";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal, message } from "antd";
 import SvgProfile from "components/Icons/Profile";
@@ -56,7 +56,7 @@ const Header = () => {
       <div className="flex justify-between items-center h-16 w-full">
         <div className="pl-[47px]">
           <Link to="/">
-            <img src={Logo} alt="" className="mx-auto w-[115px]" />
+            <SvgLogo width="115px" height="auto" className="mx-auto" />
           </Link>
         </div>
         <div className="flex items-center pr-[32px] gap-[10px]">
