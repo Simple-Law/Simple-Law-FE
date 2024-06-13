@@ -127,7 +127,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
   ];
 
   return (
-    <div className="mt-[77px] ml-10 right-side">
+    <div className=" ml-10 right-side">
       <Form.Item className="mb-8">
         <p>의뢰 제목</p>
         <Input
