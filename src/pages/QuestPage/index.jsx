@@ -124,10 +124,11 @@ const QuestPage = () => {
     },
     {
       title: "상태",
-      width: 150,
       key: "status",
       dataIndex: "status",
       render: status => <StatusTag status={status} />,
+      width: 150,
+      className: "status-column",
     },
     {
       title: (
@@ -139,7 +140,7 @@ const QuestPage = () => {
       ),
       key: "category",
       dataIndex: "category",
-      width: 320,
+      className: "category-column",
       render: (_, record) => (
         <>
           <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
@@ -152,6 +153,7 @@ const QuestPage = () => {
       title: "제목",
       dataIndex: "title",
       key: "title",
+      className: "title-column",
       render: (_, record) =>
         record.parentTitle ? (
           <div>
@@ -164,7 +166,6 @@ const QuestPage = () => {
           record.title
         ),
     },
-
     {
       title: (
         <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
@@ -183,10 +184,10 @@ const QuestPage = () => {
           </button>
         </Dropdown>
       ),
-      width: 140,
-      dataIndex: timeColumn,
       key: "time",
+      dataIndex: timeColumn,
       render: text => <span>{text}</span>,
+      className: "time-column",
     },
   ];
 
@@ -211,7 +212,7 @@ const QuestPage = () => {
   };
 
   return (
-    <BoardDiv className="mt-6 mx-8 w-full">
+    <BoardDiv className="mt-6 mx-8 grow overflow-hidden">
       <div className="flex justify-between items-end mb-3">
         <h2 className=" font-bold text-[20px]">{pageTitle}</h2>
         <PageSearch
@@ -259,7 +260,26 @@ const BoardDiv = styled.div`
   .ant-pagination .ant-pagination-item-active {
     border-color: transparent;
   }
+
+  .status-column {
+    max-width: 150px;
+    flex-basis: 150px;
+  }
+
+  .category-column {
+    max-width: 320px;
+    flex-basis: 320px;
+  }
+  .title-column {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .time-column {
+    max-width: 140px;
+    flex-basis: 140px;
+  }
 `;
+
 const PageSearch = styled(Search)`
   width: 268px;
   & .ant-input {
