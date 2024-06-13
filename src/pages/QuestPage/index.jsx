@@ -46,10 +46,10 @@ const QuestPage = () => {
   useEffect(() => {
     const titles = {
       All_request: "전체 의뢰함",
-      important: "중요 의뢰함",
-      preparing: "컨택 요청 중",
-      pending: "해결 진행 중",
-      completed: "해결 완료",
+      important: "전체 의뢰함(중요 의뢰함)",
+      preparing: "전체 의뢰함(컨택 요청 중)",
+      pending: "전체 의뢰함(해결 진행 중)",
+      completed: "전체 의뢰함(해결 완료)",
       refuse: "신청거절",
       trash: "휴지통",
     };
@@ -197,6 +197,19 @@ const QuestPage = () => {
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
+  const getEmptyText = () => {
+    const emptyTexts = {
+      All_request: "전체 의뢰함에 의뢰가 없습니다.",
+      important: "중요 의뢰함에 의뢰가 없습니다.",
+      preparing: "컨택 요청 중 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.",
+      pending: "해결 진행 중 의뢰가 없습니다.",
+      completed: "해결 완료된 의뢰가 없습니다.",
+      refuse: "신청거절된 의뢰가 없습니다.",
+      trash: "휴지통에 의뢰가 없습니다.",
+    };
+    return emptyTexts[statusKey] || "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
+  };
+
   return (
     <BoardDiv className="mt-6 mx-8 w-full">
       <div className="flex justify-between items-end mb-3">
@@ -217,7 +230,7 @@ const QuestPage = () => {
         locale={{
           emptyText: (
             <CustomEmpty>
-              <p>데이터가 없습니다.</p>
+              <p dangerouslySetInnerHTML={{ __html: getEmptyText() }} />
             </CustomEmpty>
           ),
         }}
@@ -290,6 +303,7 @@ const PageSearch = styled(Search)`
     }
   }
 `;
+
 const CustomEmpty = styled.div`
   display: flex;
   flex-direction: column;
