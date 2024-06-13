@@ -214,6 +214,13 @@ const QuestPage = () => {
         dataSource={tableData}
         columns={columns}
         pagination={paginationConfig}
+        locale={{
+          emptyText: (
+            <CustomEmpty>
+              <p>데이터가 없습니다.</p>
+            </CustomEmpty>
+          ),
+        }}
         style={{
           cursor: "pointer",
         }}
@@ -282,4 +289,13 @@ const PageSearch = styled(Search)`
       border-radius: 4px;
     }
   }
+`;
+const CustomEmpty = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+  height: 100px;
 `;
