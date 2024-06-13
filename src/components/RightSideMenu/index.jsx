@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Menu } from "antd";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,12 @@ import SvgTrash from "components/Icons/Trash";
 const RightSideMenu = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useMailContext(); // use context
-
+  useEffect(() => {
+    const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
+    if (parentElement) {
+      parentElement.classList.add("custom-arrow");
+    }
+  }, []);
   const handleMenuClick = statusKey => {
     let filteredMails = state.data;
     if (statusKey === "important") {
@@ -168,7 +173,11 @@ const RightSideMenu = () => {
         items={[
           {
             key: "main",
-            label: <span style={{ fontSize: "12px", fontWeight: "600" }}>내 의뢰함</span>,
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className="my-column">
+                내 의뢰함
+              </span>
+            ),
             children: menuItems,
           },
         ]}
@@ -200,5 +209,8 @@ const Board = styled.div`
   }
   .ant-menu-item-only-child {
     padding: 0 40px !important;
+  }
+  .custom-arrow + .ant-menu-submenu-arrow {
+    left: 65px;
   }
 `;

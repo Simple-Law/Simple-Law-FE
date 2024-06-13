@@ -140,7 +140,7 @@ const QuestPost = () => {
   };
 
   return (
-    <div className="overflow-hidden">
+    <div>
       <div className="border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]">
         <div className="flex justify-between items-center w-[1300px] mx-auto h-[100px]">
           <div>
@@ -307,10 +307,14 @@ const FormDiv = styled.div`
   }
   .right-side {
     width: calc(100% - 461px); /* 전체 너비에서 left-side 너비를 뺀 나머지 */
-    height: auto;
-    padding: 20px 0;
-    overflow-y: hidden; /* 세로 스크롤 비활성화 */
+    /* height: auto; */
+    height: calc(100vh - 100px);
+    padding: 97px 0 20px 0;
+    overflow-y: auto;
     position: relative; /* 필요에 따라 위치 설정 */
+    /* 스크롤바 숨기기 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
   }
 `;
 

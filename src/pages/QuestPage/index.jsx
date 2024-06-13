@@ -16,6 +16,7 @@ const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
+  const [pageTitle, setPageTitle] = useState("전체 의뢰함");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,9 +24,7 @@ const QuestPage = () => {
   const statusKey = queryParams.get("status");
 
   const { state, dispatch } = useMailContext();
-  // const { mails, data } = state;
   const { mails, tableData } = state; // tableData를 사용
-  // const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const combinedData = [];
@@ -43,6 +42,19 @@ const QuestPage = () => {
     });
     dispatch({ type: "SET_TABLE_DATA", payload: combinedData });
   }, [mails, dispatch]);
+
+  useEffect(() => {
+    const titles = {
+      All_request: "전체 의뢰함",
+      important: "전체 의뢰함(중요 의뢰함)",
+      preparing: "전체 의뢰함(컨택 요청 중)",
+      pending: "전체 의뢰함(해결 진행 중)",
+      completed: "전체 의뢰함(해결 완료)",
+      refuse: "신청거절",
+      trash: "휴지통",
+    };
+    setPageTitle(titles[statusKey] || "전체 의뢰함");
+  }, [statusKey]);
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
@@ -112,10 +124,11 @@ const QuestPage = () => {
     },
     {
       title: "상태",
-      width: 150,
       key: "status",
       dataIndex: "status",
       render: status => <StatusTag status={status} />,
+      width: 150,
+      className: "status-column",
     },
     {
       title: (
@@ -127,7 +140,7 @@ const QuestPage = () => {
       ),
       key: "category",
       dataIndex: "category",
-      width: 320,
+      className: "category-column",
       render: (_, record) => (
         <>
           <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
@@ -140,6 +153,7 @@ const QuestPage = () => {
       title: "제목",
       dataIndex: "title",
       key: "title",
+      className: "title-column",
       render: (_, record) =>
         record.parentTitle ? (
           <div>
@@ -152,7 +166,6 @@ const QuestPage = () => {
           record.title
         ),
     },
-
     {
       title: (
         <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
@@ -171,10 +184,10 @@ const QuestPage = () => {
           </button>
         </Dropdown>
       ),
-      width: 140,
-      dataIndex: timeColumn,
       key: "time",
+      dataIndex: timeColumn,
       render: text => <span>{text}</span>,
+      className: "time-column",
     },
   ];
 
@@ -185,10 +198,23 @@ const QuestPage = () => {
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
+  const getEmptyText = () => {
+    const emptyTexts = {
+      All_request: "전체 의뢰함에 의뢰가 없습니다.",
+      important: "중요 의뢰함에 의뢰가 없습니다.",
+      preparing: "컨택 요청 중 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.",
+      pending: "해결 진행 중 의뢰가 없습니다.",
+      completed: "해결 완료된 의뢰가 없습니다.",
+      refuse: "신청거절된 의뢰가 없습니다.",
+      trash: "휴지통에 의뢰가 없습니다.",
+    };
+    return emptyTexts[statusKey] || "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
+  };
+
   return (
-    <BoardDiv className="mt-6 mx-8 w-full">
+    <BoardDiv className="mt-6 mx-8 grow overflow-hidden">
       <div className="flex justify-between items-end mb-3">
-        <h2 className=" font-bold text-[20px]">전체 의뢰함</h2>
+        <h2 className=" font-bold text-[20px]">{pageTitle}</h2>
         <PageSearch
           placeholder="Placeholder"
           onSearch={onSearch}
@@ -202,6 +228,13 @@ const QuestPage = () => {
         dataSource={tableData}
         columns={columns}
         pagination={paginationConfig}
+        locale={{
+          emptyText: (
+            <CustomEmpty>
+              <p dangerouslySetInnerHTML={{ __html: getEmptyText() }} />
+            </CustomEmpty>
+          ),
+        }}
         style={{
           cursor: "pointer",
         }}
@@ -227,7 +260,26 @@ const BoardDiv = styled.div`
   .ant-pagination .ant-pagination-item-active {
     border-color: transparent;
   }
+
+  .status-column {
+    max-width: 150px;
+    flex-basis: 150px;
+  }
+
+  .category-column {
+    max-width: 320px;
+    flex-basis: 320px;
+  }
+  .title-column {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .time-column {
+    max-width: 140px;
+    flex-basis: 140px;
+  }
 `;
+
 const PageSearch = styled(Search)`
   width: 268px;
   & .ant-input {
@@ -270,4 +322,14 @@ const PageSearch = styled(Search)`
       border-radius: 4px;
     }
   }
+`;
+
+const CustomEmpty = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+  height: 100px;
 `;
