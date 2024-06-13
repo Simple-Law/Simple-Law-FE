@@ -16,6 +16,7 @@ const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
+  const [pageTitle, setPageTitle] = useState("전체 의뢰함");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -23,9 +24,7 @@ const QuestPage = () => {
   const statusKey = queryParams.get("status");
 
   const { state, dispatch } = useMailContext();
-  // const { mails, data } = state;
   const { mails, tableData } = state; // tableData를 사용
-  // const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const combinedData = [];
@@ -43,6 +42,19 @@ const QuestPage = () => {
     });
     dispatch({ type: "SET_TABLE_DATA", payload: combinedData });
   }, [mails, dispatch]);
+
+  useEffect(() => {
+    const titles = {
+      All_request: "전체 의뢰함",
+      important: "중요 의뢰함",
+      preparing: "컨택 요청 중",
+      pending: "해결 진행 중",
+      completed: "해결 완료",
+      refuse: "신청거절",
+      trash: "휴지통",
+    };
+    setPageTitle(titles[statusKey] || "전체 의뢰함");
+  }, [statusKey]);
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
@@ -188,7 +200,7 @@ const QuestPage = () => {
   return (
     <BoardDiv className="mt-6 mx-8 w-full">
       <div className="flex justify-between items-end mb-3">
-        <h2 className=" font-bold text-[20px]">전체 의뢰함</h2>
+        <h2 className=" font-bold text-[20px]">{pageTitle}</h2>
         <PageSearch
           placeholder="Placeholder"
           onSearch={onSearch}
