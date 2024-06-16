@@ -12,6 +12,8 @@ import SvgTrash from "components/Icons/Trash";
 const RightSideMenu = () => {
   const navigate = useNavigate();
   const { state, dispatch } = useMailContext(); // use context
+  //TODO: kmee - 사용자 권한에 따라 메뉴 다르게 보이게 처리
+
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
     if (parentElement) {
@@ -37,7 +39,7 @@ const RightSideMenu = () => {
     {
       key: "All_request",
       label: (
-        <span className="ml-2 text-stone-950">
+        <span className='ml-2 text-stone-950'>
           전체 의뢰함
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.total}</span>
         </span>
@@ -118,7 +120,7 @@ const RightSideMenu = () => {
     {
       key: "important",
       label: (
-        <span className="text-stone-950">
+        <span className='text-stone-950'>
           중요 의뢰함
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.important}</span>
         </span>
@@ -128,7 +130,7 @@ const RightSideMenu = () => {
     },
     {
       key: "sub4",
-      label: <span className="text-stone-950">종료된 의뢰함</span>,
+      label: <span className='text-stone-950'>종료된 의뢰함</span>,
       icon: <SvgMail />,
     },
 
@@ -138,7 +140,7 @@ const RightSideMenu = () => {
     {
       key: "trash",
       label: (
-        <span className="text-stone-950">
+        <span className='text-stone-950'>
           휴지통
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.trash}</span>
         </span>
@@ -154,27 +156,27 @@ const RightSideMenu = () => {
   };
 
   return (
-    <Board className="w-[245px] px-4 border-e-[1px] shrink-0 ">
+    <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Button
-        type="primary"
+        type='primary'
         block
-        className="my-6 flex items-center justify-center"
+        className='my-6 flex items-center justify-center'
         onClick={() => navigate("/mail/quest")}
       >
-        <FaPlus className="mr-1" />
+        <FaPlus className='mr-1' />
         의뢰 요청하기
       </Button>
       <Menu
         onClick={onClick}
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["main"]}
-        mode="inline"
-        className="w-full border-e-0"
+        mode='inline'
+        className='w-full border-e-0'
         items={[
           {
             key: "main",
             label: (
-              <span style={{ fontSize: "12px", fontWeight: "600" }} className="my-column">
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
                 내 의뢰함
               </span>
             ),
