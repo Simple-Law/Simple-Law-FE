@@ -12,14 +12,14 @@ const Home = () => {
         <Button block onClick={() => navigate("/login/quest")}>
           로그인
         </Button>
-        <Button block className="mt-1" onClick={() => navigate("/board")}>
+        <Button block className='mt-1' onClick={() => navigate("/board")}>
           의뢰자메일
         </Button>
-        <Button block className="mt-1" onClick={() => navigate("/mail/quest")}>
+        <Button block className='mt-1' onClick={() => navigate("/mail/quest")}>
           글작성
         </Button>
-        <Button block className="mt-1" onClick={() => navigate("/admin/board")}>
-          어드민
+        <Button block className='mt-1' onClick={() => navigate("/admin/mngAdmin")}>
+          어드민: 관리자 계정관리
         </Button>
       </LoginForm>
     </>
