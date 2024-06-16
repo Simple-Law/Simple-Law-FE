@@ -76,28 +76,4 @@ const StatusTag = ({ status }) => {
   return <StyledTag className={`status-tag ${status}`}>{getStatusText(status)}</StyledTag>;
 };
 
-export const AdminTag = ({ role }) => {
-  const tagAttr = {};
-  switch (role) {
-    case "MASTER":
-      tagAttr.text = "마스터";
-      tagAttr.color = "processing";
-      break;
-    case "TOP":
-      tagAttr.text = "최고 관리자";
-      tagAttr.color = "green";
-      break;
-    default:
-      tagAttr.text = "일반 관리자";
-      tagAttr.color = "default";
-      break;
-  }
-
-  return (
-    <Tag bordered={false} color={tagAttr.color}>
-      {tagAttr.text}
-    </Tag>
-  );
-};
-
 export default StatusTag;

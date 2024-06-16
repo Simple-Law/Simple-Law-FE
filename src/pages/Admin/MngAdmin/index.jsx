@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
-import { AdminTag } from "components/Tags";
+import AdminTag from "components/Tags/AdminTag";
 
 const MngAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
@@ -11,14 +11,14 @@ const MngAdmin = () => {
   const columns = [
     {
       title: "이름",
-      key: "userId",
-      dataIndex: "userName",
+      key: "adminId",
+      dataIndex: "adminName",
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <img src={profileImg} alt='profile' style={{ marginRight: "10px" }} />
           <div>
-            <div>{record.userName}</div>
-            <div>{record.userId}</div>
+            <div>{record.adminName}</div>
+            <div>{record.adminId}</div>
           </div>
         </div>
       ),
@@ -31,8 +31,8 @@ const MngAdmin = () => {
     //TODO: kmee- 드롭박스로 권한 수정 컴포넌트
     {
       title: "권한",
-      key: "role",
-      render: (_, record) => <AdminTag role={record.role} />,
+      key: "adminType",
+      render: (_, record) => <AdminTag adminType={record.adminType} />,
     },
     {
       title: "가입일",
@@ -46,7 +46,7 @@ const MngAdmin = () => {
     },
     {
       title: "삭제",
-      key: "userId",
+      key: "adminId",
       render: () => (
         <Button danger size='small'>
           삭제
@@ -56,33 +56,33 @@ const MngAdmin = () => {
   ];
   const mockData = [
     {
-      userId: "admin1",
-      userName: "마스터",
-      role: "MASTER",
+      adminId: "admin1",
+      adminName: "마스터",
+      adminType: "MASTER",
       email: "admin1@simplelaw.com",
       joinDate: "2021-09-01",
       accessDate: "2024-06-16",
     },
     {
-      userId: "admin2",
-      userName: "김최고",
-      role: "TOP",
+      adminId: "admin2",
+      adminName: "김최고",
+      adminType: "TOP",
       email: "admin22@simplelaw.com",
       joinDate: "2023-09-01",
       accessDate: "2024-06-16",
     },
     {
-      userId: "admin3",
-      userName: "김일반",
-      role: "NORMAL",
+      adminId: "admin3",
+      adminName: "김일반",
+      adminType: "NORMAL",
       email: "admin33@simplelaw.com",
       joinDate: "2024-09-01",
       accessDate: "2024-06-16",
     },
     {
-      userId: "admin4",
-      userName: "김노말",
-      role: "NORMAL",
+      adminId: "admin4",
+      adminName: "김노말",
+      adminType: "NORMAL",
       email: "admin44@simplelaw.com",
       joinDate: "2023-09-01",
       accessDate: "2024-06-16",
