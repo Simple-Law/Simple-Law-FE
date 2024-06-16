@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
+import { AdminTag } from "components/Tags";
 
 const MngAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
@@ -31,7 +32,7 @@ const MngAdmin = () => {
     {
       title: "권한",
       key: "role",
-      dataIndex: "role",
+      render: (_, record) => <AdminTag role={record.role} />,
     },
     {
       title: "가입일",

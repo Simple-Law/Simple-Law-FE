@@ -58,7 +58,7 @@ const StyledTag = styled(Tag)`
 `;
 
 const StatusTag = ({ status }) => {
-  const getStatusText = (status) => {
+  const getStatusText = status => {
     switch (status) {
       case "pending":
         return "재검토 요청";
@@ -73,10 +73,30 @@ const StatusTag = ({ status }) => {
     }
   };
 
+  return <StyledTag className={`status-tag ${status}`}>{getStatusText(status)}</StyledTag>;
+};
+
+export const AdminTag = ({ role }) => {
+  const tagAttr = {};
+  switch (role) {
+    case "MASTER":
+      tagAttr.text = "마스터";
+      tagAttr.color = "processing";
+      break;
+    case "TOP":
+      tagAttr.text = "최고 관리자";
+      tagAttr.color = "green";
+      break;
+    default:
+      tagAttr.text = "일반 관리자";
+      tagAttr.color = "default";
+      break;
+  }
+
   return (
-    <StyledTag className={`status-tag ${status}`}>
-      {getStatusText(status)}
-    </StyledTag>
+    <Tag bordered={false} color={tagAttr.color}>
+      {tagAttr.text}
+    </Tag>
   );
 };
 
