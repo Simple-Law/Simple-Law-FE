@@ -48,7 +48,7 @@ const FinalStep = ({ type }) => {
           <Button block type='primary' className='mb-4' onClick={() => navigate(`/login/${type}`)}>
             로그인
           </Button>
-          <Button block onClick={() => navigate("/home")}>
+          <Button block onClick={() => navigate("/")}>
             홈으로
           </Button>
         </div>
