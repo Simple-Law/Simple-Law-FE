@@ -102,10 +102,10 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
   return (
     <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
-      <Form form={form} name="validateOnly" onFinish={onFinish} onValuesChange={handleFormChange}>
-        <div className="flex gap-2 flex-col">
+      <Form form={form} name='validateOnly' onFinish={onFinish} onValuesChange={handleFormChange}>
+        <div className='flex gap-2 flex-col'>
           <Form.Item
-            name="id"
+            name='id'
             rules={[
               {
                 required: true,
@@ -116,12 +116,13 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 message: "아이디는 영문 소문자와 숫자로 이루어진 4~16자로 입력해야 합니다!",
               },
             ]}
-            validateTrigger="onBlur"
+            validateTrigger='onBlur'
           >
-            <Input placeholder="아이디 입력" />
+            <Input placeholder='아이디 입력' />
           </Form.Item>
+
           <Form.Item
-            name="password"
+            name='password'
             rules={[
               { whitespace: true, required: true, message: "비밀번호를 입력해주세요" },
               ({ getFieldValue }) => ({
@@ -135,7 +136,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
                   const isValid =
                     (hasUpperCase ? 1 : 0) + (hasLowerCase ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecialChar ? 1 : 0) >=
-                    2;
+                    3;
 
                   console.log(`비밀번호 검증:
                     대문자 포함: ${hasUpperCase},
@@ -156,12 +157,13 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 },
               }),
             ]}
-            validateTrigger="onBlur"
+            validateTrigger='onBlur'
           >
-            <Input type="password" placeholder="비밀번호 입력" />
+            <Input type='password' placeholder='비밀번호 입력' />
           </Form.Item>
+
           <Form.Item
-            name="passwordConfirm"
+            name='passwordConfirm'
             dependencies={["password"]}
             rules={[
               {
@@ -177,13 +179,13 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 },
               }),
             ]}
-            validateTrigger="onBlur"
+            validateTrigger='onBlur'
           >
-            <Input type="password" placeholder="비밀번호 재확인" />
+            <Input type='password' placeholder='비밀번호 재확인' />
           </Form.Item>
 
           <Form.Item
-            name="email"
+            name='email'
             rules={[
               {
                 whitespace: true,
@@ -196,15 +198,15 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 message: "이메일은 영문자와 숫자로만 이루어져야 합니다.",
               },
             ]}
-            validateTrigger="onBlur"
+            validateTrigger='onBlur'
           >
-            <Input placeholder="이메일 입력" />
+            <Input placeholder='이메일 입력' />
           </Form.Item>
         </div>
-        <div className="w-full h-px bg-zinc-200 my-[20px]"></div>
-        <div className="flex gap-2 flex-col">
+        <div className='w-full h-px bg-zinc-200 my-[20px]'></div>
+        <div className='flex gap-2 flex-col'>
           <Form.Item
-            name="name"
+            name='name'
             rules={[
               {
                 whitespace: true,
@@ -213,11 +215,11 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               },
             ]}
           >
-            <Input placeholder="이름" />
+            <Input placeholder='이름' />
           </Form.Item>
 
           <Form.Item
-            name="birthDay"
+            name='birthDay'
             rules={[
               {
                 required: true,
@@ -240,12 +242,12 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 },
               }),
             ]}
-            validateTrigger="onBlur"
+            validateTrigger='onBlur'
           >
-            <Input placeholder="생년월일 8자리" maxLength="10" onChange={handleBirthdayChange} />
+            <Input placeholder='생년월일 8자리' maxLength='10' onChange={handleBirthdayChange} />
           </Form.Item>
           <Form.Item
-            name="phoneNumber"
+            name='phoneNumber'
             rules={[
               {
                 whitespace: true,
@@ -254,31 +256,31 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 message: "올바른 전화번호 양식이 아닙니다.",
               },
             ]}
-            validateTrigger="onBlur"
+            validateTrigger='onBlur'
           >
-            <Input placeholder="휴대전화번호('-' 제외하고 입력)" onChange={handlePhoneNumberChange} maxLength="13" />
+            <Input placeholder="휴대전화번호('-' 제외하고 입력)" onChange={handlePhoneNumberChange} maxLength='13' />
           </Form.Item>
-          <Form.Item name="gender">
-            <Radio.Group buttonStyle="solid" className="w-full grid grid-cols-3 text-center">
-              <Radio.Button value="MALE" className="!rounded-l-md">
+          <Form.Item name='gender'>
+            <Radio.Group buttonStyle='solid' className='w-full grid grid-cols-3 text-center'>
+              <Radio.Button value='MALE' className='!rounded-l-md'>
                 남자
               </Radio.Button>
-              <Radio.Button value="FEMALE">여자</Radio.Button>
-              <Radio.Button value="none" className="!rounded-r-md">
+              <Radio.Button value='FEMALE'>여자</Radio.Button>
+              <Radio.Button value='none' className='!rounded-r-md'>
                 선택안함
               </Radio.Button>
             </Radio.Group>
           </Form.Item>
 
           {showAuthenticationCodeField && (
-            <Form.Item name="verificationCode">
-              <Input placeholder="인증번호 입력" onChange={handleAuthCodeChange} maxLength="4" />
+            <Form.Item name='verificationCode'>
+              <Input placeholder='인증번호 입력' onChange={handleAuthCodeChange} maxLength='4' />
             </Form.Item>
           )}
         </div>
-        <Form.Item className="mt-8">
+        <Form.Item className='mt-8'>
           <Button
-            type="primary"
+            type='primary'
             onClick={() => {
               if (isAuthCodeFilled) {
                 handleVerifyAuthCode();
