@@ -4,7 +4,7 @@ const baseURL = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
 });
 const joinURL = axios.create({
-  baseURL: "https://api.cimplelaw.co.kr",
+  baseURL: "https://api.simplelaw.co.kr",
 });
 // Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
 joinURL.interceptors.request.use(config => {
@@ -51,30 +51,20 @@ export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
   }
 };
 
-// 로그인 API 함수
+// 사용자 인증 API 함수
 export const loginUser = async (credentials, userType) => {
   try {
-    const response = await baseURL.get("/users");
-    const users = response.data;
-
-    const { id, password } = credentials;
-    const user = users.find(u => u.id === id && u.password === password && u.type === userType);
-
-    if (!user) {
-      throw new Error("로그인에 실패했습니다.");
-    }
-    if (user.status !== "approved") {
-      throw new Error("가입 승인 중입니다.");
-    }
-    // 로그인 성공 시, 토큰 대신 사용자 정보를 반환
-    return { token: "mock-token", user };
+    const endpoint = userType === "lawyer" ? "lawyers" : "members";
+    const response = await joinURL.post(`/api/v1/${endpoint}/sign-in/email`, credentials);
+    console.log("loginUser response:", response.data); // 응답 데이터 확인
+    return response.data; // 실제 서버에서 반환하는 데이터를 그대로 반환
   } catch (error) {
-    console.error("Error logging in:", error);
+    console.error("Error logging in:", error.response?.data || error);
     throw error;
   }
 };
-// 파일 업로드 API 함수
 
+// 파일 업로드 API 함수
 export const uploadFile = async formData => {
   try {
     const response = await joinURL.post("/api/v1/files", formData, {
