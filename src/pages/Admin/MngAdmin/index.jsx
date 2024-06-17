@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
-import AdminTag from "components/Tags/AdminTag";
+import {AdminTag, SelectAdminTag} from "components/Tags/AdminTag";
 
 const MngAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
@@ -32,7 +32,8 @@ const MngAdmin = () => {
     {
       title: "권한",
       key: "adminType",
-      render: (_, record) => <AdminTag adminType={record.adminType} />,
+      // render: (_, record) => <AdminTag adminType={record.adminType} updateAdmin={updateAdmin} />,
+      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin} />,
     },
     {
       title: "가입일",
@@ -88,6 +89,10 @@ const MngAdmin = () => {
       accessDate: "2024-06-16",
     },
   ];
+
+  const updateAdmin = () =>{
+    console.log('updateAdmin');
+  }
 
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>

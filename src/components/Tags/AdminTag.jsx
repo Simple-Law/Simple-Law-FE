@@ -1,36 +1,50 @@
-import { Tag } from "antd";
+import { Select, Tag } from "antd";
 
-const adminList = [
+const adminTagList = [
   {
-    typeCode: "MASTER",
-    typeCodeNm: "마스터",
-    styleColor: "processing",
+    value: "MASTER",
+    label: "마스터",
+    color: "processing",
   },
   {
-    typeCode: "TOP",
-    typeCodeNm: "최고 관리자",
-    styleColor: "green",
+    value: "TOP",
+    label: "운영관리자",
+    color: "green",
   },
   {
-    typeCode: "NORMAL",
-    typeCodeNm: "일반 관리자",
-    styleColor: "default",
+    value: "NORMAL",
+    label: "일반관리자",
+    color: "default",
   },
 ];
 
 const AdminTag = ({ adminType }) => {
-  console.log("typeCode");
-  console.log(adminType);
-  const tagAttr = adminList.find(item => item.typeCode === adminType);
-  console.log(tagAttr);
-
+  const tagAttr = adminTagList.find(item => item.value === adminType);
   return (
-    <Tag bordered={false} color={tagAttr.styleColor}>
-      {tagAttr.typeCodeNm}
+    <Tag bordered={false} color={tagAttr.color}>
+      {tagAttr.label}
     </Tag>
   );
 };
 
-// const DropdownAdminTag = ({ typeCode }) => {};
+export const SelectAdminTag = ({ adminType, updateAdmin }) => {
+  return(
+    <Select
+    mode="tag"
+    style={{ width: '100%' }}
+    // defaultValue={<AdminTag adminType={adminType} />}
+    defaultValue={adminType}
+    tagRender={(props) => {
+      const { value, closable, onClose } = props;
+      return <AdminTag adminType={value} closable={closable} onClose={onClose} />;
+    }}
+    onChange={updateAdmin}
+    options={adminTagList}
+    optionRender={(option) => (
+        <AdminTag adminType={option.value} />
+    )}
+  />
+  )
+};
 
 export default AdminTag;
