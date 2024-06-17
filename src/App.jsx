@@ -18,6 +18,7 @@ import { useMailContext } from "contexts/MailContexts";
 import { AuthProvider } from "contexts/AuthContext";
 import PrivateRoute from "router/PrivateRoute";
 import ImgUpload from "pages/SignUp/imgUpload";
+import MngAdmin from "pages/Admin/MngAdmin";
 
 const App = () => {
   return (
@@ -25,21 +26,22 @@ const App = () => {
       <MailProvider>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<AppLayout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/img" element={<ImgUpload />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/login/:type" element={<Login />} />
-              <Route path="/findId" element={<FindUserId />} />
-              <Route path="/admin/*" element={<Admin />} />
-              <Route path="/signup/:type" element={<SignUp />} />
-              <Route path="/mail/quest" element={<QuestPost />} />
-              <Route path="/requestion/:id" element={<ReQuestion />} />
+            <Route path='/' element={<AppLayout />}>
+              <Route path='/' element={<Home />} />
+              <Route path='/img' element={<ImgUpload />} />
+              <Route path='/login' element={<Login />} />
+              <Route path='/login/:type' element={<Login />} />
+              <Route path='/findId' element={<FindUserId />} />
+              <Route path='/admin/*' element={<Admin />} />
+              <Route path='/signup/:type' element={<SignUp />} />
+              <Route path='/mail/quest' element={<QuestPost />} />
+              <Route path='/requestion/:id' element={<ReQuestion />} />
               <Route element={<LayoutWithHeader />}>
                 {/* <Route element={<PrivateRoute />}> */}
                 <Route element={<LayoutWithSidebar />}>
-                  <Route path="/detail/:id" element={<DetailPage />} />
-                  <Route path="/board" element={<QuestPage />} />
+                  <Route path='/detail/:id' element={<DetailPage />} />
+                  <Route path='/board' element={<QuestPage />} />
+                  <Route path='/admin/mngAdmin' element={<MngAdmin />} />
                 </Route>
                 {/* </Route> */}
               </Route>
@@ -70,7 +72,7 @@ const LayoutWithSidebar = () => {
   };
 
   return (
-    <div className="flex w-full pt-16">
+    <div className='flex w-full pt-16'>
       <RightSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
       <Outlet />
     </div>

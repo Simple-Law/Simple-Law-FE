@@ -58,7 +58,7 @@ const StyledTag = styled(Tag)`
 `;
 
 const StatusTag = ({ status }) => {
-  const getStatusText = (status) => {
+  const getStatusText = status => {
     switch (status) {
       case "pending":
         return "재검토 요청";
@@ -73,11 +73,7 @@ const StatusTag = ({ status }) => {
     }
   };
 
-  return (
-    <StyledTag className={`status-tag ${status}`}>
-      {getStatusText(status)}
-    </StyledTag>
-  );
+  return <StyledTag className={`status-tag ${status}`}>{getStatusText(status)}</StyledTag>;
 };
 
 export default StatusTag;
