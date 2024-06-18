@@ -31,7 +31,7 @@ const MngAdmin = () => {
     {
       title: "권한",
       key: "adminType",
-      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin} />,
+      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin()} />,
     },
     {
       title: "가입일",
@@ -88,6 +88,11 @@ const MngAdmin = () => {
     },
   ];
 
+  const insertAdmin = () => {
+    console.log("insertAdmin");
+  }
+
+  //TODO: kmee- api명세서는 pk adminKey(식별키)로 받음. get요청 명세서 완료 후 참고해서 재작성
   const updateAdmin = () => {
     console.log("updateAdmin");
   };
@@ -96,11 +101,10 @@ const MngAdmin = () => {
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
         <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-        <Button type='primary' size='small'>
+        <Button type='primary' size='small' onClick={insertAdmin}>
           계정 추가
         </Button>
       </div>
-
       <Table dataSource={mockData} columns={columns} />
     </BoardDiv>
   );
@@ -108,6 +112,7 @@ const MngAdmin = () => {
 
 export default MngAdmin;
 
+//TODO: kmee- 테이블 컬럼에 맞춰 수정
 const BoardDiv = styled.div`
   .ant-spin-container {
     height: 80vh;
