@@ -1,10 +1,11 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import LoginForm from "components/LoginForm";
 import { Input, Button, Radio, Form } from "antd";
 import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
 import { useMessageApi } from "components/AppLayout";
-
+import PropTypes from "prop-types";
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
@@ -125,6 +126,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             name='password'
             rules={[
               { whitespace: true, required: true, message: "비밀번호를 입력해주세요" },
+              // eslint-disable-next-line no-unused-vars
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value) {
@@ -297,6 +299,12 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       </Form>
     </LoginForm>
   );
+};
+JoinForm.propTypes = {
+  handleData: PropTypes.func.isRequired,
+  nextStep: PropTypes.func.isRequired,
+  type: PropTypes.string.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
 };
 
 export default JoinForm;
