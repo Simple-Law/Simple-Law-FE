@@ -1,3 +1,5 @@
+import React from "react";
+import PropTypes from "prop-types";
 import { Select, Tag } from "antd";
 import styled from "styled-components";
 
@@ -35,11 +37,17 @@ const adminTypeList = [
 const UserTag = ({ userType }) => {
   const tagAttr = userTypeList.find(item => item.value === userType);
   return <StyledTag className={`user-tag ${tagAttr.color}`}>{tagAttr.label}</StyledTag>;
-}
+};
+UserTag.propTypes = {
+  userType: PropTypes.string.isRequired,
+};
 
 export const AdminTag = ({ adminType }) => {
   const tagAttr = adminTypeList.find(item => item.value === adminType);
   return <StyledTag className={`user-tag ${tagAttr.color}`}>{tagAttr.label}</StyledTag>;
+};
+AdminTag.propTypes = {
+  adminType: PropTypes.string.isRequired,
 };
 
 export const SelectAdminTag = ({ adminType, updateAdmin }) => {
@@ -54,6 +62,10 @@ export const SelectAdminTag = ({ adminType, updateAdmin }) => {
       })}
     </Select>
   );
+};
+SelectAdminTag.propTypes = {
+  adminType: PropTypes.string.isRequired,
+  updateAdmin: PropTypes.func.isRequired,
 };
 
 export default UserTag;
@@ -85,8 +97,8 @@ const StyledTag = styled(Tag)`
     color: #94a3b8;
     background: rgba(148, 163, 184, 0.1);
   }
-    &.user-tag.tag-orange {
+  &.user-tag.tag-orange {
     color: #ff9200;
     background: rgba(255, 146, 0, 0.12);
-    }
+  }
 `;
