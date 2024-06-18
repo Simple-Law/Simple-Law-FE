@@ -1,4 +1,4 @@
-// import React from "react";
+import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Admin from "pages/Admin";
 import SignUp from "pages/SignUp";
