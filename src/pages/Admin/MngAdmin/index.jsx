@@ -2,12 +2,12 @@ import { useState } from "react";
 import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
-import AdminTag from "components/Tags/AdminTag";
+import { SelectAdminTag } from "components/Tags/UserTypeTag";
 
 const MngAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
 
-  const [pageTitle, setPageTitle] = useState("관리자 계정 관리");
+  const [pageTitle] = useState("관리자 계정 관리");
   const columns = [
     {
       title: "이름",
@@ -28,11 +28,10 @@ const MngAdmin = () => {
       key: "email",
       dataIndex: "email",
     },
-    //TODO: kmee- 드롭박스로 권한 수정 컴포넌트
     {
       title: "권한",
       key: "adminType",
-      render: (_, record) => <AdminTag adminType={record.adminType} />,
+      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin} />,
     },
     {
       title: "가입일",
@@ -58,36 +57,40 @@ const MngAdmin = () => {
     {
       adminId: "admin1",
       adminName: "마스터",
-      adminType: "MASTER",
+      adminType: "MASTER_ADMIN",
       email: "admin1@simplelaw.com",
-      joinDate: "2021-09-01",
-      accessDate: "2024-06-16",
+      joinDate: "2021.09.01",
+      accessDate: "2024.06.16",
     },
     {
       adminId: "admin2",
       adminName: "김최고",
-      adminType: "TOP",
+      adminType: "SUPER_ADMIN",
       email: "admin22@simplelaw.com",
-      joinDate: "2023-09-01",
-      accessDate: "2024-06-16",
+      joinDate: "2023.09.01",
+      accessDate: "2024.06.16",
     },
     {
       adminId: "admin3",
       adminName: "김일반",
-      adminType: "NORMAL",
+      adminType: "NORMAL_ADMIN",
       email: "admin33@simplelaw.com",
-      joinDate: "2024-09-01",
-      accessDate: "2024-06-16",
+      joinDate: "2024.09.01",
+      accessDate: "2024.06.16",
     },
     {
       adminId: "admin4",
       adminName: "김노말",
-      adminType: "NORMAL",
+      adminType: "NORMAL_ADMIN",
       email: "admin44@simplelaw.com",
-      joinDate: "2023-09-01",
-      accessDate: "2024-06-16",
+      joinDate: "2023.09.01",
+      accessDate: "2024.06.16",
     },
   ];
+
+  const updateAdmin = () => {
+    console.log("updateAdmin");
+  };
 
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
