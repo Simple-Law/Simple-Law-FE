@@ -52,7 +52,7 @@ AdminTag.propTypes = {
 
 export const SelectAdminTag = ({ adminType, updateAdmin }) => {
   return (
-    <Select defaultValue={adminType} onChange={updateAdmin}>
+    <Select defaultValue={adminType} onChange={updateAdmin} variant='borderless'>
       {adminTypeList.map((item, index) => {
         return (
           <Select.Option key={index} value={item.value}>
@@ -73,7 +73,7 @@ export default UserTag;
 const StyledTag = styled(Tag)`
   &.user-tag {
     display: flex;
-    min-width: 100px;
+    min-width: 80px;
     padding: 4px 6px;
     font-size: 13px;
     font-weight: 400;
@@ -82,6 +82,7 @@ const StyledTag = styled(Tag)`
     gap: 10px;
     border: none;
     border-radius: 4px;
+    margin-inline-end: 0px; !important;
   }
   &.user-tag.tag-blue {
     color: #287fff;
