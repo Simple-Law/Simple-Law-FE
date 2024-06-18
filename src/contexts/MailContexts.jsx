@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+import PropTypes from "prop-types";
 import { fetchMails } from "apis/mailsApi";
 
 const MailContext = createContext();
@@ -26,7 +27,7 @@ const reducer = (state, action) => {
       return { ...state, mails: action.payload };
     case "SET_DATA":
       return { ...state, data: action.payload };
-    case "UPDATE_COUNTS":
+    case "UPDATE_COUNTS": {
       const mails = action.payload;
       const nonTrashData = mails.filter(mail => mail.status !== "휴지통");
       const counts = {
@@ -39,6 +40,7 @@ const reducer = (state, action) => {
         trash: mails.filter(mail => mail.status === "휴지통").length,
       };
       return { ...state, counts };
+    }
     case "SET_TABLE_DATA": // 추가: tableData 액션 처리
       return { ...state, tableData: action.payload };
     default:
@@ -64,4 +66,7 @@ export const MailProvider = ({ children }) => {
   }, []);
 
   return <MailContext.Provider value={{ state, dispatch }}>{children}</MailContext.Provider>;
+};
+MailProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
