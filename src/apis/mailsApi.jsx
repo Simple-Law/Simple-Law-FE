@@ -1,14 +1,14 @@
 import axios from "axios";
 import moment from "moment";
 
-const baseURL = axios.create({
-  baseURL: process.env.REACT_APP_SERVER_URL,
+const glitchURL = axios.create({
+  baseURL: process.env.REACT_APP_GLITCH_URL,
 });
 
 export const fetchMails = async () => {
   try {
-    const response = await baseURL.get("/mails");
-
+    console.log("glitchURL", glitchURL);
+    const response = await glitchURL.get("/mails");
     const formattedData = response.data
       .map(item => ({
         ...item,
@@ -29,7 +29,7 @@ export const fetchMails = async () => {
 
 export const updateMail = async (id, updateData) => {
   try {
-    await baseURL.patch(`/mails/${id}`, updateData);
+    await glitchURL.patch(`/mails/${id}`, updateData);
   } catch (error) {
     console.error("Error updating mail:", error);
   }
@@ -37,7 +37,7 @@ export const updateMail = async (id, updateData) => {
 
 export const createMail = async mailData => {
   try {
-    const response = await baseURL.post("/mails", mailData);
+    const response = await glitchURL.post("/mails", mailData);
     return response.data;
   } catch (error) {
     console.error("Error creating mail:", error);
@@ -47,7 +47,7 @@ export const createMail = async mailData => {
 
 export const getMailById = async id => {
   try {
-    const response = await baseURL.get(`/mails/${id}`);
+    const response = await glitchURL.get(`/mails/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching mail by id:", error);
