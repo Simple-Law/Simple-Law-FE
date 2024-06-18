@@ -7,7 +7,6 @@ const glitchURL = axios.create({
 
 export const fetchMails = async () => {
   try {
-    console.log("glitchURL", glitchURL);
     const response = await glitchURL.get("/mails");
     const formattedData = response.data
       .map(item => ({
