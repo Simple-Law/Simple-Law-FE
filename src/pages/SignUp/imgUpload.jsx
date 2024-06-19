@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Upload, Button, Form } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 
 const { Dragger } = Upload;
 // 이미지 업로드 테스터
@@ -71,25 +71,25 @@ const ImgUpload = () => {
   };
 
   return (
-    <Form form={form} name="validateOnly" autoComplete="off" className="flex gap-[20px] flex-col">
-      <div className="flex gap-2 flex-col">
-        <p className="font-medium text-base flex items-center">
+    <Form form={form} name='validateOnly' autoComplete='off' className='flex gap-[20px] flex-col'>
+      <div className='flex gap-2 flex-col'>
+        <p className='font-medium text-base flex items-center'>
           파일 업로드
           <label
-            htmlFor="file-upload"
-            className="bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]"
+            htmlFor='file-upload'
+            className='bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]'
           >
             내 PC
           </label>
         </p>
         <Form.Item
-          name="identification"
-          valuePropName="fileList"
+          name='identification'
+          valuePropName='fileList'
           getValueFromEvent={e => (Array.isArray(e) ? e : e && e.fileList)}
           rules={[{ required: true, message: "파일을 업로드해 주세요." }]}
         >
           <Dragger
-            name="files"
+            name='files'
             multiple={true} // 다중 파일 업로드를 허용하도록 수정
             fileList={fileList}
             customRequest={({ file, onSuccess }) => {
@@ -99,22 +99,22 @@ const ImgUpload = () => {
             }}
             onChange={handleChange}
             disabled={loading}
-            accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.hwp" // 허용할 파일 유형 추가
+            accept='.png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.hwp' // 허용할 파일 유형 추가
           >
-            <p className="mb-[8px]">
-              <UploadFile className="mx-auto my-auto mt-[10px]" />
+            <p className='mb-[8px]'>
+              <UploadFile className='mx-auto my-auto mt-[10px]' />
             </p>
-            <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
+            <p className='ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]'>
               최대 10mb 이하 png, jpg, jpeg, gif, pdf, doc, docx, hwp 파일을 업로드할 수 있습니다.
             </p>
           </Dragger>
         </Form.Item>
       </div>
       <Button
-        type="primary"
+        type='primary'
         onClick={handleSubmit}
         block
-        className="mt-8"
+        className='mt-8'
         disabled={pendingFiles.length === 0 || loading}
       >
         제출하기

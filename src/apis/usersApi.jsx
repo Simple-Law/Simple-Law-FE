@@ -1,34 +1,32 @@
 /* eslint-disable no-undef */
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 
-// api완료 서버 url
-const joinURL = axios.create({
-  baseURL: process.env.REACT_APP_SERVER_URL,
-});
 // Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
-joinURL.interceptors.request.use(config => {
+axiosInstance.interceptors.request.use(config => {
   const token = localStorage.getItem("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
+
 // 회원가입 API 함수
 export const registerUser = async userData => {
   try {
     const endpoint = userData.type === "lawyer" ? "lawyers" : "members";
-    const response = await joinURL.post(`/api/v1/${endpoint}/sign-up/email`, userData);
+    const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-up/email`, userData);
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error.response?.data || error);
     throw error;
   }
 };
+
 // 사용자 인증 API 함수 - 로그인
 export const loginUser = async (credentials, userType) => {
   try {
     const endpoint = userType === "lawyer" ? "lawyers" : "members";
-    const response = await joinURL.post(`/api/v1/${endpoint}/sign-in/email`, credentials);
+    const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-in/email`, credentials);
     console.log("loginUser response:", response.data); // 응답 데이터 확인
     return response.data; // 실제 서버에서 반환하는 데이터를 그대로 반환
   } catch (error) {
@@ -41,7 +39,7 @@ export const loginUser = async (credentials, userType) => {
 export const sendAuthCode = async (phoneNumber, type) => {
   const endpoint = type === "lawyer" ? "lawyers" : "members";
   try {
-    await joinURL.post(`/api/v1/${endpoint}/sign-up/send-sms`, { phoneNumber });
+    await axiosInstance.post(`/api/v1/${endpoint}/sign-up/send-sms`, { phoneNumber });
   } catch (error) {
     console.error("Error sending auth code:", error.response?.data || error);
     throw error;
@@ -52,7 +50,7 @@ export const sendAuthCode = async (phoneNumber, type) => {
 export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
   const endpoint = type === "lawyer" ? "lawyers" : "members";
   try {
-    await joinURL.post(`/api/v1/${endpoint}/sign-up/verify-sms`, {
+    await axiosInstance.post(`/api/v1/${endpoint}/sign-up/verify-sms`, {
       phoneNumber,
       verificationCode,
     });
@@ -65,7 +63,7 @@ export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
 // 파일 업로드 API 함수
 export const uploadFile = async formData => {
   try {
-    const response = await joinURL.post("/api/v1/files", formData, {
+    const response = await axiosInstance.post("/api/v1/files", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

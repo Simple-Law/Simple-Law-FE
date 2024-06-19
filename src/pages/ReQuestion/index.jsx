@@ -10,7 +10,7 @@ import { getMailById, createMail, fetchMails } from "apis/mailsApi";
 import { useMailContext } from "contexts/MailContexts";
 import CommonForm from "components/CommonForm";
 import moment from "moment";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 
 const ReQuestion = () => {
   const { id } = useParams();
@@ -104,22 +104,22 @@ const ReQuestion = () => {
   }
 
   return (
-    <div className="overflow-hidden">
-      <div className="border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]">
-        <div className="flex justify-between items-center w-[1300px] mx-auto h-[100px]">
+    <div className='overflow-hidden'>
+      <div className='border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]'>
+        <div className='flex justify-between items-center w-[1300px] mx-auto h-[100px]'>
           <div>
-            <Link to="/">
-              <img src={Logo} alt="" className="mx-auto w-[140px]" />
+            <Link to='/'>
+              <img src={Logo} alt='' className='mx-auto w-[140px]' />
             </Link>
           </div>
         </div>
       </div>
-      <FormDiv className="w-[1300px] mx-auto mt-[100px]">
-        <Form onFinish={handleSubmit} className="flex">
-          <div className="left-side">
-            <div className="w-[400px] pt-[40px]">
-              <h2 className="text-2xl font-bold mb-6">의뢰 요청서</h2>
-              <div className="flex flex-col gap-8">
+      <FormDiv className='w-[1300px] mx-auto mt-[100px]'>
+        <Form onFinish={handleSubmit} className='flex'>
+          <div className='left-side'>
+            <div className='w-[400px] pt-[40px]'>
+              <h2 className='text-2xl font-bold mb-6'>의뢰 요청서</h2>
+              <div className='flex flex-col gap-8'>
                 <div>
                   <p>{mail.title}</p>
                 </div>
@@ -131,9 +131,9 @@ const ReQuestion = () => {
                   <p>답변</p>
                   {mail.replies &&
                     mail.replies.map((reply, index) => (
-                      <div key={index} className="p-2 bg-gray-100 rounded-md mb-2">
-                        <div className="text-gray-700">{reply.content}</div>
-                        <div className="text-gray-500 text-sm">
+                      <div key={index} className='p-2 bg-gray-100 rounded-md mb-2'>
+                        <div className='text-gray-700'>{reply.content}</div>
+                        <div className='text-gray-500 text-sm'>
                           {moment(reply.createdAt).format("YYYY년 MM월 DD일 A h:mm")}
                         </div>
                       </div>
@@ -143,11 +143,11 @@ const ReQuestion = () => {
                   안내 사항을 모두 확인했으며, 동의합니다.
                 </Checkbox>
               </div>
-              <div className="mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex">
+              <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
                 <div className="text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
                   총 결제 금액
                 </div>
-                <div className="justify-start items-center gap-0.5 flex">
+                <div className='justify-start items-center gap-0.5 flex'>
                   <div className="text-right text-blue-500 text-[22px] font-bold font-['Pretendard']">120,000</div>
                   <div className="text-right text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
                     원
@@ -158,7 +158,7 @@ const ReQuestion = () => {
           </div>
           <CommonForm formik={formik} editorRef={editorRef} isCheckboxChecked={isCheckboxChecked} />
         </Form>
-        <Modal title="제출 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <Modal title='제출 확인' open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
           <p>진짜로 제출하시겠습니까?</p>
         </Modal>
       </FormDiv>

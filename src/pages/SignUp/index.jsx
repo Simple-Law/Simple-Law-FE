@@ -7,7 +7,7 @@ import Agreement from "./Steps/Agreement";
 import FinalStep from "./Steps/FinalStep"; // FinalStep 컴포넌트 추가
 import { useParams } from "react-router-dom";
 import { registerUser } from "apis/usersApi";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 
 const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(0);

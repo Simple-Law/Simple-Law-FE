@@ -2,25 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import SvgLogo from "components/Icons/Logo";
 import { Form, Select, Checkbox, Modal } from "antd";
 import { useFormik } from "formik";
-import { useMessageApi } from "components/AppLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
-import { createMail, fetchMails } from "apis/mailsApi";
-import { useMailContext } from "contexts/MailContexts";
+import { useDispatch, useSelector } from "react-redux";
+import { createMail } from "../../redux/actions/mailActions";
 import CommonForm from "components/CommonForm";
-import { useAuth } from "contexts/AuthContext";
 import axios from "axios";
-
+import { useMessageApi } from "components/MessageProvider";
 const QuestPost = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
-  const { dispatch } = useMailContext();
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const messageApi = useMessageApi();
+  const user = useSelector(state => state.auth.user);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pendingImages, setPendingImages] = useState([]); // 첨부된 이미지 파일 임시 저장
   const [deletedImages, setDeletedImages] = useState([]); // 삭제된 이미지 파일 URL 임시 저장
-  const messageApi = useMessageApi();
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -101,19 +99,13 @@ const QuestPost = () => {
       };
 
       try {
-        const response = await createMail(dataToSend);
+        await dispatch(createMail(dataToSend));
         messageApi.success("게시글이 등록되었습니다!");
-
-        const { data: mailData } = await fetchMails();
-        dispatch({ type: "SET_DATA", payload: mailData });
-        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.status !== "휴지통") });
-        dispatch({ type: "UPDATE_COUNTS", payload: mailData });
-
         formik.resetForm();
         navigate("/board");
       } catch (error) {
-        console.error("Error sending mail:", error);
         messageApi.error("게시글 등록이 실패했습니다!");
+        console.error("Error sending mail:", error);
       }
     },
   });
@@ -141,26 +133,26 @@ const QuestPost = () => {
 
   return (
     <div>
-      <div className="border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]">
-        <div className="flex justify-between items-center w-[1300px] mx-auto h-[100px]">
+      <div className='border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]'>
+        <div className='flex justify-between items-center w-[1300px] mx-auto h-[100px]'>
           <div>
-            <Link to="/">
-              <SvgLogo width="140px" height="auto" className="mx-auto" />
+            <Link to='/'>
+              <SvgLogo width='140px' height='auto' className='mx-auto' />
             </Link>
           </div>
         </div>
       </div>
-      <FormDiv className="w-[1300px] mx-auto mt-[100px]">
-        <Form onFinish={handleSubmit} className="flex">
-          <div className="left-side">
-            <div className="w-[400px] pt-[40px]">
-              <h2 className="text-2xl font-bold mb-6">의뢰 요청서</h2>
-              <div className="flex flex-col gap-8">
+      <FormDiv className='w-[1300px] mx-auto mt-[100px]'>
+        <Form onFinish={handleSubmit} className='flex'>
+          <div className='left-side'>
+            <div className='w-[400px] pt-[40px]'>
+              <h2 className='text-2xl font-bold mb-6'>의뢰 요청서</h2>
+              <div className='flex flex-col gap-8'>
                 <Form.Item>
                   <p>분야 선택</p>
                   <Select
-                    name="anytime"
-                    placeholder="분야 선택"
+                    name='anytime'
+                    placeholder='분야 선택'
                     onChange={value => formik.setFieldValue("anytime", value)}
                     options={[
                       { value: "계약서 검토/작성", label: "계약서 검토/작성" },
@@ -176,41 +168,41 @@ const QuestPost = () => {
                 <Form.Item>
                   <p>세부 분야 선택</p>
                   <Select
-                    name="category"
-                    placeholder="세부 분야 선택"
+                    name='category'
+                    placeholder='세부 분야 선택'
                     onChange={value => formik.setFieldValue("category", value)}
                   >
-                    <Select.Option className="text-gray-500" value="주주간 계약서">
+                    <Select.Option className='text-gray-500' value='주주간 계약서'>
                       주주간 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="동업 계약서">
+                    <Select.Option className='text-gray-500' value='동업 계약서'>
                       동업 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="용역(개발, 디자인 등) 계약서">
+                    <Select.Option className='text-gray-500' value='용역(개발, 디자인 등) 계약서'>
                       용역(개발, 디자인 등) 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="근로 계약서">
+                    <Select.Option className='text-gray-500' value='근로 계약서'>
                       근로 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="거래 계약서">
+                    <Select.Option className='text-gray-500' value='거래 계약서'>
                       거래 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="투자 계약서">
+                    <Select.Option className='text-gray-500' value='투자 계약서'>
                       투자 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="스톡옵션 계약서">
+                    <Select.Option className='text-gray-500' value='스톡옵션 계약서'>
                       스톡옵션 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="비밀유지(보안) 계약서">
+                    <Select.Option className='text-gray-500' value='비밀유지(보안) 계약서'>
                       비밀유지(보안) 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="이익 분배 계약서">
+                    <Select.Option className='text-gray-500' value='이익 분배 계약서'>
                       이익 분배 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="저작권 이용허락(양도 등) 계약서">
+                    <Select.Option className='text-gray-500' value='저작권 이용허락(양도 등) 계약서'>
                       저작권 이용허락(양도 등) 계약서
                     </Select.Option>
-                    <Select.Option className="text-gray-500" value="기타 계약서">
+                    <Select.Option className='text-gray-500' value='기타 계약서'>
                       기타 계약서
                     </Select.Option>
                   </Select>
@@ -218,17 +210,17 @@ const QuestPost = () => {
                 <Form.Item>
                   <p>의뢰 작업 기한</p>
                   <Select
-                    name="time"
-                    placeholder="의뢰 작업 기한"
+                    name='time'
+                    placeholder='의뢰 작업 기한'
                     onChange={value => formik.setFieldValue("time", value)}
                   >
-                    <Select.Option value="12">12시간</Select.Option>
-                    <Select.Option value="24">24시간</Select.Option>
+                    <Select.Option value='12'>12시간</Select.Option>
+                    <Select.Option value='24'>24시간</Select.Option>
                   </Select>
                 </Form.Item>
                 <div>
                   <p>의뢰 등록 전 안내사항</p>
-                  <StyledList className=" rounded-md bg-slate-100 px-5 py-5 mb-[10px]">
+                  <StyledList className=' rounded-md bg-slate-100 px-5 py-5 mb-[10px]'>
                     <li>
                       요청이 완료된 의뢰는 수정이 불가합니다. 수정을 원하실 경우 기존 의뢰를 종료하신 후 새로운 의뢰서를
                       작성해주세요.
@@ -255,11 +247,11 @@ const QuestPost = () => {
                   </Checkbox>
                 </div>
               </div>
-              <div className="mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex">
+              <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
                 <div className="text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
                   총 결제 금액
                 </div>
-                <div className="justify-start items-center gap-0.5 flex">
+                <div className='justify-start items-center gap-0.5 flex'>
                   <div className="text-right text-blue-500 text-[22px] font-bold font-['Pretendard']">120,000</div>
                   <div className="text-right text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
                     원
@@ -277,7 +269,7 @@ const QuestPost = () => {
             setDeletedImages={setDeletedImages}
           />
         </Form>
-        <Modal title="제출 확인" open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <Modal title='제출 확인' open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
           <p>진짜로 제출하시겠습니까?</p>
         </Modal>
       </FormDiv>
