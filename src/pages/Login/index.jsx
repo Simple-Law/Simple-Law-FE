@@ -16,10 +16,11 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth(); // login 함수 사용
   const messageApi = useMessageApi();
+
   const isLawyerLogin = type === "lawyer";
-  const title = isLawyerLogin ? "변호사 로그인" : "의뢰인 로그인";
-  const toggleType = isLawyerLogin ? "quest" : "lawyer";
-  const toggleText = isLawyerLogin ? "의뢰인이신가요?" : "변호사이신가요?";
+  const { title, toggleType, toggleText } = isLawyerLogin
+    ? { title: "변호사 로그인", toggleType: "quest", toggleText: "의뢰인이신가요?" }
+    : { title: "의뢰인 로그인", toggleType: "lawyer", toggleText: "변호사이신가요?" };
 
   const handleLogin = async values => {
     try {
