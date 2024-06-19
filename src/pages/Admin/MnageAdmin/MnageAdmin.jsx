@@ -4,7 +4,7 @@ import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
 import { SelectAdminTag } from "components/Tags/UserTag";
 
-const MngAdmin = () => {
+const Admin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
 
   const [pageTitle] = useState("관리자 계정 관리");
@@ -121,7 +121,7 @@ const MngAdmin = () => {
   );
 };
 
-export default MngAdmin;
+export default Admin;
 
 //TODO: kmee- 테이블 컬럼에 맞춰 수정
 const BoardDiv = styled.div`

@@ -16,7 +16,7 @@ import RightSideMenu from "components/RightSideMenu";
 import ReQuestion from "pages/ReQuestion";
 // import PrivateRoute from "router/PrivateRoute";
 import ImgUpload from "pages/SignUp/imgUpload";
-import MngAdmin from "pages/Admin/MngAdmin";
+import MnageAdmin from "pages/Admin/MnageAdmin/MnageAdmin";
 
 const App = () => {
   return (
@@ -38,7 +38,7 @@ const App = () => {
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<DetailPage />} />
                 <Route path='board' element={<QuestPage />} />
-                <Route path='admin/mngAdmin' element={<MngAdmin />} />
+                <Route path='admin/mnageAdmin' element={<MnageAdmin />} />
               </Route>
               {/* </Route> */}
             </Route>
