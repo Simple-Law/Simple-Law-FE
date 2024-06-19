@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { createMail } from "actions/mailActions";
+import { createMail } from "redux/actions/mailActions";
 import CommonForm from "components/CommonForm";
 import axios from "axios";
 import { useMessageApi } from "components/MessageProvider";

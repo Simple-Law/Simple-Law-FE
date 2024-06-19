@@ -1,12 +1,13 @@
 import { loginUser as apiLoginUser } from "apis/usersApi";
+import { LOGIN, LOGOUT } from "redux/types";
 
 export const login = (tokens, user) => ({
-  type: "LOGIN",
+  type: LOGIN,
   payload: { tokens, user },
 });
 
 export const logout = () => ({
-  type: "LOGOUT",
+  type: LOGOUT,
 });
 
 export const loginUser = (values, userType) => async dispatch => {

@@ -1,22 +1,23 @@
 import { createMail as apiCreateMail, fetchMails as apiFetchMails } from "apis/mailsApi";
+import { SET_MAILS, SET_DATA, UPDATE_COUNTS, SET_TABLE_DATA } from "redux/types";
 
 export const setMails = mails => ({
-  type: "SET_MAILS",
+  type: SET_MAILS,
   payload: mails,
 });
 
 export const setData = data => ({
-  type: "SET_DATA",
+  type: SET_DATA,
   payload: data,
 });
 
 export const updateCounts = mails => ({
-  type: "UPDATE_COUNTS",
+  type: UPDATE_COUNTS,
   payload: mails,
 });
 
 export const setTableData = data => ({
-  type: "SET_TABLE_DATA",
+  type: SET_TABLE_DATA,
   payload: data,
 });
 
