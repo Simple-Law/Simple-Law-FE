@@ -18,7 +18,7 @@ const Home = () => {
         <Button block className='mt-1' onClick={() => navigate("/mail/quest")}>
           글작성
         </Button>
-        <Button block className='mt-1' onClick={() => navigate("/admin/mngAdmin")}>
+        <Button block className='mt-1' onClick={() => navigate("/admin/mnageAdmin")}>
           어드민: 관리자 계정관리
         </Button>
       </LoginForm>
