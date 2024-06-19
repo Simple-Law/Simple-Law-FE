@@ -1,24 +1,17 @@
 import React, { useRef, useMemo, useState } from "react";
-import { Input, Form, Button, Upload, message } from "antd";
+import { Input, Form, Button, Upload } from "antd";
 import ReactQuill from "react-quill";
 import { UploadOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
 import { useMessageApi } from "components/MessageProvider";
 
+// eslint-disable-next-line react/prop-types
 const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, setDeletedImages }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
   const useMessage = useMessageApi();
-
-  const getCurrentDate = () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
 
   const uploadToServer = async file => {
     const formData = new FormData();
@@ -31,9 +24,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("데이터 오나?", response.data);
       const fileUploadId = response.data?.data?.payload[0]?.fileUploadId;
-      console.log("fileUploadId:", fileUploadId);
       useMessage.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
       return fileUploadId;
     } catch (error) {
@@ -51,8 +42,9 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
     setPendingImages(newFileList.map(file => file.originFileObj));
   };
 
-  const handleImageDelete = (quill, delta) => {
-    if (!quill) return;
+  const handleImageDelete = delta => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill || !delta.ops) return;
     const deletedImages = [];
     delta.ops.forEach(op => {
       if (op.delete) {
@@ -151,7 +143,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
           onChange={(content, delta, source, editor) => {
             formik.setFieldValue("content", editor.getHTML());
             if (source === "user") {
-              handleImageDelete(editor, delta);
+              handleImageDelete(editor);
             }
           }}
           modules={modules}
@@ -168,7 +160,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
           beforeUpload={file => {
             const isSizeValid = file.size / 1024 / 1024 < 1024;
             if (!isSizeValid) {
-              message.error("파일 크기는 1GB 이하이어야 합니다.");
+              useMessage.error("파일 크기는 1GB 이하이어야 합니다.");
               return Upload.LIST_IGNORE;
             }
             return false;
