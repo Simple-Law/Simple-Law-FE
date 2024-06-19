@@ -1,5 +1,4 @@
 import { createMail as apiCreateMail, fetchMails as apiFetchMails } from "apis/mailsApi";
-import { message } from "antd";
 
 export const setMails = mails => ({
   type: "SET_MAILS",
