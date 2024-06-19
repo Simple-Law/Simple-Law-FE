@@ -5,7 +5,7 @@ import SignUp from "pages/SignUp";
 import Home from "pages/Home";
 import Login from "pages/Login";
 import Header from "components/header";
-import AppLayout from "components/AppLayout";
+import AppLayout from "components/MessageProvider";
 import QuestPage from "pages/QuestPage";
 import QuestPost from "pages/QuestPost";
 import FindUserId from "pages/FindUserId";

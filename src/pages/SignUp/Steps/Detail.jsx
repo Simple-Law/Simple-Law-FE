@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import LoginForm from "components/LoginForm";
 import { Button, Form, Input } from "antd";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 import { uploadFile } from "apis/usersApi";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import SvgTrash from "components/Icons/Trash";

@@ -6,7 +6,7 @@ const MessageApiContext = createContext(null);
 
 export const useMessageApi = () => useContext(MessageApiContext);
 
-const AppLayout = () => {
+const MessageProvider = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   return (
@@ -17,4 +17,4 @@ const AppLayout = () => {
   );
 };
 
-export default AppLayout; // AppLayout을 default로 내보냄
+export default MessageProvider; // MessageProvider를 default로 내보냄

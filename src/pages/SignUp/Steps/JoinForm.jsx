@@ -4,7 +4,7 @@ import LoginForm from "components/LoginForm";
 import { Input, Button, Radio, Form } from "antd";
 import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 import PropTypes from "prop-types";
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();

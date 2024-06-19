@@ -9,7 +9,7 @@ import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
 import { useAuth } from "contexts/AuthContext";
 import { loginUser } from "apis/usersApi";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 
 const Login = () => {
   const { type } = useParams();
