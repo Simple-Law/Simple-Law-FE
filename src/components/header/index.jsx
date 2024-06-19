@@ -1,24 +1,27 @@
 import React, { useState } from "react";
 import SvgLogo from "components/Icons/Logo";
 import { Link, useNavigate } from "react-router-dom";
-import { Modal, message } from "antd";
+import { Modal } from "antd";
 import SvgProfile from "components/Icons/Profile";
-import { useAuth } from "contexts/AuthContext"; // AuthContext 사용
-
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../../redux/actions/authActions";
+import { useMessageApi } from "components/MessageProvider";
 const Header = () => {
-  const { user, logout } = useAuth(); // 로그인한 사용자 정보 및 로그아웃 함수 가져오기
+  const dispatch = useDispatch();
+  const useMessage = useMessageApi();
+  const user = useSelector(state => state.auth.user);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
-  console.log("user", user);
+
   const showLogoutModal = () => {
     setIsModalVisible(true);
   };
 
   const handleOk = () => {
-    logout(); // 로그아웃 함수 호출
-    message.success("로그아웃 되었습니다.");
+    dispatch(logout());
     setIsModalVisible(false);
-    navigate("/login"); // 로그인 페이지로 이동
+    useMessage.success("로그아웃 되었습니다.");
+    navigate("/login");
   };
 
   const handleCancel = () => {

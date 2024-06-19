@@ -4,13 +4,15 @@ import LoginForm from "components/LoginForm";
 import { Input, Button, Radio, Form } from "antd";
 import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 import PropTypes from "prop-types";
+
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
   const [isAuthCodeFilled, setIsAuthCodeFilled] = useState(false);
+
   const messageApi = useMessageApi();
 
   // 핸드폰 번호 확인
@@ -42,6 +44,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     }
   };
 
+  // 폼 필드 값이 변경 시 호출
   const handleFormChange = (changedValues, allValues) => {
     const isAllFieldsFilled = Object.keys(allValues).every(key => allValues[key]);
     setIsFormFilled(isAllFieldsFilled);
@@ -66,6 +69,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       setIsAuthCodeFilled(false);
     }
   };
+  // 인증 코드를 전송하는 함수
   const handleSendAuthCode = async () => {
     const phoneNumber = form.getFieldValue("phoneNumber").replace(/-/g, "");
     const name = form.getFieldValue("name");
@@ -84,6 +88,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     }
   };
 
+  // 인증 코드를 확인하는 함수
   const handleVerifyAuthCode = async () => {
     const phoneNumber = form.getFieldValue("phoneNumber").replace(/-/g, "");
     const verificationCode = form.getFieldValue("verificationCode");
@@ -273,7 +278,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               </Radio.Button>
             </Radio.Group>
           </Form.Item>
-
           {showAuthenticationCodeField && (
             <Form.Item name='verificationCode'>
               <Input placeholder='인증번호 입력' onChange={handleAuthCodeChange} maxLength='4' />
@@ -282,6 +286,10 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
         </div>
         <Form.Item className='mt-8'>
           <Button
+            // TODO: DY - 인증번호 입력 input 열리기 전까지 disabled 처리하기
+            // NOTE: 인증번호가 발송되었습니다. < 문구 추가
+            // NOTE: 인증번호를 받지 못하셨다면 휴대폰 번호를 확인해 주세요. 인증번호 필수
+            // NOTE: 2:38 확인
             type='primary'
             onClick={() => {
               if (isAuthCodeFilled) {
