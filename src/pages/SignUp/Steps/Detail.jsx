@@ -1,12 +1,16 @@
 import React, { useState, useRef } from "react";
+import PropTypes from "prop-types";
 import LoginForm from "components/LoginForm";
 import { Button, Form, Input } from "antd";
-import { useMessageApi } from "components/AppLayout";
+import { useMessageApi } from "components/MessageProvider";
 import { uploadFile } from "apis/usersApi";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
+import SvgTrash from "components/Icons/Trash";
+import { AiOutlinePaperClip, AiOutlineDelete } from "react-icons/ai";
+import styled from "styled-components";
 
 // 사무실 번호 지역번호 하이픈 추가
-const formatPhoneNumber = (value) => {
+const formatPhoneNumber = value => {
   if (!value) {
     return "";
   }
@@ -37,7 +41,7 @@ const formatPhoneNumber = (value) => {
     result.push(restNumber.substring(4));
   }
 
-  return result.filter((val) => val).join("-");
+  return result.filter(val => val).join("-");
 };
 
 const Detail = ({ handleData, nextStep }) => {
@@ -48,7 +52,7 @@ const Detail = ({ handleData, nextStep }) => {
   const messageApi = useMessageApi();
   const dropAreaRef = useRef(null);
 
-  const uploadToServer = async (file) => {
+  const uploadToServer = async file => {
     const formData = new FormData();
     formData.append("files", file);
 
@@ -68,7 +72,7 @@ const Detail = ({ handleData, nextStep }) => {
     }
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
@@ -76,7 +80,7 @@ const Detail = ({ handleData, nextStep }) => {
     }
   };
 
-  const handleFileChange = (file) => {
+  const handleFileChange = file => {
     if (beforeUpload(file)) {
       const newFileList = [file]; // 최신 파일만 유지
       setFileList(newFileList);
@@ -100,7 +104,7 @@ const Detail = ({ handleData, nextStep }) => {
     nextStep(); // 다음 스텝으로 이동
   };
 
-  const handlePhoneNumberChange = (e) => {
+  const handlePhoneNumberChange = e => {
     const { value } = e.target;
     const formattedPhoneNumber = formatPhoneNumber(value);
     form.setFieldsValue({ companyPhone: formattedPhoneNumber });
@@ -112,20 +116,15 @@ const Detail = ({ handleData, nextStep }) => {
     form.setFieldsValue({ [fieldName]: numericValue });
   };
 
-  const onFinish = async (values) => {
+  const onFinish = async values => {
     console.log("결과값: ", values);
     await handleSubmit();
     handleData({ ...values, fileUploadId }); // fileUploadId를 포함한 데이터를 전달
     nextStep(); // 파일 업로드 없이 바로 다음 스텝으로 이동
   };
 
-  const beforeUpload = (file) => {
-    const isValidType = [
-      "image/png",
-      "image/jpeg",
-      "image/jpg",
-      "image/gif",
-    ].includes(file.type);
+  const beforeUpload = file => {
+    const isValidType = ["image/png", "image/jpeg", "image/jpg", "image/gif"].includes(file.type);
     const isLt10M = file.size / 1024 / 1024 < 10;
 
     if (!isValidType) {
@@ -142,18 +141,12 @@ const Detail = ({ handleData, nextStep }) => {
   };
 
   return (
-    <LoginForm title="변호사 회원가입">
-      <Form
-        className="flex gap-[20px] flex-col"
-        form={form}
-        name="validateOnly"
-        autoComplete="off"
-        onFinish={onFinish}
-      >
-        <div className="flex gap-2 flex-col">
-          <p className="font-medium text-base">소속</p>
+    <LoginForm title='변호사 회원가입'>
+      <Form className='flex gap-[20px] flex-col' form={form} name='validateOnly' autoComplete='off' onFinish={onFinish}>
+        <div className='flex gap-2 flex-col'>
+          <p className='font-medium text-base'>소속</p>
           <Form.Item
-            name="companyName"
+            name='companyName'
             rules={[
               {
                 required: true,
@@ -164,10 +157,10 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input placeholder="소속(사무소,회사)" />
+            <Input placeholder='소속(사무소,회사)' />
           </Form.Item>
           <Form.Item
-            name="companyPhone"
+            name='companyPhone'
             rules={[
               {
                 required: true,
@@ -178,17 +171,13 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input
-              placeholder="소속 전화번호(‘-’ 제외하고 입력)"
-              onChange={handlePhoneNumberChange}
-              maxLength="13"
-            />
+            <Input placeholder='소속 전화번호(‘-’ 제외하고 입력)' onChange={handlePhoneNumberChange} maxLength='13' />
           </Form.Item>
         </div>
-        <div className="flex gap-2 flex-col">
-          <p className="font-medium text-base">출신 시험</p>
+        <div className='flex gap-2 flex-col'>
+          <p className='font-medium text-base'>출신 시험</p>
           <Form.Item
-            name="barExam"
+            name='barExam'
             rules={[
               {
                 required: true,
@@ -199,10 +188,10 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input placeholder="출신 시험" />
+            <Input placeholder='출신 시험' />
           </Form.Item>
           <Form.Item
-            name="barExamCount"
+            name='barExamCount'
             rules={[
               {
                 required: true,
@@ -213,14 +202,11 @@ const Detail = ({ handleData, nextStep }) => {
               },
             ]}
           >
-            <Input
-              placeholder="시험 횟수"
-              onChange={(e) => handleNumberChange("barExamCount", e)}
-            />
+            <Input placeholder='시험 횟수' onChange={e => handleNumberChange("barExamCount", e)} />
           </Form.Item>
 
           <Form.Item
-            name="yearOfPassing"
+            name='yearOfPassing'
             rules={[
               {
                 required: true,
@@ -232,14 +218,14 @@ const Detail = ({ handleData, nextStep }) => {
             ]}
           >
             <Input
-              placeholder="변호사 자격 획득연도"
+              placeholder='변호사 자격 획득연도'
               maxLength={4}
-              onChange={(e) => handleNumberChange("yearOfPassing", e)}
+              onChange={e => handleNumberChange("yearOfPassing", e)}
             />
           </Form.Item>
         </div>
         <Form.Item
-          name="fileUploadId"
+          name='fileUploadId'
           rules={[
             {
               required: true,
@@ -249,17 +235,17 @@ const Detail = ({ handleData, nextStep }) => {
         >
           <div
             ref={dropAreaRef}
-            onDragOver={(e) => e.preventDefault()}
+            onDragOver={e => e.preventDefault()}
             onDrop={handleDrop}
             style={{ position: "relative" }}
           >
-            <p className="font-medium text-base flex items-center">
+            <p className='font-medium text-base flex items-center'>
               변호사 신분증 사진 업로드
               <input
-                type="file"
-                id="file-upload"
+                type='file'
+                id='file-upload'
                 style={{ display: "none" }}
-                onChange={(e) => {
+                onChange={e => {
                   const file = e.target.files[0];
                   if (file) {
                     handleFileChange(file);
@@ -267,27 +253,30 @@ const Detail = ({ handleData, nextStep }) => {
                 }}
               />
               <label
-                htmlFor="file-upload"
-                className="bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]"
+                htmlFor='file-upload'
+                className='bg-slate-400 rounded text-white text-xs font-medium leading-none px-2 py-1 ml-[10px]'
                 style={{ cursor: "pointer" }}
               >
                 내 PC
               </label>
             </p>
             {fileList.length === 0 ? (
-              <div className="h-[180px] text-center rounded-md border border-dashed border-gray-200 bg-gray-50 mt-2 flex flex-col items-center justify-center">
-                <UploadFile className="mx-auto" />
-                <p className="ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]">
+              <div className='h-[180px] text-center rounded-md border border-dashed border-gray-200 bg-gray-50 mt-2 flex flex-col items-center justify-center'>
+                <UploadFile className='mx-auto' />
+                <p className='ant-upload-hint text-Btn-Text-Disabled text-sm font-normal mb-[10px]'>
                   최대 10mb 이하 png, jpg, jpeg, gif
                 </p>
               </div>
             ) : (
-              <div className="uploaded-file-list">
+              <div className='border border-dashed border-gray-200 rounded-md p-2 bg-gray-50 mt-2'>
                 {fileList.map((file, index) => (
-                  <div key={index} className="uploaded-file-item">
-                    <span>{file.name}</span>
-                    <Button onClick={handleRemove} type="link" danger>
-                      삭제
+                  <div key={index} className='flex justify-between items-center p-2 mb-2 '>
+                    <div className='flex items-center'>
+                      <AiOutlinePaperClip className='mr-2' />
+                      <span className='text-sm text-gray-700'>{file.name}</span>
+                    </div>
+                    <Button type='link' onClick={handleRemove} className='p-0 '>
+                      <SvgTrash width='15px' height='15px' />
                     </Button>
                   </div>
                 ))}
@@ -295,12 +284,16 @@ const Detail = ({ handleData, nextStep }) => {
             )}
           </div>
         </Form.Item>
-        <Button type="primary" htmlType="submit" block disabled={loading}>
+        <Button type='primary' htmlType='submit' block disabled={loading}>
           다음
         </Button>
       </Form>
     </LoginForm>
   );
+};
+Detail.propTypes = {
+  handleData: PropTypes.func.isRequired,
+  nextStep: PropTypes.func.isRequired,
 };
 
 export default Detail;

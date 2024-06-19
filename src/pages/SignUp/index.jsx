@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-key */
 import React, { useState } from "react";
 import JoinForm from "./Steps/JoinForm";
 import Detail from "./Steps/Detail";
@@ -6,15 +7,13 @@ import Agreement from "./Steps/Agreement";
 import FinalStep from "./Steps/FinalStep"; // FinalStep 컴포넌트 추가
 import { useParams } from "react-router-dom";
 import { registerUser } from "apis/usersApi";
-import { useMessageApi } from "components/AppLayout";
-import { useAuth } from "contexts/AuthContext"; // AuthContext import
+import { useMessageApi } from "components/MessageProvider";
 
 const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const { type } = useParams();
   const messageApi = useMessageApi();
-  const { login } = useAuth(); // AuthContext의 login 함수 사용
 
   const handleData = newData => {
     setFormData(prev => ({ ...prev, ...newData }));
@@ -74,11 +73,6 @@ const SignUp = () => {
     try {
       const response = await registerUser(userData);
       console.log("Saved data", response);
-
-      // 토큰 정보와 사용자 정보를 AuthContext에 저장
-      // const { accessToken, refreshToken, accessTokenExpiredAt, refreshTokenExpiredAt } = response.payload;
-      // const user = { id, email, name };
-      // login({ accessToken, refreshToken, accessTokenExpiredAt, refreshTokenExpiredAt }, user);
 
       // messageApi.success("가입이 완료되었습니다!");
       nextStep(); // 가입 완료 후 다음 단계로 이동
