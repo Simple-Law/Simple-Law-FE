@@ -1,20 +1,26 @@
-import { useState } from "react";
+import { React, useState } from "react";
 import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
-import { SelectAdminTag } from "components/Tags/UserTypeTag";
+import { SelectAdminTag } from "components/Tags/UserTag";
 
 const MngAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
 
   const [pageTitle] = useState("관리자 계정 관리");
+  //TODO: kmee- 추후 테이블 컴포넌트 별도 분리
+  const paginationConfig = {
+    pageSize: 10,
+    position: ["bottomCenter"],
+  };
   const columns = [
     {
       title: "이름",
       key: "adminId",
       dataIndex: "adminName",
+      className: "name-column",
       render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
           <img src={profileImg} alt='profile' style={{ marginRight: "10px" }} />
           <div>
             <div>{record.adminName}</div>
@@ -27,25 +33,30 @@ const MngAdmin = () => {
       title: "이메일",
       key: "email",
       dataIndex: "email",
+      className: "email-column",
     },
     {
       title: "권한",
       key: "adminType",
-      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin} />,
+      className: "adminTag-column",
+      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin()} />,
     },
     {
       title: "가입일",
       key: "joinDate",
       dataIndex: "joinDate",
+      className: "joinDate-column",
     },
     {
       title: "최근 접속일",
       key: "accessDate",
       dataIndex: "accessDate",
+      className: "accessDate-column",
     },
     {
       title: "삭제",
       key: "adminId",
+      className: "deleteBtn-column",
       render: () => (
         <Button danger size='small'>
           삭제
@@ -88,6 +99,11 @@ const MngAdmin = () => {
     },
   ];
 
+  const insertAdmin = () => {
+    console.log("insertAdmin");
+  };
+
+  //TODO: kmee- api명세서는 pk adminKey(식별키)로 받음. get요청 명세서 완료 후 참고해서 재작성
   const updateAdmin = () => {
     console.log("updateAdmin");
   };
@@ -96,18 +112,18 @@ const MngAdmin = () => {
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
         <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-        <Button type='primary' size='small'>
+        <Button type='primary' size='small' onClick={insertAdmin}>
           계정 추가
         </Button>
       </div>
-
-      <Table dataSource={mockData} columns={columns} />
+      <Table dataSource={mockData} columns={columns} pagination={paginationConfig} />
     </BoardDiv>
   );
 };
 
 export default MngAdmin;
 
+//TODO: kmee- 테이블 컬럼에 맞춰 수정
 const BoardDiv = styled.div`
   .ant-spin-container {
     height: 80vh;
@@ -119,21 +135,28 @@ const BoardDiv = styled.div`
     border-color: transparent;
   }
 
-  .status-column {
+  .name-column {
     max-width: 150px;
     flex-basis: 150px;
   }
-
-  .category-column {
-    max-width: 320px;
-    flex-basis: 320px;
+  .email-column {
+    max-width: 300px;
+    flex-basis: 300px;
   }
-  .title-column {
-    flex: 1 1 auto;
-    min-width: 0;
+  .adminTag-column {
+    max-width: 150px;
+    flex-basis: 150px;
   }
-  .time-column {
-    max-width: 140px;
-    flex-basis: 140px;
+  .joinDate-column {
+    max-width: 150px;
+    flex-basis: 150px;
+  }
+  .accessDate-column {
+    max-width: 150px;
+    flex-basis: 150px;
+  }
+  .deleteBtn-column {
+    max-width: 100px;
+    flex-basis: 100px;
   }
 `;
