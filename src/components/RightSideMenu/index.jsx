@@ -3,15 +3,17 @@ import { Button, Menu } from "antd";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useMailContext } from "contexts/MailContexts"; // import the context
+import { useDispatch, useSelector } from "react-redux";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
 import SvgTrash from "components/Icons/Trash";
+import { setMails, setTableData } from "actions/mailActions";
 
 const RightSideMenu = () => {
   const navigate = useNavigate();
-  const { state, dispatch } = useMailContext(); // use context
+  const dispatch = useDispatch();
+  const { data, counts } = useSelector(state => state.mail);
   //TODO: kmee - 사용자 권한에 따라 메뉴 다르게 보이게 처리
 
   useEffect(() => {
@@ -20,18 +22,18 @@ const RightSideMenu = () => {
       parentElement.classList.add("custom-arrow");
     }
   }, []);
-  const handleMenuClick = statusKey => {
-    let filteredMails = state.data;
-    if (statusKey === "important") {
-      filteredMails = state.data.filter(mail => mail.isImportant);
-    } else if (statusKey === "trash") {
-      filteredMails = state.data.filter(mail => mail.status === "휴지통");
-    } else if (statusKey !== "All_request") {
-      filteredMails = state.data.filter(mail => mail.status === statusKey);
-    }
 
-    dispatch({ type: "SET_MAILS", payload: filteredMails }); // dispatch the action
-    dispatch({ type: "SET_TABLE_DATA", payload: filteredMails }); // 추가: tableData 업데이트
+  const handleMenuClick = statusKey => {
+    let filteredMails = data;
+    if (statusKey === "important") {
+      filteredMails = data.filter(mail => mail.isImportant);
+    } else if (statusKey === "trash") {
+      filteredMails = data.filter(mail => mail.status === "휴지통");
+    } else if (statusKey !== "All_request") {
+      filteredMails = data.filter(mail => mail.status === statusKey);
+    }
+    dispatch(setMails(filteredMails)); // dispatch the action
+    dispatch(setTableData(filteredMails)); // 추가: tableData 업데이트
     navigate(`/board?status=${statusKey}`);
   };
 
@@ -41,7 +43,7 @@ const RightSideMenu = () => {
       label: (
         <span className='ml-2 text-stone-950'>
           전체 의뢰함
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.total}</span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.total}</span>
         </span>
       ),
       icon: <SvgMailAll />,
@@ -59,7 +61,7 @@ const RightSideMenu = () => {
                   fontSize: "14px",
                 }}
               >
-                {state.counts.preparing}
+                {counts.preparing}
               </span>
             </span>
           ),
@@ -76,7 +78,7 @@ const RightSideMenu = () => {
                   fontSize: "14px",
                 }}
               >
-                {state.counts.pending}
+                {counts.pending}
               </span>
             </span>
           ),
@@ -93,7 +95,7 @@ const RightSideMenu = () => {
                   fontSize: "14px",
                 }}
               >
-                {state.counts.completed}
+                {counts.completed}
               </span>
             </span>
           ),
@@ -110,7 +112,7 @@ const RightSideMenu = () => {
                   fontSize: "14px",
                 }}
               >
-                {state.counts.refuse}
+                {counts.refuse}
               </span>
             </span>
           ),
@@ -122,7 +124,7 @@ const RightSideMenu = () => {
       label: (
         <span className='text-stone-950'>
           중요 의뢰함
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.important}</span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("important"),
@@ -142,7 +144,7 @@ const RightSideMenu = () => {
       label: (
         <span className='text-stone-950'>
           휴지통
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{state.counts.trash}</span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.trash}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("trash"),

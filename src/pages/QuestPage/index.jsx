@@ -5,10 +5,11 @@ import { useLocation, useNavigate } from "react-router-dom";
 import StatusTag from "components/Tags";
 import styled from "styled-components";
 import { updateMail } from "apis/mailsApi";
-import { useMailContext } from "contexts/MailContexts";
+import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
+import { setMails, setData, updateCounts, setTableData, fetchMailsAction } from "actions/mailActions";
 
 const { Search } = Input;
 
@@ -23,8 +24,12 @@ const QuestPage = () => {
   const queryParams = new URLSearchParams(location.search);
   const statusKey = queryParams.get("status");
 
-  const { state, dispatch } = useMailContext();
-  const { mails, tableData } = state; // tableData를 사용
+  const dispatch = useDispatch();
+  const { mails, tableData } = useSelector(state => state.mail);
+
+  useEffect(() => {
+    dispatch(fetchMailsAction());
+  }, [dispatch]);
 
   useEffect(() => {
     const combinedData = [];
@@ -40,7 +45,7 @@ const QuestPage = () => {
         });
       }
     });
-    dispatch({ type: "SET_TABLE_DATA", payload: combinedData });
+    dispatch(setTableData(combinedData));
   }, [mails, dispatch]);
 
   useEffect(() => {
@@ -58,15 +63,15 @@ const QuestPage = () => {
 
   const toggleImportant = async (id, event) => {
     event.stopPropagation();
-    const newData = state.data.map(item => {
+    const newData = mails.map(item => {
       if (item.id === id) {
         item.isImportant = !item.isImportant;
       }
       return item;
     });
 
-    dispatch({ type: "SET_DATA", payload: newData });
-    dispatch({ type: "UPDATE_COUNTS", payload: newData });
+    dispatch(setData(newData));
+    dispatch(updateCounts(newData));
 
     try {
       const updatedItem = newData.find(item => item.id === id);
@@ -74,8 +79,8 @@ const QuestPage = () => {
 
       if (statusKey === "important" && !updatedItem.isImportant) {
         const filteredMails = newData.filter(mail => mail.isImportant);
-        dispatch({ type: "SET_MAILS", payload: filteredMails });
-        dispatch({ type: "SET_TABLE_DATA", payload: filteredMails }); // 추가: tableData 업데이트
+        dispatch(setMails(filteredMails));
+        dispatch(setTableData(filteredMails)); // 추가: tableData 업데이트
       }
     } catch (error) {
       console.error("Error updating important status:", error);
@@ -212,13 +217,13 @@ const QuestPage = () => {
   };
 
   return (
-    <BoardDiv className="mt-6 mx-8 grow overflow-hidden">
-      <div className="flex justify-between items-end mb-3">
-        <h2 className=" font-bold text-[20px]">{pageTitle}</h2>
+    <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
+      <div className='flex justify-between items-end mb-3'>
+        <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
         <PageSearch
-          placeholder="Placeholder"
+          placeholder='Placeholder'
           onSearch={onSearch}
-          enterButton={<SvgSearch width="16px" height="16px" />}
+          enterButton={<SvgSearch width='16px' height='16px' />}
           style={{
             width: 268,
           }}

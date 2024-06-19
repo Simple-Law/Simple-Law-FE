@@ -1,20 +1,19 @@
 import React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Input, Button, Form } from "antd";
+import { useDispatch } from "react-redux";
 import LoginForm from "components/LoginForm";
 import SvgEye from "components/Icons/Eye";
 import SvgEyeclose from "components/Icons/Eyeclose";
 import SvgKakao from "components/Icons/Kakao";
 import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
-import { useAuth } from "contexts/AuthContext";
-import { loginUser } from "apis/usersApi";
+import { loginUser } from "actions/authActions";
 import { useMessageApi } from "components/MessageProvider";
-
 const Login = () => {
   const { type } = useParams();
   const navigate = useNavigate();
-  const { login } = useAuth(); // login 함수 사용
+  const dispatch = useDispatch();
   const messageApi = useMessageApi();
 
   const isLawyerLogin = type === "lawyer";
@@ -23,15 +22,13 @@ const Login = () => {
     : { title: "의뢰인 로그인", toggleType: "lawyer", toggleText: "변호사이신가요?" };
 
   const handleLogin = async values => {
-    try {
-      const response = await loginUser(values, type);
-      console.log("handleLogin response:", response); // 응답 데이터 확인
-      login(response.data.payload, response.data.payload); // 토큰 및 사용자 정보 저장
+    const { success, message } = await dispatch(loginUser(values, type));
+    if (success) {
       messageApi.success("로그인 성공!");
-      navigate("/board"); // 홈으로 이동
-    } catch (error) {
-      messageApi.error(error.message);
-      if (error.message === "pending-approval") {
+      navigate("/board"); // 로그인 성공 시 이동
+    } else {
+      messageApi.error(message || "로그인 실패!");
+      if (message === "pending-approval") {
         messageApi.warning("가입 승인 중입니다.");
       }
     }

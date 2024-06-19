@@ -2,25 +2,23 @@ import React, { useEffect, useRef, useState } from "react";
 import SvgLogo from "components/Icons/Logo";
 import { Form, Select, Checkbox, Modal } from "antd";
 import { useFormik } from "formik";
-import { useMessageApi } from "components/MessageProvider";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
-import { createMail, fetchMails } from "apis/mailsApi";
-import { useMailContext } from "contexts/MailContexts";
+import { useDispatch, useSelector } from "react-redux";
+import { createMail } from "actions/mailActions";
 import CommonForm from "components/CommonForm";
-import { useAuth } from "contexts/AuthContext";
 import axios from "axios";
-
+import { useMessageApi } from "components/MessageProvider";
 const QuestPost = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
-  const { dispatch } = useMailContext();
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const messageApi = useMessageApi();
+  const user = useSelector(state => state.auth.user);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pendingImages, setPendingImages] = useState([]); // 첨부된 이미지 파일 임시 저장
   const [deletedImages, setDeletedImages] = useState([]); // 삭제된 이미지 파일 URL 임시 저장
-  const messageApi = useMessageApi();
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
@@ -101,19 +99,13 @@ const QuestPost = () => {
       };
 
       try {
-        const response = await createMail(dataToSend);
+        await dispatch(createMail(dataToSend));
         messageApi.success("게시글이 등록되었습니다!");
-
-        const { data: mailData } = await fetchMails();
-        dispatch({ type: "SET_DATA", payload: mailData });
-        dispatch({ type: "SET_MAILS", payload: mailData.filter(mail => mail.status !== "휴지통") });
-        dispatch({ type: "UPDATE_COUNTS", payload: mailData });
-
         formik.resetForm();
         navigate("/board");
       } catch (error) {
-        console.error("Error sending mail:", error);
         messageApi.error("게시글 등록이 실패했습니다!");
+        console.error("Error sending mail:", error);
       }
     },
   });
