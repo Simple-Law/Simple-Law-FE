@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Provider, useDispatch, useSelector } from "react-redux";
+import store from "store";
 import Admin from "pages/Admin";
 import SignUp from "pages/SignUp";
 import Home from "pages/Home";
@@ -12,44 +14,38 @@ import FindUserId from "pages/FindUserId";
 import DetailPage from "pages/DetailPage";
 import RightSideMenu from "components/RightSideMenu";
 import ReQuestion from "pages/ReQuestion";
-
-import { MailProvider } from "contexts/MailContexts";
-import { useMailContext } from "contexts/MailContexts";
-import { AuthProvider } from "contexts/AuthContext";
-import PrivateRoute from "router/PrivateRoute";
+// import PrivateRoute from "router/PrivateRoute";
 import ImgUpload from "pages/SignUp/imgUpload";
 import MngAdmin from "pages/Admin/MngAdmin";
 
 const App = () => {
   return (
-    <AuthProvider>
-      <MailProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<AppLayout />}>
-              <Route path='/' element={<Home />} />
-              <Route path='/img' element={<ImgUpload />} />
-              <Route path='/login' element={<Login />} />
-              <Route path='/login/:type' element={<Login />} />
-              <Route path='/findId' element={<FindUserId />} />
-              <Route path='/admin/*' element={<Admin />} />
-              <Route path='/signup/:type' element={<SignUp />} />
-              <Route path='/mail/quest' element={<QuestPost />} />
-              <Route path='/requestion/:id' element={<ReQuestion />} />
-              <Route element={<LayoutWithHeader />}>
-                {/* <Route element={<PrivateRoute />}> */}
-                <Route element={<LayoutWithSidebar />}>
-                  <Route path='/detail/:id' element={<DetailPage />} />
-                  <Route path='/board' element={<QuestPage />} />
-                  <Route path='/admin/mngAdmin' element={<MngAdmin />} />
-                </Route>
-                {/* </Route> */}
+    <Provider store={store}>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<AppLayout />}>
+            <Route index element={<Home />} />
+            <Route path='img' element={<ImgUpload />} />
+            <Route path='login' element={<Login />} />
+            <Route path='login/:type' element={<Login />} />
+            <Route path='findId' element={<FindUserId />} />
+            <Route path='admin/*' element={<Admin />} />
+            <Route path='signup/:type' element={<SignUp />} />
+            <Route path='mail/quest' element={<QuestPost />} />
+            <Route path='requestion/:id' element={<ReQuestion />} />
+            <Route element={<LayoutWithHeader />}>
+              {/* <Route element={<PrivateRoute />}> */}
+              <Route element={<LayoutWithSidebar />}>
+                <Route path='detail/:id' element={<DetailPage />} />
+                <Route path='board' element={<QuestPage />} />
+                <Route path='admin/mngAdmin' element={<MngAdmin />} />
               </Route>
+              {/* </Route> */}
             </Route>
-          </Routes>
-        </BrowserRouter>
-      </MailProvider>
-    </AuthProvider>
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </Provider>
   );
 };
 
@@ -63,9 +59,8 @@ const LayoutWithHeader = () => {
 };
 
 const LayoutWithSidebar = () => {
-  const { state, dispatch } = useMailContext();
-
-  const { data, counts } = state;
+  const dispatch = useDispatch();
+  const { data, counts } = useSelector(state => state.mail); // Redux state에서 가져옵니다.
 
   const handleMenuClick = filteredMails => {
     dispatch({ type: "SET_MAILS", payload: filteredMails });
