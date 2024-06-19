@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { setMails, setData, updateCounts, setTableData, fetchMailsAction } from "redux/actions/mailActions";
+import { setMails, setData, updateCounts, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
 
 const { Search } = Input;
 

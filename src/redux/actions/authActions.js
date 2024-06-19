@@ -1,5 +1,5 @@
 import { loginUser as apiLoginUser } from "apis/usersApi";
-import { LOGIN, LOGOUT } from "redux/types";
+import { LOGIN, LOGOUT } from "../types";
 
 export const login = (tokens, user) => ({
   type: LOGIN,

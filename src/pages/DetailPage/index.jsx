@@ -6,7 +6,7 @@ import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Modal, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setData, setMails, updateCounts } from "redux/actions/mailActions";
+import { setData, setMails, updateCounts } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import StatusTag from "components/Tags";
 import SvgSearch from "components/Icons/Search";

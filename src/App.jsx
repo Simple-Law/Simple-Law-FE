@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
-import store from "store";
+import store from "./redux/store";
 import Admin from "pages/Admin";
 import SignUp from "pages/SignUp";
 import Home from "pages/Home";

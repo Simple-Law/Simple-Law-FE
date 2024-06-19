@@ -8,7 +8,7 @@ import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
 import SvgTrash from "components/Icons/Trash";
-import { setMails, setTableData } from "redux/actions/mailActions";
+import { setMails, setTableData } from "../../redux/actions/mailActions";
 
 const RightSideMenu = () => {
   const navigate = useNavigate();

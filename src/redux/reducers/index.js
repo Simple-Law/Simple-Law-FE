@@ -1,10 +1,9 @@
-import { combineReducers } from "redux";
 import authReducer from "./authReducer";
 import mailReducer from "./mailReducer";
 
-const rootReducer = combineReducers({
+const rootReducer = {
   auth: authReducer,
   mail: mailReducer,
-});
+};
 
 export default rootReducer;

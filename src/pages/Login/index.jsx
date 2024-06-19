@@ -8,7 +8,7 @@ import SvgEyeclose from "components/Icons/Eyeclose";
 import SvgKakao from "components/Icons/Kakao";
 import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
-import { loginUser } from "redux/actions/authActions";
+import { loginUser } from "../../redux/actions/authActions";
 import { useMessageApi } from "components/MessageProvider";
 const Login = () => {
   const { type } = useParams();
