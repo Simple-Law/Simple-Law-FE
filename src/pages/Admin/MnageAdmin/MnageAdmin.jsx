@@ -39,7 +39,7 @@ const MnageAdmin = () => {
       title: "권한",
       key: "adminType",
       className: "adminTag-column",
-      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin()} />,
+      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin} />,
     },
     {
       title: "가입일",
