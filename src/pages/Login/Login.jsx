@@ -2,14 +2,14 @@ import React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Input, Button, Form } from "antd";
 import { useDispatch } from "react-redux";
-import LoginForm from "components/LoginForm";
+import LoginForm from "components/layout/AuthFormLayout";
 import SvgEye from "components/Icons/Eye";
 import SvgEyeclose from "components/Icons/Eyeclose";
 import SvgKakao from "components/Icons/Kakao";
 import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
 import { loginUser } from "../../redux/actions/authActions";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 const Login = () => {
   const { type } = useParams();
   const navigate = useNavigate();
@@ -57,13 +57,13 @@ const Login = () => {
           </div>
           <div className='justify-center items-center gap-3 inline-flex w-full'>
             <Link
-              to={`/signup/${type}`}
+              to={`/sign-up/${type}`}
               className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
             >
               회원가입
             </Link>
             <div className='w-px h-3 bg-zinc-300'></div>
-            <Link to='/findId' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
+            <Link to='/find-id' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
               아이디 찾기
             </Link>
             <div className='w-px h-3 bg-zinc-300'></div>

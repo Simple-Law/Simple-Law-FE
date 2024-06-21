@@ -5,7 +5,7 @@ import { Modal } from "antd";
 import SvgProfile from "components/Icons/Profile";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/actions/authActions";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 const Header = () => {
   const dispatch = useDispatch();
   const useMessage = useMessageApi();

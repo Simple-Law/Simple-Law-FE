@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from "react";
-import LoginForm from "components/LoginForm";
+import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
 import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 import PropTypes from "prop-types";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {

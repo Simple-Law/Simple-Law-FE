@@ -1,4 +1,4 @@
-import LoginForm from "components/LoginForm";
+import LoginForm from "components/layout/AuthFormLayout";
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Checkbox, Button, Form } from "antd";
