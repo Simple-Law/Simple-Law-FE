@@ -3,7 +3,7 @@ import { Input, Form, Button, Upload } from "antd";
 import ReactQuill from "react-quill";
 import { UploadOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
 // eslint-disable-next-line react/prop-types

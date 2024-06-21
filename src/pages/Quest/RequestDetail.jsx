@@ -8,7 +8,7 @@ import { Button, Modal, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setData, setMails, updateCounts } from "../../redux/actions/mailActions";
 import styled from "styled-components";
-import StatusTag from "components/Tags/StatusTag";
+import StatusTag from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowDown from "components/Icons/ArrowDown";
 

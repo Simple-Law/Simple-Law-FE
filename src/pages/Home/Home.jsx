@@ -1,5 +1,5 @@
 import { Button } from "antd";
-import LoginForm from "components/LoginForm";
+import LoginForm from "components/layout/AuthFormLayout";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 

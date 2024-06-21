@@ -1,20 +1,17 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "./redux/store";
-import SignUp from "pages/SignUp";
-import Home from "pages/Home";
-import Login from "pages/Login";
-import Header from "components/header";
-import AppLayout from "components/MessageProvider";
-import QuestPage from "pages/Quest/QuestPage";
-import QuestPost from "pages/Quest/QuestPost";
-import FindUserId from "pages/FindUserId";
-import DetailPage from "pages/DetailPage";
-import RightSideMenu from "components/RightSideMenu";
-import ReQuestion from "pages/ReQuestion";
-// import PrivateRoute from "router/PrivateRoute";
-import ImgUpload from "pages/SignUp/imgUpload";
+import SignUpPage from "pages/SignUp/SignUp";
+import HomePage from "pages/Home/Home";
+import LoginPage from "pages/Login/Login";
+import Header from "components/layout/Header";
+import AppLayout from "components/messaging/MessageProvider";
+import MyQuestListPage from "pages/Quest/MyQuestList";
+import QuestPostPage from "pages/Quest/QuestPost";
+import FindUserIdPage from "pages/Login/findUser/FindUserId";
+import RequestDetailPage from "pages/Quest/RequestDetail";
+import RequestSideMenu from "components/layout/RequestSideMenu";
 import MnageAdmin from "pages/Admin/MnageAdmin/MnageAdmin";
 
 const App = () => {
@@ -23,23 +20,19 @@ const App = () => {
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<AppLayout />}>
-            <Route index element={<Home />} />
-            <Route path='img' element={<ImgUpload />} />
-            <Route path='login' element={<Login />} />
-            <Route path='login/:type' element={<Login />} />
-            <Route path='findId' element={<FindUserId />} />
-            {/* <Route path='admin/*' element={<Admin />} /> */}
-            <Route path='signup/:type' element={<SignUp />} />
-            <Route path='mail/quest' element={<QuestPost />} />
-            <Route path='requestion/:id' element={<ReQuestion />} />
+            <Route index element={<HomePage />} />
+            <Route path='login' element={<Navigate to='/login/quest' replace />} />
+            <Route path='login/:type' element={<LoginPage />} />
+            <Route path='find-id' element={<FindUserIdPage />} />
+            <Route path='sign-up/:type' element={<SignUpPage />} />
+            <Route path='mail/quest' element={<QuestPostPage />} />
+
             <Route element={<LayoutWithHeader />}>
-              {/* <Route element={<PrivateRoute />}> */}
               <Route element={<LayoutWithSidebar />}>
-                <Route path='detail/:id' element={<DetailPage />} />
-                <Route path='board' element={<QuestPage />} />
+                <Route path='detail/:id' element={<RequestDetailPage />} />
+                <Route path='board' element={<MyQuestListPage />} />
                 <Route path='admin/mnageAdmin' element={<MnageAdmin />} />
               </Route>
-              {/* </Route> */}
             </Route>
           </Route>
         </Routes>
@@ -67,7 +60,7 @@ const LayoutWithSidebar = () => {
 
   return (
     <div className='flex w-full pt-16'>
-      <RightSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
+      <RequestSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
       <Outlet />
     </div>
   );
