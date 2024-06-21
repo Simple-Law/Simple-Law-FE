@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
 
-import { SelectAdminTag } from "components/tags2/UserTag";
+import { SelectAdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 
 const MnageAdmin = () => {
