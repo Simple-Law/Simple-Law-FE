@@ -7,8 +7,8 @@ import { styled } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { createMail } from "../../redux/actions/mailActions";
 import CommonForm from "components/CommonForm";
-import axios from "axios";
 import { useMessageApi } from "components/MessageProvider";
+import { deleteFile, uploadFile } from "apis/commonAPI";
 const QuestPost = () => {
   const editorRef = useRef();
   const navigate = useNavigate();
@@ -46,14 +46,12 @@ const QuestPost = () => {
     formData.append("files", file);
 
     try {
-      const response = await axios.post(`http://api.simplelaw.co.kr/api/v1/files`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      const fileUploadId = response.data?.data?.payload[0]?.fileUploadId;
+      const response = await uploadFile(formData);
+      const fileUploadId = response?.data?.payload[0]?.fileUploadId;
+      messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
       return fileUploadId;
     } catch (error) {
+      messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
       console.error("Error uploading file:", error);
     }
   };
@@ -61,7 +59,7 @@ const QuestPost = () => {
   const deleteImagesFromServer = async () => {
     for (const url of deletedImages) {
       try {
-        await axios.delete("http://api.simplelaw.co.kr/api/v1/files", { data: { url } });
+        await deleteFile(url);
         console.log("Image deleted:", url);
       } catch (error) {
         console.error("Error deleting image:", error);
