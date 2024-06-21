@@ -10,7 +10,7 @@ import SvgMail from "components/Icons/Mail";
 import SvgTrash from "components/Icons/Trash";
 import { setMails, setTableData } from "../../redux/actions/mailActions";
 
-const RightSideMenu = () => {
+const RequestSideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail);
@@ -190,7 +190,7 @@ const RightSideMenu = () => {
   );
 };
 
-export default RightSideMenu;
+export default RequestSideMenu;
 
 const Board = styled.div`
   height: calc(100vh - 64px);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Dropdown, Input, Menu, Table } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
-import StatusTag from "components/Tags/StatusTag";
+import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
 import { updateMail } from "apis/mailsApi";
 import { useDispatch, useSelector } from "react-redux";

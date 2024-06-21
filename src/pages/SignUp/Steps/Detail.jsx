@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
 import PropTypes from "prop-types";
-import LoginForm from "components/LoginForm";
+import LoginForm from "components/layout/AuthFormLayout";
 import { Button, Form, Input } from "antd";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 import { uploadFile } from "apis/commonAPI";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import SvgTrash from "components/Icons/Trash";
