@@ -4,7 +4,7 @@ import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
 
 import { SelectAdminTag } from "components/tags/UserTag";
-import AuthButton from "components/Button/AuthButton";
+import AuthButton from "components/button/AuthButton";
 
 const MnageAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
@@ -110,7 +110,7 @@ const MnageAdmin = () => {
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
         <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-        <AuthButton text='계정 추가' clickHandler={insertAdmin} authRole='MASTER_ADMIN' />
+        <AuthButton text='계정 추가' clickHandler={insertAdmin} authRoles={["SUPER_ADMIN"]} />
       </div>
       <Table dataSource={mockData} columns={columns} pagination={paginationConfig} />
     </BoardDiv>
