@@ -2,21 +2,20 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "./redux/store";
-import Admin from "pages/Admin";
 import SignUp from "pages/SignUp";
 import Home from "pages/Home";
 import Login from "pages/Login";
 import Header from "components/header";
 import AppLayout from "components/MessageProvider";
-import QuestPage from "pages/QuestPage";
-import QuestPost from "pages/QuestPost";
+import QuestPage from "pages/Quest/QuestPage";
+import QuestPost from "pages/Quest/QuestPost";
 import FindUserId from "pages/FindUserId";
 import DetailPage from "pages/DetailPage";
 import RightSideMenu from "components/RightSideMenu";
 import ReQuestion from "pages/ReQuestion";
 // import PrivateRoute from "router/PrivateRoute";
 import ImgUpload from "pages/SignUp/imgUpload";
-import MngAdmin from "pages/Admin/MngAdmin";
+import MnageAdmin from "pages/Admin/MnageAdmin/MnageAdmin";
 
 const App = () => {
   return (
@@ -29,7 +28,7 @@ const App = () => {
             <Route path='login' element={<Login />} />
             <Route path='login/:type' element={<Login />} />
             <Route path='findId' element={<FindUserId />} />
-            <Route path='admin/*' element={<Admin />} />
+            {/* <Route path='admin/*' element={<Admin />} /> */}
             <Route path='signup/:type' element={<SignUp />} />
             <Route path='mail/quest' element={<QuestPost />} />
             <Route path='requestion/:id' element={<ReQuestion />} />
@@ -38,7 +37,7 @@ const App = () => {
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<DetailPage />} />
                 <Route path='board' element={<QuestPage />} />
-                <Route path='admin/mngAdmin' element={<MngAdmin />} />
+                <Route path='admin/mnageAdmin' element={<MnageAdmin />} />
               </Route>
               {/* </Route> */}
             </Route>
