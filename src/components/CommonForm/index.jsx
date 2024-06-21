@@ -3,37 +3,14 @@ import { Input, Form, Button, Upload } from "antd";
 import ReactQuill from "react-quill";
 import { UploadOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
-import axios from "axios";
 import { useMessageApi } from "components/MessageProvider";
+import styled from "styled-components";
 
 // eslint-disable-next-line react/prop-types
 const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, setDeletedImages }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const useMessage = useMessageApi();
-
-  const uploadToServer = async file => {
-    const formData = new FormData();
-    formData.append("files", file);
-
-    try {
-      setLoading(true);
-      const response = await axios.post(`http://api.simplelaw.co.kr/api/v1/files`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      const fileUploadId = response.data?.data?.payload[0]?.fileUploadId;
-      useMessage.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
-      return fileUploadId;
-    } catch (error) {
-      useMessage.error(`${file.name} 파일 업로드에 실패했습니다.`);
-      console.error("Error uploading file:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const messageApi = useMessageApi();
 
   const handleFileChange = info => {
     let newFileList = [...info.fileList];
@@ -119,7 +96,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
   ];
 
   return (
-    <div className=' ml-10 right-side'>
+    <StyledFormContainer>
       <Form.Item className='mb-8'>
         <p>의뢰 제목</p>
         <Input
@@ -133,24 +110,26 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
         <p>
           의뢰 내용<span>(100자 이상)</span>
         </p>
-        <ReactQuill
-          ref={el => {
-            editorRef.current = el;
-            quillRef.current = el;
-          }}
-          theme='snow'
-          value={formik.values.content}
-          onChange={(content, delta, source, editor) => {
-            formik.setFieldValue("content", editor.getHTML());
-            if (source === "user") {
-              handleImageDelete(editor);
-            }
-          }}
-          modules={modules}
-          formats={formats}
-          className='custom-quill'
-          placeholder='내용을 입력하세요'
-        />
+        <StyledQuillContainer>
+          <ReactQuill
+            ref={el => {
+              editorRef.current = el;
+              quillRef.current = el;
+            }}
+            theme='snow'
+            value={formik.values.content}
+            onChange={(content, delta, source, editor) => {
+              formik.setFieldValue("content", editor.getHTML());
+              if (source === "user") {
+                handleImageDelete(delta);
+              }
+            }}
+            modules={modules}
+            formats={formats}
+            className='custom-quill'
+            placeholder='내용을 입력하세요'
+          />
+        </StyledQuillContainer>
       </Form.Item>
       <Form.Item>
         <p>의뢰 문서 업로드</p>
@@ -160,7 +139,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
           beforeUpload={file => {
             const isSizeValid = file.size / 1024 / 1024 < 1024;
             if (!isSizeValid) {
-              useMessage.error("파일 크기는 1GB 이하이어야 합니다.");
+              messageApi.error("파일 크기는 1GB 이하이어야 합니다.");
               return Upload.LIST_IGNORE;
             }
             return false;
@@ -172,9 +151,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
             }, 0);
           }}
         >
-          <Button icon={<UploadOutlined />} loading={loading}>
-            파일 선택
-          </Button>
+          <Button icon={<UploadOutlined />}>파일 선택</Button>
         </Upload>
       </Form.Item>
       <Form.Item>
@@ -182,8 +159,29 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
           의뢰 요청하기
         </Button>
       </Form.Item>
-    </div>
+    </StyledFormContainer>
   );
 };
+
+const StyledFormContainer = styled.div`
+  margin-left: 10px;
+
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+
+  p {
+    font-weight: bold;
+  }
+`;
+
+const StyledQuillContainer = styled.div`
+  .custom-quill {
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+`;
 
 export default CommonForm;

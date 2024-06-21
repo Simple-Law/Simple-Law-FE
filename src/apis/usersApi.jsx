@@ -59,18 +59,3 @@ export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
     throw error;
   }
 };
-
-// 파일 업로드 API 함수
-export const uploadFile = async formData => {
-  try {
-    const response = await axiosInstance.post("/api/v1/files", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error uploading file:", error.response?.data || error);
-    throw error;
-  }
-};

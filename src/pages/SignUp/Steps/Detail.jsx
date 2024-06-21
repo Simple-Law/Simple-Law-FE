@@ -3,11 +3,10 @@ import PropTypes from "prop-types";
 import LoginForm from "components/LoginForm";
 import { Button, Form, Input } from "antd";
 import { useMessageApi } from "components/MessageProvider";
-import { uploadFile } from "apis/usersApi";
+import { uploadFile } from "apis/commonAPI";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
 import SvgTrash from "components/Icons/Trash";
-import { AiOutlinePaperClip, AiOutlineDelete } from "react-icons/ai";
-import styled from "styled-components";
+import { AiOutlinePaperClip } from "react-icons/ai";
 
 // 사무실 번호 지역번호 하이픈 추가
 const formatPhoneNumber = value => {
@@ -58,7 +57,6 @@ const Detail = ({ handleData, nextStep }) => {
 
     try {
       setLoading(true);
-
       const response = await uploadFile(formData);
       const { fileUploadId } = response;
       console.log("데이터 오나?", response);

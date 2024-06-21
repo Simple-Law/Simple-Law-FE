@@ -2,14 +2,13 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "./redux/store";
-import Admin from "pages/Admin";
 import SignUp from "pages/SignUp";
 import Home from "pages/Home";
 import Login from "pages/Login";
 import Header from "components/header";
 import AppLayout from "components/MessageProvider";
-import QuestPage from "pages/QuestPage";
-import QuestPost from "pages/QuestPost";
+import QuestPage from "pages/Quest/QuestPage";
+import QuestPost from "pages/Quest/QuestPost";
 import FindUserId from "pages/FindUserId";
 import DetailPage from "pages/DetailPage";
 import RightSideMenu from "components/RightSideMenu";
@@ -29,7 +28,7 @@ const App = () => {
             <Route path='login' element={<Login />} />
             <Route path='login/:type' element={<Login />} />
             <Route path='findId' element={<FindUserId />} />
-            <Route path='admin/*' element={<Admin />} />
+            {/* <Route path='admin/*' element={<Admin />} /> */}
             <Route path='signup/:type' element={<SignUp />} />
             <Route path='mail/quest' element={<QuestPost />} />
             <Route path='requestion/:id' element={<ReQuestion />} />

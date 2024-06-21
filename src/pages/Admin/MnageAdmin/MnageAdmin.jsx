@@ -1,14 +1,14 @@
-import { React, useState } from "react";
+import { React, useCallback, useState } from "react";
 import styled from "styled-components";
 import { Table, Button } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
 import { SelectAdminTag } from "components/Tags/UserTag";
+import AuthButton from "components/Button/AuthButton";
 
-const Admin = () => {
+const MnageAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
 
   const [pageTitle] = useState("관리자 계정 관리");
-  //TODO: kmee- 추후 테이블 컴포넌트 별도 분리
   const paginationConfig = {
     pageSize: 10,
     position: ["bottomCenter"],
@@ -39,7 +39,9 @@ const Admin = () => {
       title: "권한",
       key: "adminType",
       className: "adminTag-column",
-      render: (_, record) => <SelectAdminTag adminType={record.adminType} updateAdmin={updateAdmin()} />,
+      render: (_, record) => (
+        <SelectAdminTag adminType={record.adminType} updateAdmin={() => updateAdmin(record.adminId)} />
+      ),
     },
     {
       title: "가입일",
@@ -58,21 +60,13 @@ const Admin = () => {
       key: "adminId",
       className: "deleteBtn-column",
       render: () => (
-        <Button danger size='small'>
+        <Button danger size='small' onClick={deleteAdmin}>
           삭제
         </Button>
       ),
     },
   ];
   const mockData = [
-    {
-      adminId: "admin1",
-      adminName: "마스터",
-      adminType: "MASTER_ADMIN",
-      email: "admin1@simplelaw.com",
-      joinDate: "2021.09.01",
-      accessDate: "2024.06.16",
-    },
     {
       adminId: "admin2",
       adminName: "김최고",
@@ -103,25 +97,26 @@ const Admin = () => {
     console.log("insertAdmin");
   };
 
-  //TODO: kmee- api명세서는 pk adminKey(식별키)로 받음. get요청 명세서 완료 후 참고해서 재작성
-  const updateAdmin = () => {
-    console.log("updateAdmin");
+  const updateAdmin = useCallback(adminId => {
+    console.log("updateAdmin", adminId);
+  }, []);
+
+  const deleteAdmin = () => {
+    console.log("deleteAdmin");
   };
 
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
         <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-        <Button type='primary' size='small' onClick={insertAdmin}>
-          계정 추가
-        </Button>
+        <AuthButton text='계정 추가' clickHandler={insertAdmin} authRole='MASTER_ADMIN' />
       </div>
       <Table dataSource={mockData} columns={columns} pagination={paginationConfig} />
     </BoardDiv>
   );
 };
 
-export default Admin;
+export default MnageAdmin;
 
 //TODO: kmee- 테이블 컬럼에 맞춰 수정
 const BoardDiv = styled.div`
