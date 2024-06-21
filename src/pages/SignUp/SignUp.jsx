@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-key */
 import React, { useState } from "react";
-import JoinForm from "./Steps/JoinForm";
+import JoinForm from "./Steps/SignUpForm";
 import Detail from "./Steps/Detail";
 import Choice from "./Steps/Choice";
 import Agreement from "./Steps/Agreement";
 import FinalStep from "./Steps/FinalStep"; // FinalStep 컴포넌트 추가
 import { useParams } from "react-router-dom";
 import { registerUser } from "apis/usersApi";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 
 const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(0);

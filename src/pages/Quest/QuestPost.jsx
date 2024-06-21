@@ -6,8 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import { createMail } from "../../redux/actions/mailActions";
-import CommonForm from "components/CommonForm";
-import { useMessageApi } from "components/MessageProvider";
+import CommonForm from "components/editor/ContentEditorForm";
+import { useMessageApi } from "components/messaging/MessageProvider";
 import { deleteFile, uploadFile } from "apis/commonAPI";
 const QuestPost = () => {
   const editorRef = useRef();

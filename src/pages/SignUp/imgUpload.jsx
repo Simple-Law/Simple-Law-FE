@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Upload, Button, Form } from "antd";
 import { ReactComponent as UploadFile } from "assets/images/icons/Upload.svg";
-import { useMessageApi } from "components/MessageProvider";
+import { useMessageApi } from "components/messaging/MessageProvider";
 
 const { Dragger } = Upload;
 // 이미지 업로드 테스터
