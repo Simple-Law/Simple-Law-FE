@@ -18,11 +18,6 @@ const userTypeList = [
 
 const adminTypeList = [
   {
-    value: "MASTER_ADMIN",
-    label: "마스터",
-    color: "tag-blue",
-  },
-  {
     value: "SUPER_ADMIN",
     label: "최고관리자",
     color: "tag-green",

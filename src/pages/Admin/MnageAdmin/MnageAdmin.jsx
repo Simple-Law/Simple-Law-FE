@@ -68,14 +68,6 @@ const MnageAdmin = () => {
   ];
   const mockData = [
     {
-      adminId: "admin1",
-      adminName: "마스터",
-      adminType: "MASTER_ADMIN",
-      email: "admin1@simplelaw.com",
-      joinDate: "2021.09.01",
-      accessDate: "2024.06.16",
-    },
-    {
       adminId: "admin2",
       adminName: "김최고",
       adminType: "SUPER_ADMIN",
