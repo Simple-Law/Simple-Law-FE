@@ -58,13 +58,15 @@ const Detail = ({ handleData, nextStep }) => {
     try {
       setLoading(true);
       const response = await uploadFile(formData);
-      const { fileUploadId } = response;
-      console.log("데이터 오나?", response);
+      const fileUploadId = response?.data?.payload[0]?.fileUploadId; // 서버 응답에서 fileUploadId 추출
+      console.log("fileUploadId:", fileUploadId); // fileUploadId 확인
       setFileUploadId(fileUploadId);
       messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
+      return fileUploadId;
     } catch (error) {
       messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
       console.error("Error uploading file:", error);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -89,19 +91,6 @@ const Detail = ({ handleData, nextStep }) => {
     setFileList([]);
   };
 
-  const handleSubmit = async () => {
-    if (fileList.length === 0) {
-      messageApi.error("파일을 업로드해 주세요.");
-      return;
-    }
-    for (let file of fileList) {
-      await uploadToServer(file);
-    }
-    setFileList([]); // 파일 리스트 초기화
-    form.resetFields(); // 폼 필드 초기화
-    nextStep(); // 다음 스텝으로 이동
-  };
-
   const handlePhoneNumberChange = e => {
     const { value } = e.target;
     const formattedPhoneNumber = formatPhoneNumber(value);
@@ -114,11 +103,25 @@ const Detail = ({ handleData, nextStep }) => {
     form.setFieldsValue({ [fieldName]: numericValue });
   };
 
+  const handleSubmit = async () => {
+    if (fileList.length === 0) {
+      messageApi.error("파일을 업로드해 주세요.");
+      return false;
+    }
+    const fileUploadId = await uploadToServer(fileList[0]);
+    return fileUploadId;
+  };
+
   const onFinish = async values => {
-    console.log("결과값: ", values);
-    await handleSubmit();
-    handleData({ ...values, fileUploadId }); // fileUploadId를 포함한 데이터를 전달
-    nextStep(); // 파일 업로드 없이 바로 다음 스텝으로 이동
+    setLoading(true);
+    const fileUploadId = await handleSubmit();
+    setLoading(false);
+    if (fileUploadId) {
+      handleData({ ...values, fileUploadId });
+      nextStep();
+    } else {
+      messageApi.error("파일 업로드에 실패했습니다. 다시 시도해 주세요.");
+    }
   };
 
   const beforeUpload = file => {
@@ -289,6 +292,7 @@ const Detail = ({ handleData, nextStep }) => {
     </LoginForm>
   );
 };
+
 Detail.propTypes = {
   handleData: PropTypes.func.isRequired,
   nextStep: PropTypes.func.isRequired,
