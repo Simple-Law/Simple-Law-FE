@@ -16,16 +16,35 @@ const Login = () => {
   const dispatch = useDispatch();
   const messageApi = useMessageApi();
 
-  const isLawyerLogin = type === "lawyer";
-  const { title, toggleType, toggleText } = isLawyerLogin
-    ? { title: "변호사 로그인", toggleType: "quest", toggleText: "의뢰인이신가요?" }
-    : { title: "의뢰인 로그인", toggleType: "lawyer", toggleText: "변호사이신가요?" };
+  // const isLawyerLogin = type === "lawyer";
+  // const { title, toggleType, toggleText } = isLawyerLogin
+  //   ? { title: "변호사 로그인", toggleType: "quest", toggleText: "의뢰인이신가요?" }
+  //   : { title: "의뢰인 로그인", toggleType: "lawyer", toggleText: "변호사이신가요?" };
+
+  let { typeName, toggleType, toggleText } = "";
+  switch (type) {
+    case "admin":
+      typeName = "관리자";
+      break;
+    case "lawyer":
+      typeName = "변호사";
+      toggleType = "quest";
+      toggleText = "의뢰인이신가요?";
+      break;
+    default:
+      typeName = "의뢰인";
+      toggleType = "lawyer";
+      toggleText = "변호사이신가요?";
+      break;
+  }
+  const title = `${typeName} 로그인`;
 
   const handleLogin = async values => {
     const { success, message } = await dispatch(loginUser(values, type));
+    const successUrl = type === "admin" ? "/admin/mnageAdmin" : "/board";
     if (success) {
       messageApi.success("로그인 성공!");
-      navigate("/board"); // 로그인 성공 시 이동
+      navigate(successUrl); // 로그인 성공 시 이동
     } else {
       messageApi.error(message || "로그인 실패!");
       if (message === "pending-approval") {
@@ -55,45 +74,49 @@ const Login = () => {
               </Button>
             </Form.Item>
           </div>
-          <div className='justify-center items-center gap-3 inline-flex w-full'>
-            <Link
-              to={`/sign-up/${type}`}
-              className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
-            >
-              회원가입
-            </Link>
-            <div className='w-px h-3 bg-zinc-300'></div>
-            <Link to='/find-id' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
-              아이디 찾기
-            </Link>
-            <div className='w-px h-3 bg-zinc-300'></div>
-            <Link to='/' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
-              <span>비밀번호 찾기</span>
-            </Link>
-          </div>
-          <div className='justify-start items-center inline-flex'>
-            <div className='grow shrink basis-0 h-px bg-zinc-200'></div>
-            <div className='px-3 justify-center items-center gap-2.5 flex'>
-              <div className="text-center text-neutral-400 text-base font-medium font-['Pretendard'] leading-tight">
-                또는
+          {type !== "admin" && (
+            <>
+              <div className='justify-center items-center gap-3 inline-flex w-full'>
+                <Link
+                  to={`/sign-up/${type}`}
+                  className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
+                >
+                  회원가입
+                </Link>
+                <div className='w-px h-3 bg-zinc-300'></div>
+                <Link to='/find-id' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
+                  아이디 찾기
+                </Link>
+                <div className='w-px h-3 bg-zinc-300'></div>
+                <Link to='/' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
+                  <span>비밀번호 찾기</span>
+                </Link>
               </div>
-            </div>
-            <div className='grow shrink basis-0 h-px bg-zinc-200'></div>
-          </div>
-          <div className='w-full flex gap-6 justify-center'>
-            <div className='flex justify-center items-center rounded-[50px] bg-kakaoYellow w-[54px] h-[54px]'>
-              <SvgKakao width='24px' height='24px' />
-            </div>
-            <div className='flex justify-center items-center rounded-[50px] bg-naverGreen w-[54px] h-[54px]'>
-              <SvgNaver width='20px' height='20px' />
-            </div>
-            <div className='flex justify-center items-center rounded-[50px] border-[1px] w-[54px] h-[54px]'>
-              <SvgGoogle width='24px' height='24px' fill='#FFF' />
-            </div>
-          </div>
-          <Link to={`/login/${toggleType}`} className='text-base font-normal text-center text-Base-Blue underline'>
-            {toggleText}
-          </Link>
+              <div className='justify-start items-center inline-flex'>
+                <div className='grow shrink basis-0 h-px bg-zinc-200'></div>
+                <div className='px-3 justify-center items-center gap-2.5 flex'>
+                  <div className="text-center text-neutral-400 text-base font-medium font-['Pretendard'] leading-tight">
+                    또는
+                  </div>
+                </div>
+                <div className='grow shrink basis-0 h-px bg-zinc-200'></div>
+              </div>
+              <div className='w-full flex gap-6 justify-center'>
+                <div className='flex justify-center items-center rounded-[50px] bg-kakaoYellow w-[54px] h-[54px]'>
+                  <SvgKakao width='24px' height='24px' />
+                </div>
+                <div className='flex justify-center items-center rounded-[50px] bg-naverGreen w-[54px] h-[54px]'>
+                  <SvgNaver width='20px' height='20px' />
+                </div>
+                <div className='flex justify-center items-center rounded-[50px] border-[1px] w-[54px] h-[54px]'>
+                  <SvgGoogle width='24px' height='24px' fill='#FFF' />
+                </div>
+              </div>
+              <Link to={`/login/${toggleType}`} className='text-base font-normal text-center text-Base-Blue underline'>
+                {toggleText}
+              </Link>
+            </>
+          )}
         </div>
       </Form>
     </LoginForm>
