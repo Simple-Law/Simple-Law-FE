@@ -25,7 +25,8 @@ export const registerUser = async userData => {
 // 사용자 인증 API 함수 - 로그인
 export const loginUser = async (credentials, userType) => {
   try {
-    const endpoint = userType === "lawyer" ? "lawyers" : "members";
+    // const endpoint = userType === "lawyer" ? "lawyers" : "members";
+    const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
     const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-in/email`, credentials);
     console.log("loginUser response:", response.data); // 응답 데이터 확인
     return response.data; // 실제 서버에서 반환하는 데이터를 그대로 반환

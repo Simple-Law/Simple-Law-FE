@@ -22,6 +22,7 @@ const App = () => {
           <Route path='/' element={<AppLayout />}>
             <Route index element={<HomePage />} />
             <Route path='login' element={<Navigate to='/login/quest' replace />} />
+            <Route path='admin/login' element={<Navigate to='/login/admin' replace />} />
             <Route path='login/:type' element={<LoginPage />} />
             <Route path='find-id' element={<FindUserIdPage />} />
             <Route path='sign-up/:type' element={<SignUpPage />} />
