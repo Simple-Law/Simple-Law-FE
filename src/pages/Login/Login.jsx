@@ -21,19 +21,23 @@ const Login = () => {
   //   ? { title: "변호사 로그인", toggleType: "quest", toggleText: "의뢰인이신가요?" }
   //   : { title: "의뢰인 로그인", toggleType: "lawyer", toggleText: "변호사이신가요?" };
 
-  let typeName = "";
+  let { typeName, toggleType, toggleText } = "";
   switch (type) {
     case "admin":
       typeName = "관리자";
       break;
     case "lawyer":
       typeName = "변호사";
+      toggleType = "quest";
+      toggleText = "의뢰인이신가요?";
       break;
     default:
       typeName = "의뢰인";
+      toggleType = "lawyer";
+      toggleText = "변호사이신가요?";
       break;
   }
-  const { title, toggleText } = { title: `${typeName} 로그인`, toggleText: `${typeName}이신가요?` };
+  const title = `${typeName} 로그인`;
 
   const handleLogin = async values => {
     const { success, message } = await dispatch(loginUser(values, type));
@@ -108,7 +112,7 @@ const Login = () => {
                   <SvgGoogle width='24px' height='24px' fill='#FFF' />
                 </div>
               </div>
-              <Link to={`/login/${type}`} className='text-base font-normal text-center text-Base-Blue underline'>
+              <Link to={`/login/${toggleType}`} className='text-base font-normal text-center text-Base-Blue underline'>
                 {toggleText}
               </Link>
             </>
