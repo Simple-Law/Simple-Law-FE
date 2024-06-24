@@ -7,6 +7,7 @@ const store = configureStore({
     auth: authReducer,
     mail: mailReducer,
   },
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 export default store;
