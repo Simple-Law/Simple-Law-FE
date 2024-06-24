@@ -33,7 +33,7 @@ export const loginUser = (values, userType) => async dispatch => {
     localStorage.setItem("accessTokenExpiredAt", accessTokenExpiredAt);
     localStorage.setItem("refreshTokenExpiredAt", refreshTokenExpiredAt);
 
-    // TODO: api완성 시 활성화
+    // TODO: DY - api완성 시 활성화
     // const memberInfoResponse = await getMemberInfo(userType);
     // dispatch(setUserInfo(memberInfoResponse.data.payload));
 
