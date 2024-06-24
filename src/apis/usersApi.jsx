@@ -1,14 +1,4 @@
-/* eslint-disable no-undef */
 import axiosInstance from "./axiosConfig";
-
-// Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
-axiosInstance.interceptors.request.use(config => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 // 회원가입 API 함수
 export const registerUser = async userData => {
@@ -56,6 +46,18 @@ export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
     });
   } catch (error) {
     console.error("Error verifying auth code:", error.response?.data || error);
+    throw error;
+  }
+};
+
+// 멤버 정보 가져오기 API 함수
+export const getMemberInfo = async userType => {
+  const endpoint = userType === "lawyer" ? "lawyers" : "members"; // 엔드포인트 설정
+  try {
+    const response = await axiosInstance.get(`/api/v1/${endpoint}/me`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching member info:", error.response?.data || error);
     throw error;
   }
 };

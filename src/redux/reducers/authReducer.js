@@ -1,14 +1,16 @@
 const initialState = {
   accessToken: localStorage.getItem("accessToken"),
   refreshToken: localStorage.getItem("refreshToken"),
+  accessTokenExpiredAt: localStorage.getItem("accessTokenExpiredAt"),
+  refreshTokenExpiredAt: localStorage.getItem("refreshTokenExpiredAt"),
   user: JSON.parse(localStorage.getItem("user")),
 };
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "LOGIN":
-      // eslint-disable-next-line no-case-declarations
-      const { accessToken, refreshToken, user, accessTokenExpiredAt, refreshTokenExpiredAt } = action.payload;
+    case "LOGIN": {
+      const { tokens, user } = action.payload;
+      const { accessToken, refreshToken, accessTokenExpiredAt, refreshTokenExpiredAt } = tokens;
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("accessTokenExpiredAt", accessTokenExpiredAt);
@@ -18,7 +20,16 @@ const authReducer = (state = initialState, action) => {
         ...state,
         accessToken,
         refreshToken,
+        accessTokenExpiredAt,
+        refreshTokenExpiredAt,
         user,
+      };
+    }
+    case "SET_USER_INFO":
+      localStorage.setItem("user", JSON.stringify(action.payload));
+      return {
+        ...state,
+        user: action.payload,
       };
     case "LOGOUT":
       localStorage.removeItem("accessToken");
@@ -30,6 +41,8 @@ const authReducer = (state = initialState, action) => {
         ...state,
         accessToken: null,
         refreshToken: null,
+        accessTokenExpiredAt: null,
+        refreshTokenExpiredAt: null,
         user: null,
       };
     default:
