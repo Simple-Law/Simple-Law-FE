@@ -45,9 +45,9 @@ AdminTag.propTypes = {
   adminType: PropTypes.string.isRequired,
 };
 
-export const SelectAdminTag = ({ adminType, updateAdmin }) => {
+export const SelectAdminTag = ({ defaultValue, onChange }) => {
   return (
-    <Select defaultValue={adminType} onChange={updateAdmin} variant='borderless'>
+    <Select defaultValue={defaultValue} onChange={onChange} variant='borderless'>
       {adminTypeList.map((item, index) => {
         return (
           <Select.Option key={index} value={item.value}>
@@ -59,8 +59,8 @@ export const SelectAdminTag = ({ adminType, updateAdmin }) => {
   );
 };
 SelectAdminTag.propTypes = {
-  adminType: PropTypes.string.isRequired,
-  updateAdmin: PropTypes.func.isRequired,
+  defaultValue: PropTypes.string.isRequired,
+  onChange: PropTypes.func,
 };
 
 export default UserTag;

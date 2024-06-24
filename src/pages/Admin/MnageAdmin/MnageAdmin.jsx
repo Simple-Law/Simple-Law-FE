@@ -41,7 +41,7 @@ const MnageAdmin = () => {
       key: "adminType",
       className: "adminTag-column",
       render: (_, record) => (
-        <SelectAdminTag adminType={record.adminType} updateAdmin={() => updateAdmin(record.adminId)} />
+        <SelectAdminTag defaultValue={record.adminType} onChange={() => updateAdmin(record.adminId)} />
       ),
     },
     {
