@@ -15,6 +15,7 @@ export const logout = () => ({
   type: LOGOUT,
 });
 
+// 비동기 Thunk 함수
 export const loginUser = (values, userType) => async dispatch => {
   try {
     const response = await apiLoginUser(values, userType);
