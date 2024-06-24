@@ -41,6 +41,7 @@ const SignUp = () => {
       barExamCount = "",
       yearOfPassing = "",
       fileUploadId = "",
+      caseCategoryKeyList = [],
       isMarketingConsent = false,
     } = formData;
 
@@ -67,6 +68,7 @@ const SignUp = () => {
         barExamCount: String(barExamCount),
         yearOfPassing: String(yearOfPassing),
         fileUploadId: String(fileUploadId),
+        caseCategoryKeyList: caseCategoryKeyList.map(Number),
       });
     }
 
