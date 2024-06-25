@@ -29,7 +29,6 @@ export const loginUser = (values, userType) => async dispatch => {
 
     dispatch(login(tokens, user));
 
-    // TODO: DY - api완성 시 활성화
     const memberInfoResponse = await getMemberInfo(userType);
     dispatch(setUserInfo(memberInfoResponse.data.payload));
 
