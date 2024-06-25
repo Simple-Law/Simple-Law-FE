@@ -29,14 +29,8 @@ export const loginUser = (values, userType) => async dispatch => {
 
     dispatch(login(tokens, user));
 
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("accessTokenExpiredAt", accessTokenExpiredAt);
-    localStorage.setItem("refreshTokenExpiredAt", refreshTokenExpiredAt);
-
-    // TODO: DY - api완성 시 활성화
-    // const memberInfoResponse = await getMemberInfo(userType);
-    // dispatch(setUserInfo(memberInfoResponse.data.payload));
+    const memberInfoResponse = await getMemberInfo(userType);
+    dispatch(setUserInfo(memberInfoResponse.data.payload));
 
     return { success: true }; // 성공 시 객체 반환
   } catch (error) {
