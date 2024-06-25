@@ -1,10 +1,11 @@
 import { React, useCallback, useState } from "react";
 import styled from "styled-components";
-import { Table, Button } from "antd";
+import { Table, Button, Modal } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
 
 import { SelectAdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
+import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 
 const MnageAdmin = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
@@ -93,6 +94,14 @@ const MnageAdmin = () => {
       accessDate: "2024.06.16",
     },
   ];
+  const userData = {
+    adminKey: null,
+    userId: null,
+    name: null,
+    email: null,
+  };
+
+  const [selectedUser, setSelectedUser] = useState(userData);
 
   const insertAdmin = () => {
     console.log("insertAdmin");
@@ -106,14 +115,53 @@ const MnageAdmin = () => {
     console.log("deleteAdmin");
   };
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
-    <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
-      <div className='flex justify-between items-end mb-3'>
-        <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-        <AuthButton text='계정 추가' clickHandler={insertAdmin} authRoles={["SUPER_ADMIN"]} />
-      </div>
-      <Table dataSource={mockData} columns={columns} pagination={paginationConfig} />
-    </BoardDiv>
+    <>
+      <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
+        <div className='flex justify-between items-end mb-3'>
+          <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
+          <AuthButton text='계정 추가' clickHandler={showModal} authRoles={["SUPER_ADMIN"]} />
+        </div>
+        <Table
+          // onmouseover="this.style.color='red'"
+          // onmouseout="this.style.color='blue';"
+          // style={{ hover: true }}
+          dataSource={mockData}
+          columns={columns}
+          pagination={paginationConfig}
+          onRow={(record, rowIndex) => {
+            return {
+              onClick: e => {
+                console.log(e.target.value);
+                console.log(record);
+                console.log(rowIndex);
+              }, // click row
+              onDoubleClick: e => {
+                console.log(e.target.value);
+                console.log(record);
+                console.log(rowIndex);
+              }, // double click row
+            };
+          }}
+        />
+      </BoardDiv>
+
+      <Modal title='Basic Modal' open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+        <p>유저 정보 입력폼</p>
+      </Modal>
+    </>
   );
 };
 
