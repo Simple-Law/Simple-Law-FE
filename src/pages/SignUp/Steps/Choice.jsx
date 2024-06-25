@@ -32,33 +32,34 @@ const Choice = ({ handleData, handleSubmit }) => {
     { value: "8", text: "등기", img: SvgDocument },
   ];
 
-  const onFinish = values => {
+  const onFinish = async values => {
     const caseCategoryKeyList = selectedValues.map(Number); // String을 Number로 변환
     const data = {
       ...values,
       caseCategoryKeyList,
     };
-    console.log("결과값: ", data);
     handleData(data);
-    handleSubmit();
+    console.log("결과값: ", data);
+
+    await handleSubmit();
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col justify-center">
-      <div className="relative w-[600px] mb-[100px] mx-auto px-6">
-        <div className="w-full relative mt-[20px]">
-          <div className="mb-6">
-            <Link to="/">
-              <SvgLogo width="226px" height="auto" className="mx-auto" />
+    <div className='min-h-screen relative flex flex-col justify-center'>
+      <div className='relative w-[600px] mb-[100px] mx-auto px-6'>
+        <div className='w-full relative mt-[20px]'>
+          <div className='mb-6'>
+            <Link to='/'>
+              <SvgLogo width='226px' height='auto' className='mx-auto' />
             </Link>
-            <h1 className="text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]">담당 의뢰 분야 선택</h1>
+            <h1 className='text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]'>담당 의뢰 분야 선택</h1>
           </div>
           <Form form={form} onFinish={onFinish}>
-            <Form.Item name="caseCategoryKeyList">
-              <StyledCheckGroup onChange={onChange} className="grid grid-cols-4 gap-x-6 gap-y-5 text-center">
+            <Form.Item name='caseCategoryKeyList'>
+              <StyledCheckGroup onChange={onChange} className='grid grid-cols-4 gap-x-6 gap-y-5 text-center'>
                 {radioOptions.map(option => (
                   <Checkbox key={option.value} value={option.value}>
-                    <div className="check-img-wrapper">
+                    <div className='check-img-wrapper'>
                       <option.img />
                     </div>
                     <p>{option.text}</p>
@@ -66,7 +67,7 @@ const Choice = ({ handleData, handleSubmit }) => {
                 ))}
               </StyledCheckGroup>
             </Form.Item>
-            <Button type="primary" htmlType="submit" block className="mt-8">
+            <Button type='primary' htmlType='submit' block className='mt-8'>
               가입 신청
             </Button>
           </Form>
