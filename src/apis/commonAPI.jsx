@@ -7,7 +7,7 @@ import axiosInstance from "./axiosConfig";
  */
 export const getRoles = async userTypeList => {
   try {
-    const response = await axiosInstance.get("/roles", { userTypeList: userTypeList.join(",") });
+    const response = await axiosInstance.get("/api/v1//roles", { userTypeList: userTypeList.join(",") });
     return response;
   } catch (error) {
     console.error("Error fetching getRoles:", error);

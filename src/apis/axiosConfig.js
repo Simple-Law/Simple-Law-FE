@@ -2,7 +2,6 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
-  url: "/api/v1",
   // withCredentials : false,
 });
 // Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
