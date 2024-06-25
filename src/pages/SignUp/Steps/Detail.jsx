@@ -47,7 +47,6 @@ const Detail = ({ handleData, nextStep }) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [fileUploadId, setFileUploadId] = useState("");
   const messageApi = useMessageApi();
   const dropAreaRef = useRef(null);
 
@@ -59,8 +58,6 @@ const Detail = ({ handleData, nextStep }) => {
       setLoading(true);
       const response = await uploadFile(formData);
       const fileUploadId = response?.data?.payload[0]?.fileUploadId; // 서버 응답에서 fileUploadId 추출
-      console.log("fileUploadId:", fileUploadId); // fileUploadId 확인
-      setFileUploadId(fileUploadId);
       messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
       return fileUploadId;
     } catch (error) {
