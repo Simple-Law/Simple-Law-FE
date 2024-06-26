@@ -76,7 +76,6 @@ const SignUp = () => {
       const response = await registerUser(userData);
       console.log("Saved data", response);
 
-      // messageApi.success("가입이 완료되었습니다!");
       nextStep(); // 가입 완료 후 다음 단계로 이동
     } catch (error) {
       messageApi.error("가입에 실패했습니다.");
