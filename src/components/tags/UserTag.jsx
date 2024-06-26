@@ -7,12 +7,12 @@ const userTypeList = [
   {
     value: "MEMBER",
     label: "의뢰인",
-    color: "tag-orange",
+    color: "tag-blue",
   },
   {
     value: "LAWYER",
     label: "변호사",
-    color: "tag-blue",
+    color: "tag-orange",
   },
 ];
 
