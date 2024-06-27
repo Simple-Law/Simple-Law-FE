@@ -17,7 +17,6 @@ const RequestSideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail);
-  //TODO: kmee - 사용자 권한에 따라 메뉴 다르게 보이게 처리
 
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
@@ -197,68 +196,71 @@ export const AdminSideMenu = () => {
   const navigate = useNavigate();
   const questMenuItems = [
     {
-      key: "1",
+      key: "allRequest",
       icon: <SvgMailAll />,
       label: "전체 의뢰함",
       children: [
         {
-          key: "1",
+          key: "preparing",
           label: "컨텍 예정",
         },
         {
-          key: "2",
+          key: "pending",
           label: "컨텍 진행중",
         },
         {
-          key: "3",
+          key: "completed",
           label: "컨텍 완료",
         },
       ],
     },
     {
-      key: "2",
+      key: "important",
       icon: <SvgMailStar />,
       label: "중요 의뢰함",
     },
     {
-      key: "3",
+      key: "endRequest",
       icon: <SvgMail />,
       label: "종료된 의뢰함",
     },
   ];
   const accountMenuItems = [
     {
-      key: "1",
+      key: "mnage-admin",
       icon: <SvgManageAdmin />,
       label: "관리자 계정 관리",
-      onTitleClick: () => navigate("/admin/mnage-dmin"),
     },
     {
-      key: "2",
+      key: "mnage-user",
       label: "회원 관리",
       icon: <SvgManageUser />,
       children: [
         {
-          key: "1",
+          key: "mnage-user",
           label: "전체 사용자",
-          onTitleClick: () => navigate("/admin/mnage-user"),
         },
         {
-          key: "2",
+          key: "rquestSignUp",
           label: "회원가입 요청",
         },
       ],
     },
     {
-      key: "2",
+      key: "event",
       icon: <SvgEvent />,
       label: "이벤트 관리",
     },
   ];
+
+  const onClickMenu = e => {
+    navigate(`/admin/${e.key}`);
+  };
+
   return (
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
-        // onClick={onClick}
+        onClick={onClickMenu}
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["main"]}
         mode='inline'
