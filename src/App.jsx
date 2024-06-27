@@ -9,7 +9,7 @@ import MyQuestListPage from "pages/Quest/MyQuestList";
 import QuestPostPage from "pages/Quest/QuestPost";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import RequestDetailPage from "pages/Quest/RequestDetail";
-import RequestSideMenu from "components/layout/RequestSideMenu";
+import RequestSideMenu, { AdminSideMenu } from "components/layout/RequestSideMenu";
 import MnageAdminList from "pages/Admin/MnageAdmin/MnageAdminList";
 
 const App = () => {
@@ -50,6 +50,8 @@ const LayoutWithHeader = () => {
 const LayoutWithSidebar = () => {
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail); // Redux state에서 가져옵니다.
+  //TODO: kmee - 임시. /me API 수정 시 유저타입으로 수정
+  const userType = useSelector(state => state?.auth?.user?.id);
 
   const handleMenuClick = filteredMails => {
     dispatch({ type: "SET_MAILS", payload: filteredMails });
@@ -57,7 +59,11 @@ const LayoutWithSidebar = () => {
 
   return (
     <div className='flex w-full pt-16'>
-      <RequestSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
+      {userType === "admin" ? (
+        <AdminSideMenu />
+      ) : (
+        <RequestSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />
+      )}
       <Outlet />
     </div>
   );

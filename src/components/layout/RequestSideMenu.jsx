@@ -190,6 +190,10 @@ const RequestSideMenu = () => {
   );
 };
 
+export const AdminSideMenu = () => {
+  return <div>관리자메뉴</div>;
+};
+
 export default RequestSideMenu;
 
 const Board = styled.div`
