@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Table, Button, Modal } from "antd";
 import profileImg from "../../../assets/images/icons/profile.svg";
 
-import { SelectAdminTag } from "components/tags/UserTag";
+import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 
@@ -41,9 +41,7 @@ const MnageAdminList = () => {
       title: "권한",
       key: "adminType",
       className: "adminTag-column",
-      render: (_, record) => (
-        <SelectAdminTag defaultValue={record.adminType} onChange={() => updateAdmin(record.adminId)} />
-      ),
+      render: (_, record) => <AdminTag adminType={record.adminType} />,
     },
     {
       title: "가입일",
