@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SvgLogo from "components/Icons/Logo";
 import { Link, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
@@ -12,7 +12,7 @@ const Header = () => {
   const user = useSelector(state => state.auth.user);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
-  //TODO: me API 수정 후 userType에 따라 처리
+  //TODO: me API 수정 후 userType에 따라 로그인 url, 로고 옆 관리자 태그 추가
   // const loginUrl =
 
   const showLogoutModal = () => {
