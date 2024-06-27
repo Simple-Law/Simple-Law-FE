@@ -1,11 +1,10 @@
 import { useCallback, useState } from "react";
 import styled from "styled-components";
 import { Table, Button, Modal } from "antd";
-import profileImg from "../../../assets/images/icons/profile.svg";
-
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
+import SvgProfile from "components/Icons/Profile";
 
 const MnageAdminList = () => {
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
@@ -23,7 +22,7 @@ const MnageAdminList = () => {
       className: "name-column",
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
-          <img src={profileImg} alt='profile' style={{ marginRight: "10px" }} />
+          <SvgProfile className='w-8 h-8 mr-2' />
           <div>
             <div>{record.adminName}</div>
             <div>{record.adminId}</div>
