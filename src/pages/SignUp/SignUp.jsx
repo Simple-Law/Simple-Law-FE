@@ -9,14 +9,17 @@ import { registerUser } from "apis/usersApi";
 import { useMessageApi } from "components/messaging/MessageProvider";
 
 const SignUp = () => {
-  //TODO: DY - 아이디, 이메일, 핸드폰 번호 중복확인
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({});
   const { type } = useParams();
   const messageApi = useMessageApi();
 
   const handleData = newData => {
-    setFormData(prev => ({ ...prev, ...newData }));
+    setFormData(prev => {
+      const updatedData = { ...prev, ...newData };
+      console.log("Updated form data: ", updatedData); // 데이터 구조를 확인합니다.
+      return updatedData;
+    });
   };
 
   const nextStep = () => {
@@ -24,8 +27,9 @@ const SignUp = () => {
     setCurrentStep(nextIndex);
   };
 
-  const handleSubmit = async () => {
-    console.log("Form Data:", { ...formData });
+  const handleSubmit = async data => {
+    const mergedData = { ...formData, ...data }; // 전달된 데이터를 병합
+    console.log("Form Data:", mergedData);
     const {
       id = "",
       password = "",
@@ -43,7 +47,7 @@ const SignUp = () => {
       fileUploadId = "",
       caseCategoryKeyList = [],
       isMarketingConsent = false,
-    } = formData;
+    } = mergedData;
 
     // 기본 필수 필드 구성
     const userData = {
@@ -71,6 +75,7 @@ const SignUp = () => {
         caseCategoryKeyList: caseCategoryKeyList.map(Number),
       });
     }
+    console.log("User Data Payload: ", userData); // 페이로드 확인
 
     try {
       const response = await registerUser(userData);

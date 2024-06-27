@@ -23,19 +23,27 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
   // 회원가입 폼 제출
   const onFinish = async values => {
-    // 인증번호 검증
-    const isVerified = await handleVerifyAuthCode();
-    if (!isVerified) {
-      return; // 인증 실패 시 함수 종료
-    }
+    console.log("onFinish called with values: ", values);
+    try {
+      // 인증번호 검증
+      const isVerified = await handleVerifyAuthCode();
+      if (!isVerified) {
+        console.log("Verification failed");
+        return; // 인증 실패 시 함수 종료
+      }
 
-    console.log("결과값: ", values);
-    handleData(values);
+      console.log("결과값: ", values);
+      handleData(values);
 
-    if (type !== "lawyer") {
-      await handleSubmit();
-    } else {
-      nextStep();
+      if (type !== "lawyer") {
+        console.log("Calling handleSubmit with values: ", values);
+        await handleSubmit(values);
+      } else {
+        console.log("Calling nextStep for lawyer");
+        nextStep();
+      }
+    } catch (error) {
+      console.error("유효성 검사 실패: ", error);
     }
   };
   // 중복검사
@@ -63,13 +71,13 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
         form.setFields([{ name: field, errors: [`이미 사용 중인 ${fieldNames[field]}입니다.`] }]);
       } else {
         setFieldMessages("", `사용 가능한 ${fieldNames[field]}입니다.`);
+        //TODO CHECKLIST: Warning: Warning: There may be circular references
         form.setFields([{ name: field, errors: [] }]);
       }
     } catch (error) {
       messageApi.error(`${fieldNames[field]} 중복 검사 중 오류가 발생했습니다.`);
     }
   };
-
   // 폼 필드 값이 변경 시 호출
   const handleFormChange = (_, allValues) => {
     const requiredFields = [
