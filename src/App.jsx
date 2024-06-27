@@ -30,7 +30,7 @@ const App = () => {
             <Route element={<LayoutWithSidebar />}>
               <Route path='detail/:id' element={<RequestDetailPage />} />
               <Route path='board' element={<MyQuestListPage />} />
-              <Route path='admin/mnage-dmin' element={<MnageAdminList />} />
+              <Route path='admin/mnage-admin' element={<MnageAdminList />} />
               <Route path='admin/mnage-user' element={<MnageUserList />} />
             </Route>
           </Route>
