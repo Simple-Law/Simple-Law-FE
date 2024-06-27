@@ -1,4 +1,3 @@
-import React from "react";
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import SignUpPage from "pages/SignUp/SignUp";
@@ -11,7 +10,7 @@ import QuestPostPage from "pages/Quest/QuestPost";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import RequestDetailPage from "pages/Quest/RequestDetail";
 import RequestSideMenu from "components/layout/RequestSideMenu";
-import MnageAdmin from "pages/Admin/MnageAdmin/MnageAdmin";
+import MnageAdminList from "pages/Admin/MnageAdmin/MnageAdminList";
 
 const App = () => {
   return (
@@ -30,7 +29,7 @@ const App = () => {
             <Route element={<LayoutWithSidebar />}>
               <Route path='detail/:id' element={<RequestDetailPage />} />
               <Route path='board' element={<MyQuestListPage />} />
-              <Route path='admin/mnageAdmin' element={<MnageAdmin />} />
+              <Route path='admin/mnageAdmin' element={<MnageAdminList />} />
             </Route>
           </Route>
         </Route>
