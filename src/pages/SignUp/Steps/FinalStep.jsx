@@ -1,8 +1,7 @@
-import React from "react";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-
+import PropTypes from "prop-types";
 const FinalStep = ({ type }) => {
   const navigate = useNavigate();
 
@@ -56,5 +55,7 @@ const FinalStep = ({ type }) => {
     </div>
   );
 };
-
+FinalStep.propTypes = {
+  type: PropTypes.string.isRequired,
+};
 export default FinalStep;
