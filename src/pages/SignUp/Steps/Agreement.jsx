@@ -1,7 +1,8 @@
 import LoginForm from "components/layout/AuthFormLayout";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Checkbox, Button, Form } from "antd";
+import PropTypes from "prop-types";
 
 const Agreement = ({ handleData, nextStep }) => {
   const { type } = useParams();
@@ -135,5 +136,8 @@ const Agreement = ({ handleData, nextStep }) => {
     </LoginForm>
   );
 };
-
+Agreement.propTypes = {
+  handleData: PropTypes.func.isRequired,
+  nextStep: PropTypes.func.isRequired,
+};
 export default Agreement;
