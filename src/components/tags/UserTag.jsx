@@ -1,7 +1,19 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { Select, Tag } from "antd";
 import styled from "styled-components";
+
+const userStatusList = [
+  {
+    value: true,
+    label: "활성화",
+    color: "tag-gray",
+  },
+  {
+    value: false,
+    label: "비활성화",
+    color: "tag-red",
+  },
+];
 
 const userTypeList = [
   {
@@ -13,6 +25,11 @@ const userTypeList = [
     value: "LAWYER",
     label: "변호사",
     color: "tag-orange",
+  },
+  {
+    value: "ADMIN",
+    label: "관리자",
+    color: "tag-gray",
   },
 ];
 
@@ -29,9 +46,17 @@ const adminTypeList = [
   },
 ];
 
+const UserStatusTag = ({ status }) => {
+  const tagAttr = userStatusList.find(item => item.value === status);
+  return <StyledTag className={`status-tag ${tagAttr?.color} `}>{tagAttr?.label}</StyledTag>;
+};
+UserStatusTag.propTypes = {
+  status: PropTypes.bool.isRequired,
+};
+
 const UserTag = ({ userType }) => {
   const tagAttr = userTypeList.find(item => item.value === userType);
-  return <StyledTag className={`user-tag ${tagAttr.color}`}>{tagAttr.label}</StyledTag>;
+  return <StyledTag className={`user-tag ${tagAttr?.color} max-w-[50px]`}>{tagAttr?.label}</StyledTag>;
 };
 UserTag.propTypes = {
   userType: PropTypes.string.isRequired,
@@ -39,7 +64,7 @@ UserTag.propTypes = {
 
 export const AdminTag = ({ adminType }) => {
   const tagAttr = adminTypeList.find(item => item.value === adminType);
-  return <StyledTag className={`user-tag ${tagAttr.color}`}>{tagAttr.label}</StyledTag>;
+  return <StyledTag className={`user-tag ${tagAttr?.color} max-w-[100px]`}>{tagAttr?.label}</StyledTag>;
 };
 AdminTag.propTypes = {
   adminType: PropTypes.string.isRequired,
@@ -68,7 +93,7 @@ export default UserTag;
 const StyledTag = styled(Tag)`
   &.user-tag {
     display: flex;
-    min-width: 80px;
+    min-width: 60px;
     padding: 4px 6px;
     font-size: 13px;
     font-weight: 400;
@@ -78,6 +103,16 @@ const StyledTag = styled(Tag)`
     border: none;
     border-radius: 4px;
     margin-inline-end: 0px; !important;
+  }
+  &.dot{
+    &::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      display: block;
+      border-radius: 50px;
+      margin-right: 6px;
+    }
   }
   &.user-tag.tag-blue {
     color: #287fff;
@@ -96,5 +131,9 @@ const StyledTag = styled(Tag)`
   &.user-tag.tag-orange {
     color: #ff9200;
     background: rgba(255, 146, 0, 0.12);
+  }
+    &.user-tag.tag-red {
+    color: #ff4242;
+    background: rgba(255, 66, 66, 0.12);
   }
 `;

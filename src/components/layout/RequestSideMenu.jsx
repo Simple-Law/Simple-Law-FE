@@ -1,20 +1,22 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { Button, Menu } from "antd";
 import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
+import { setMails, setTableData } from "../../redux/actions/mailActions";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
 import SvgTrash from "components/Icons/Trash";
-import { setMails, setTableData } from "../../redux/actions/mailActions";
+import SvgManageAdmin from "components/Icons/ManageAdmin";
+import SvgManageUser from "components/Icons/ManageUser";
+import SvgEvent from "components/Icons/Event";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail);
-  //TODO: kmee - 사용자 권한에 따라 메뉴 다르게 보이게 처리
 
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
@@ -191,7 +193,104 @@ const RequestSideMenu = () => {
 };
 
 export const AdminSideMenu = () => {
-  return <div>관리자메뉴</div>;
+  const navigate = useNavigate();
+  const questMenuItems = [
+    {
+      key: "allRequest",
+      icon: <SvgMailAll />,
+      label: "전체 의뢰함",
+      children: [
+        {
+          key: "preparing",
+          label: "컨텍 예정",
+        },
+        {
+          key: "pending",
+          label: "컨텍 진행중",
+        },
+        {
+          key: "completed",
+          label: "컨텍 완료",
+        },
+      ],
+    },
+    {
+      key: "important",
+      icon: <SvgMailStar />,
+      label: "중요 의뢰함",
+    },
+    {
+      key: "endRequest",
+      icon: <SvgMail />,
+      label: "종료된 의뢰함",
+    },
+  ];
+  const accountMenuItems = [
+    {
+      key: "mnage-admin",
+      icon: <SvgManageAdmin />,
+      label: "관리자 계정 관리",
+    },
+    {
+      key: "mnage-user",
+      label: "회원 관리",
+      icon: <SvgManageUser />,
+      children: [
+        {
+          key: "mnage-user",
+          label: "전체 사용자",
+        },
+        {
+          key: "rquestSignUp",
+          label: "회원가입 요청",
+        },
+      ],
+    },
+    {
+      key: "event",
+      icon: <SvgEvent />,
+      label: "이벤트 관리",
+    },
+  ];
+
+  const onClickMenu = e => {
+    navigate(`/admin/${e.key}`);
+  };
+
+  return (
+    <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
+      <Menu
+        onClick={onClickMenu}
+        defaultSelectedKeys={["1"]}
+        defaultOpenKeys={["main"]}
+        mode='inline'
+        className='w-full border-e-0'
+        items={[
+          {
+            key: "questMain",
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
+                의뢰함
+              </span>
+            ),
+            children: questMenuItems,
+          },
+          {
+            type: "divider",
+          },
+          {
+            key: "AccountMain",
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
+                계정
+              </span>
+            ),
+            children: accountMenuItems,
+          },
+        ]}
+      />
+    </Board>
+  );
 };
 
 export default RequestSideMenu;
