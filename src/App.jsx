@@ -11,6 +11,7 @@ import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import RequestDetailPage from "pages/Quest/RequestDetail";
 import RequestSideMenu, { AdminSideMenu } from "components/layout/RequestSideMenu";
 import MnageAdminList from "pages/Admin/MnageAdmin/MnageAdminList";
+import MnageUserList from "pages/Admin/MnageUser/MnageUserList";
 
 const App = () => {
   return (
@@ -29,7 +30,8 @@ const App = () => {
             <Route element={<LayoutWithSidebar />}>
               <Route path='detail/:id' element={<RequestDetailPage />} />
               <Route path='board' element={<MyQuestListPage />} />
-              <Route path='admin/mnageAdmin' element={<MnageAdminList />} />
+              <Route path='admin/mnage-dmin' element={<MnageAdminList />} />
+              <Route path='admin/mnage-user' element={<MnageUserList />} />
             </Route>
           </Route>
         </Route>

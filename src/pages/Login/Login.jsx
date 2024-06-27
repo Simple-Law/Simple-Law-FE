@@ -42,7 +42,7 @@ const Login = () => {
   const handleLogin = async values => {
     // TODO: DY -  오류 메시지 받아서 messageApi에 띄우기
     const { success, message } = await dispatch(loginUser(values, type));
-    const successUrl = type === "admin" ? "/admin/mnageAdmin" : "/board";
+    const successUrl = type === "admin" ? "/admin/mnage-dmin" : "/board";
     if (success) {
       messageApi.success("로그인 성공!");
       navigate(successUrl); // 로그인 성공 시 이동
