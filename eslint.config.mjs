@@ -7,11 +7,12 @@ export default [
     pluginJs.configs.recommended,
     { files: ['**/*.jsx'], languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
     {
+        ...pluginReactConfig,
         rules: {
+            ...pluginReactConfig.rules,
             semi: ['error', 'always'],
             'react/jsx-uses-react': 'off',
             'react/react-in-jsx-scope': 'off',
         },
     },
-    pluginReactConfig,
 ];
