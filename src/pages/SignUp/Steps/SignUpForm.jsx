@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+import { useState } from "react";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
-import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
+import { sendAuthCode, verifyAuthCode, checkDuplicate } from "apis/usersApi";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import PropTypes from "prop-types";
 import moment from "moment";
@@ -12,8 +13,82 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [isFormFilled, setIsFormFilled] = useState(false);
   const [timer, setTimer] = useState(0);
   const [countdown, setCountdown] = useState(null);
-
+  const [messages, setMessages] = useState({
+    idError: "",
+    idSuccess: "",
+    emailError: "",
+    emailSuccess: "",
+  });
   const messageApi = useMessageApi();
+
+  // 회원가입 폼 제출
+  const onFinish = async values => {
+    // 인증번호 검증
+    const isVerified = await handleVerifyAuthCode();
+    if (!isVerified) {
+      return; // 인증 실패 시 함수 종료
+    }
+
+    console.log("결과값: ", values);
+    handleData(values);
+
+    if (type !== "lawyer") {
+      await handleSubmit();
+    } else {
+      nextStep();
+    }
+  };
+  // 중복검사
+  const handleBlur = async field => {
+    const value = form.getFieldValue(field);
+    if (!value) return;
+
+    const fieldNames = {
+      id: "아이디",
+      email: "이메일",
+    };
+
+    const setFieldMessages = (errorMessage, successMessage) => {
+      setMessages(prev => ({
+        ...prev,
+        [`${field}Error`]: errorMessage,
+        [`${field}Success`]: successMessage,
+      }));
+    };
+
+    try {
+      const isDuplicate = await checkDuplicate(field, value);
+      if (isDuplicate) {
+        setFieldMessages(`이미 사용 중인 ${fieldNames[field]}입니다.`, "");
+        form.setFields([{ name: field, errors: [`이미 사용 중인 ${fieldNames[field]}입니다.`] }]);
+      } else {
+        setFieldMessages("", `사용 가능한 ${fieldNames[field]}입니다.`);
+        form.setFields([{ name: field, errors: [] }]);
+      }
+    } catch (error) {
+      messageApi.error(`${fieldNames[field]} 중복 검사 중 오류가 발생했습니다.`);
+    }
+  };
+
+  // 폼 필드 값이 변경 시 호출
+  const handleFormChange = (_, allValues) => {
+    const requiredFields = [
+      "id",
+      "password",
+      "passwordConfirm",
+      "email",
+      "name",
+      "birthDay",
+      "gender",
+      "phoneNumber",
+      "verificationCode",
+    ];
+    const isAllFieldsFilled = requiredFields.every(key => {
+      return allValues[key] !== undefined && allValues[key] !== "";
+    });
+
+    setIsFormFilled(isAllFieldsFilled);
+  };
 
   // 타이머 변환
   const formatTime = seconds => {
@@ -37,6 +112,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     }, 1000);
     setCountdown(newCountdown);
   };
+
   // 핸드폰 번호 확인
   const validPhoneNumber = (phoneNumberInput, value) => {
     if (!value || !value.startsWith("010")) {
@@ -44,52 +120,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     } else {
       return Promise.resolve();
     }
-  };
-
-  // 핸드폰 번호 하이픈 추가
-  const handlePhoneNumberChange = e => {
-    const { value } = e.target;
-    const phoneNumber = value.replace(/\D/g, "");
-    const formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
-    form.setFieldsValue({ phoneNumber: formattedPhoneNumber });
-  };
-
-  // 회원가입 폼 제출
-  const onFinish = async values => {
-    // 인증번호 검증
-    const isVerified = await handleVerifyAuthCode();
-    if (!isVerified) {
-      return; // 인증 실패 시 함수 종료
-    }
-
-    console.log("결과값: ", values);
-    handleData(values);
-
-    if (type !== "lawyer") {
-      await handleSubmit();
-    } else {
-      nextStep();
-    }
-  };
-
-  // 폼 필드 값이 변경 시 호출
-  const handleFormChange = (_, allValues) => {
-    const requiredFields = [
-      "id",
-      "password",
-      "passwordConfirm",
-      "email",
-      "name",
-      "birthDay",
-      "gender",
-      "phoneNumber",
-      ...(showAuthenticationCodeField ? ["verificationCode"] : []),
-    ];
-    const isAllFieldsFilled = requiredFields.every(key => {
-      return allValues[key] !== undefined && allValues[key] !== "";
-    });
-
-    setIsFormFilled(isAllFieldsFilled);
   };
 
   // 생년월일 dot 추가
@@ -100,6 +130,14 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       .split("")
       .reduce((acc, char, index) => (index === 4 || index === 6 ? acc + "." + char : acc + char), "");
     form.setFieldsValue({ birthDay: formattedDate });
+  };
+
+  // 핸드폰 번호 하이픈 추가
+  const handlePhoneNumberChange = e => {
+    const { value } = e.target;
+    const phoneNumber = value.replace(/\D/g, "");
+    const formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
+    form.setFieldsValue({ phoneNumber: formattedPhoneNumber });
   };
 
   // 인증코드 확인
@@ -168,15 +206,16 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               },
             ]}
             validateTrigger='onBlur'
+            validateStatus={messages.idError ? "error" : messages.idSuccess ? "success" : ""}
+            help={messages.idError || messages.idSuccess}
           >
-            <Input placeholder='아이디 입력' />
+            <Input placeholder='아이디 입력' onBlur={() => handleBlur("id")} />
           </Form.Item>
 
           <Form.Item
             name='password'
             rules={[
               { whitespace: true, required: true, message: "비밀번호를 입력해주세요" },
-              // eslint-disable-next-line no-unused-vars
               ({ getFieldValue }) => ({
                 validator(_, value) {
                   if (!value) {
@@ -251,8 +290,10 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               },
             ]}
             validateTrigger='onBlur'
+            validateStatus={messages.emailError ? "error" : messages.emailSuccess ? "success" : ""}
+            help={messages.emailError || messages.emailSuccess}
           >
-            <Input placeholder='이메일 입력' />
+            <Input placeholder='이메일 입력' onBlur={() => handleBlur("email")} />
           </Form.Item>
         </div>
         <div className='w-full h-px bg-zinc-200 my-[20px]'></div>
