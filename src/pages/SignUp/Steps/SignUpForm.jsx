@@ -1,20 +1,42 @@
-/* eslint-disable no-unused-vars */
 import React, { useState } from "react";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
-import moment from "moment";
 import { sendAuthCode, verifyAuthCode } from "apis/usersApi";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import PropTypes from "prop-types";
+import moment from "moment";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
   const [isFormFilled, setIsFormFilled] = useState(false);
-  const [isAuthCodeFilled, setIsAuthCodeFilled] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [countdown, setCountdown] = useState(null);
 
   const messageApi = useMessageApi();
 
+  // 타이머 변환
+  const formatTime = seconds => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
+  // 타이머 시작
+  const startTimer = seconds => {
+    setTimer(seconds);
+    if (countdown) clearInterval(countdown);
+    const newCountdown = setInterval(() => {
+      setTimer(prevTimer => {
+        if (prevTimer <= 1) {
+          clearInterval(newCountdown);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+    setCountdown(newCountdown);
+  };
   // 핸드폰 번호 확인
   const validPhoneNumber = (phoneNumberInput, value) => {
     if (!value || !value.startsWith("010")) {
@@ -34,6 +56,12 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
   // 회원가입 폼 제출
   const onFinish = async values => {
+    // 인증번호 검증
+    const isVerified = await handleVerifyAuthCode();
+    if (!isVerified) {
+      return; // 인증 실패 시 함수 종료
+    }
+
     console.log("결과값: ", values);
     handleData(values);
 
@@ -45,8 +73,22 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   };
 
   // 폼 필드 값이 변경 시 호출
-  const handleFormChange = (changedValues, allValues) => {
-    const isAllFieldsFilled = Object.keys(allValues).every(key => allValues[key]);
+  const handleFormChange = (_, allValues) => {
+    const requiredFields = [
+      "id",
+      "password",
+      "passwordConfirm",
+      "email",
+      "name",
+      "birthDay",
+      "gender",
+      "phoneNumber",
+      ...(showAuthenticationCodeField ? ["verificationCode"] : []),
+    ];
+    const isAllFieldsFilled = requiredFields.every(key => {
+      return allValues[key] !== undefined && allValues[key] !== "";
+    });
+
     setIsFormFilled(isAllFieldsFilled);
   };
 
@@ -60,34 +102,37 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     form.setFieldsValue({ birthDay: formattedDate });
   };
 
-  // 전화번호 인증
+  // 인증코드 확인
   const handleAuthCodeChange = e => {
     const { value } = e.target;
-    if (value.length === 4) {
-      setIsAuthCodeFilled(true);
-    } else {
-      setIsAuthCodeFilled(false);
-    }
+    form.setFieldsValue({ verificationCode: value });
+    handleFormChange({}, { ...form.getFieldsValue(), verificationCode: value });
   };
+
   // 인증 코드를 전송하는 함수
   const handleSendAuthCode = async () => {
-    const phoneNumber = form.getFieldValue("phoneNumber").replace(/-/g, "");
+    const phoneNumber = form.getFieldValue("phoneNumber");
     const name = form.getFieldValue("name");
     if (!phoneNumber || !name) {
       messageApi.error("이름과 휴대전화 번호를 입력하세요.");
       return;
     }
 
+    const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
+
     try {
-      await sendAuthCode(phoneNumber, type);
+      // CHECKLIST: DY - 인증 만료 시간 체크
+      await sendAuthCode(cleanedPhoneNumber, type);
+      // const expireTime = response.data.expireTime; //인증타임 있다면 설정
       messageApi.success("인증번호가 발송되었습니다.");
       setShowAuthenticationCodeField(true);
+      // startTimer(expireTime || 180); // expireTime이 없는 경우 기본값 180초 설정
+      startTimer(180); // expireTime이 없는 경우 기본값 180초 설정
     } catch (error) {
       messageApi.error("인증번호 발송에 실패했습니다.");
-      setShowAuthenticationCodeField(true);
+      setShowAuthenticationCodeField(false);
     }
   };
-
   // 인증 코드를 확인하는 함수
   const handleVerifyAuthCode = async () => {
     const phoneNumber = form.getFieldValue("phoneNumber").replace(/-/g, "");
@@ -99,10 +144,10 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
     try {
       await verifyAuthCode(phoneNumber, verificationCode, type);
-      form.submit();
+      return true;
     } catch (error) {
-      messageApi.error("인증번호 확인에 실패했습니다.");
-      form.submit();
+      messageApi.error("인증번호가 올바르지 않습니다. 확인 후 다시 입력해 주세요.");
+      return false;
     }
   };
 
@@ -224,7 +269,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
           >
             <Input placeholder='이름' />
           </Form.Item>
-
           <Form.Item
             name='birthDay'
             rules={[
@@ -253,6 +297,19 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
           >
             <Input placeholder='생년월일 8자리' maxLength='10' onChange={handleBirthdayChange} />
           </Form.Item>
+
+          <Form.Item name='gender'>
+            <Radio.Group buttonStyle='solid' className='w-full grid grid-cols-3 text-center'>
+              <Radio.Button value='MALE' className='!rounded-l-md'>
+                남자
+              </Radio.Button>
+              <Radio.Button value='FEMALE'>여자</Radio.Button>
+              <Radio.Button value='none' className='!rounded-r-md'>
+                선택안함
+              </Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+
           <Form.Item
             name='phoneNumber'
             rules={[
@@ -265,43 +322,36 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             ]}
             validateTrigger='onBlur'
           >
-            <Input placeholder="휴대전화번호('-' 제외하고 입력)" onChange={handlePhoneNumberChange} maxLength='13' />
-          </Form.Item>
-          <Form.Item name='gender'>
-            <Radio.Group buttonStyle='solid' className='w-full grid grid-cols-3 text-center'>
-              <Radio.Button value='MALE' className='!rounded-l-md'>
-                남자
-              </Radio.Button>
-              <Radio.Button value='FEMALE'>여자</Radio.Button>
-              <Radio.Button value='none' className='!rounded-r-md'>
-                선택안함
-              </Radio.Button>
-            </Radio.Group>
+            <Input
+              style={{ width: "100%" }}
+              placeholder="휴대전화번호('-' 제외하고 입력)"
+              onChange={handlePhoneNumberChange}
+              maxLength='13'
+              suffix={
+                <p
+                  onClick={handleSendAuthCode}
+                  disabled={!form.getFieldValue("phoneNumber")}
+                  style={{ color: "#287fff", cursor: "pointer" }}
+                >
+                  {showAuthenticationCodeField ? "재전송" : "인증 요청"}
+                </p>
+              }
+            />
           </Form.Item>
           {showAuthenticationCodeField && (
             <Form.Item name='verificationCode'>
-              <Input placeholder='인증번호 입력' onChange={handleAuthCodeChange} maxLength='4' />
+              <Input
+                placeholder='인증번호 입력'
+                onChange={handleAuthCodeChange}
+                maxLength='4'
+                suffix={<span style={{ color: "#287fff" }}>{timer > 0 ? `${formatTime(timer)}` : ""}</span>}
+              />
             </Form.Item>
           )}
         </div>
         <Form.Item className='mt-8'>
-          <Button
-            // TODO: DY - 인증번호 입력 input 열리기 전까지 disabled 처리하기
-            // NOTE: 인증번호가 발송되었습니다. < 문구 추가
-            // NOTE: 인증번호를 받지 못하셨다면 휴대폰 번호를 확인해 주세요. 인증번호 필수
-            // NOTE: 2:38 확인
-            type='primary'
-            onClick={() => {
-              if (isAuthCodeFilled) {
-                handleVerifyAuthCode();
-              } else {
-                handleSendAuthCode();
-              }
-            }}
-            disabled={!isFormFilled}
-            block
-          >
-            {isAuthCodeFilled ? "가입하기" : "인증 요청"}
+          <Button type='primary' htmlType='submit' disabled={!isFormFilled} block>
+            가입하기
           </Button>
         </Form.Item>
       </Form>

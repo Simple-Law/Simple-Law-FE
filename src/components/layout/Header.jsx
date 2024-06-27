@@ -12,6 +12,8 @@ const Header = () => {
   const user = useSelector(state => state.auth.user);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
+  //TODO: me API 수정 후 userType에 따라 처리
+  // const loginUrl =
 
   const showLogoutModal = () => {
     setIsModalVisible(true);

@@ -1,14 +1,14 @@
 // store.js
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-import storage from "redux-persist/lib/storage";
 import { thunk } from "redux-thunk";
+import storageSession from "redux-persist/lib/storage/session";
 import rootReducer from "./reducers/index"; // 결합된 리듀서 가져오기
 
 // Persist Config 설정
 const persistConfig = {
   key: "root",
-  storage,
+  storage: storageSession, // sessionStorage를 사용,창 닫으면 로그아웃
   whitelist: ["auth"], // 지속할 리듀서 목록
 };
 
