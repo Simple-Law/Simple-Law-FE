@@ -232,7 +232,7 @@ export const AdminSideMenu = () => {
       label: "관리자 계정 관리",
     },
     {
-      key: "mnage-user",
+      key: "temp",
       label: "회원 관리",
       icon: <SvgManageUser />,
       children: [
@@ -241,7 +241,7 @@ export const AdminSideMenu = () => {
           label: "전체 사용자",
         },
         {
-          key: "rquestSignUp",
+          key: "request-signup",
           label: "회원가입 요청",
         },
       ],
