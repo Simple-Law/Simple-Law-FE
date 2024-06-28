@@ -175,7 +175,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     }
 
     const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
-    const timeout = delayedShowLoading(dispatch); // 3초 후 로딩 시작
+    const timeout = dispatch(delayedShowLoading());
     setTimeoutId(timeout);
     try {
       await sendAuthCode(cleanedPhoneNumber, type);
@@ -187,7 +187,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       messageApi.error("인증번호 발송에 실패했습니다.");
       setShowAuthenticationCodeField(false);
     } finally {
-      dispatch(hideLoading()); // 로딩 종료
+      dispatch(clearLoadingTimeout(timeout)); // 로딩 종료
     }
   };
 
