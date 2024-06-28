@@ -3,16 +3,25 @@ import { Button, Form, Input } from "antd";
 import { SelectAdminTag } from "components/tags/UserTag";
 import { validateEmailType, validateRequired, validatePassword } from "utils/validateUtil";
 import { isEmpty } from "lodash";
+import { useEffect } from "react";
 
-const UserInfoEditorForm = ({ handleSubmit, userData = null, isAdmin = false }) => {
-  const onFinish = values => {
-    console.log("Success:", values);
-    handleSubmit();
-  };
+const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = false }) => {
+  const [formData] = Form.useForm();
+
+  useEffect(() => {
+    formData.setFieldsValue({
+      id: userData?.id,
+      name: userData?.name,
+      email: userData?.email,
+      password: "",
+      userType: isAdmin ? userData?.userType : "",
+    });
+  }, [userData]);
 
   return (
     <Form
       name='basic'
+      form={formData}
       labelCol={{
         span: 8,
       }}
@@ -25,13 +34,15 @@ const UserInfoEditorForm = ({ handleSubmit, userData = null, isAdmin = false }) 
       initialValues={{
         remember: true,
       }}
-      onFinish={onFinish}
+      onFinish={onSubmit}
     >
-      <Form.Item label='아이디' name='userId'>
-        <Input disabled={!isEmpty(userData)} />
+      <Form.Item label='아이디' name='id' rules={[validateRequired("아이디")]}>
+        <Input defaultValue={userData?.id} disabled={!isEmpty(userData)} />
       </Form.Item>
       <Form.Item label='이름' name='name' rules={[validateRequired("이름")]}>
-        <Input placeholder='이름' />
+        {/* <Input defaultValue={userData?.name} /> */}
+        {/* <Input defaultValue='why' /> */}
+        <Input defaultValue='26888888' />
       </Form.Item>
 
       <Form.Item label='이메일' name='email' rules={[validateEmailType, validateRequired]}>
@@ -52,8 +63,8 @@ const UserInfoEditorForm = ({ handleSubmit, userData = null, isAdmin = false }) 
       </Form.Item>
 
       {isAdmin ? (
-        <Form.Item>
-          <SelectAdminTag defaultValue={userData?.adminType} />
+        <Form.Item label='권한' name='userType' rules={[validateRequired("권한")]}>
+          <SelectAdminTag defaultValue={userData?.userType} />
         </Form.Item>
       ) : null}
 
@@ -63,13 +74,19 @@ const UserInfoEditorForm = ({ handleSubmit, userData = null, isAdmin = false }) 
           span: 16,
         }}
       >
-        <Button type='primary'>저장</Button>
+        <Button type='primary' htmlType='submit'>
+          {userData ? "수정" : "등록"}
+        </Button>
+        <Button type='primary' onClick={closeModal}>
+          닫기
+        </Button>
       </Form.Item>
     </Form>
   );
 };
 UserInfoEditorForm.propTypes = {
-  handleSubmit: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  closeModal: PropTypes.func.isRequired,
   userData: PropTypes.object,
   isAdmin: PropTypes.bool,
 };
