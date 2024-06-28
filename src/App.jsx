@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import CommonProvider from "contexts/CommonContext";
 import SignUpPage from "pages/SignUp/SignUp";
 import HomePage from "pages/Home/Home";
 import LoginPage from "pages/Login/Login";
@@ -15,28 +16,30 @@ import MnageUserList from "pages/Admin/MnageUser/MnageUserList";
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<AppLayout />}>
-          <Route index element={<HomePage />} />
-          <Route path='login' element={<Navigate to='/login/quest' replace />} />
-          <Route path='admin/login' element={<Navigate to='/login/admin' replace />} />
-          <Route path='login/:type' element={<LoginPage />} />
-          <Route path='find-id' element={<FindUserIdPage />} />
-          <Route path='sign-up/:type' element={<SignUpPage />} />
-          <Route path='mail/quest' element={<QuestPostPage />} />
+    <CommonProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element={<AppLayout />}>
+            <Route index element={<HomePage />} />
+            <Route path='login' element={<Navigate to='/login/quest' replace />} />
+            <Route path='admin/login' element={<Navigate to='/login/admin' replace />} />
+            <Route path='login/:type' element={<LoginPage />} />
+            <Route path='find-id' element={<FindUserIdPage />} />
+            <Route path='sign-up/:type' element={<SignUpPage />} />
+            <Route path='mail/quest' element={<QuestPostPage />} />
 
-          <Route element={<LayoutWithHeader />}>
-            <Route element={<LayoutWithSidebar />}>
-              <Route path='detail/:id' element={<RequestDetailPage />} />
-              <Route path='board' element={<MyQuestListPage />} />
-              <Route path='admin/mnage-admin' element={<MnageAdminList />} />
-              <Route path='admin/mnage-user' element={<MnageUserList />} />
+            <Route element={<LayoutWithHeader />}>
+              <Route element={<LayoutWithSidebar />}>
+                <Route path='detail/:id' element={<RequestDetailPage />} />
+                <Route path='board' element={<MyQuestListPage />} />
+                <Route path='admin/mnage-admin' element={<MnageAdminList />} />
+                <Route path='admin/mnage-user' element={<MnageUserList />} />
+              </Route>
             </Route>
           </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+        </Routes>
+      </BrowserRouter>
+    </CommonProvider>
   );
 };
 

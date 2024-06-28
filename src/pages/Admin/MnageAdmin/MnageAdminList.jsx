@@ -1,19 +1,13 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 import { Table, Button, Modal } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import SvgProfile from "components/Icons/Profile";
+import { useCommonContext } from "contexts/CommonContext";
 
 const MnageAdminList = () => {
-  //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
-
-  const [pageTitle] = useState("관리자 계정 관리");
-  const paginationConfig = {
-    pageSize: 10,
-    position: ["bottomCenter"],
-  };
   const columns = [
     {
       title: "이름",
@@ -65,6 +59,7 @@ const MnageAdminList = () => {
       ),
     },
   ];
+
   const mockData = [
     {
       id: "admin2",
@@ -96,9 +91,14 @@ const MnageAdminList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
+  const pageTitle = "관리자 계정 관리";
+  const { paginationConfig } = useCommonContext();
+
   useLayoutEffect(() => {
     getAdminList();
     console.log("mockData", mockData);
+    console.log("paginationConfig", paginationConfig);
   }, []);
 
   const getAdminList = async () => {
