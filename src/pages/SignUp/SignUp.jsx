@@ -17,7 +17,6 @@ const SignUp = () => {
   const handleData = newData => {
     setFormData(prev => {
       const updatedData = { ...prev, ...newData };
-      console.log("Updated form data: ", updatedData); // 데이터 구조를 확인합니다.
       return updatedData;
     });
   };
@@ -29,7 +28,6 @@ const SignUp = () => {
 
   const handleSubmit = async data => {
     const mergedData = { ...formData, ...data }; // 전달된 데이터를 병합
-    console.log("Form Data:", mergedData);
     const {
       id = "",
       password = "",
@@ -75,7 +73,7 @@ const SignUp = () => {
         caseCategoryKeyList: caseCategoryKeyList.map(Number),
       });
     }
-    console.log("User Data Payload: ", userData); // 페이로드 확인
+    console.log("페이로드 확인: ", userData);
 
     try {
       const response = await registerUser(userData);

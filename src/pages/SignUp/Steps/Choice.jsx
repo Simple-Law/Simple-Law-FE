@@ -39,9 +39,8 @@ const Choice = ({ handleData, handleSubmit }) => {
       caseCategoryKeyList,
     };
     handleData(data);
-    console.log("결과값: ", data);
 
-    await handleSubmit();
+    await handleSubmit(data);
   };
 
   return (
