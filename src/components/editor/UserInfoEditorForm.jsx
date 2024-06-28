@@ -1,13 +1,10 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { Button, Form, Input } from "antd";
 import { SelectAdminTag } from "components/tags/UserTag";
 import { validateEmailType, validateRequired, validatePassword } from "utils/validateUtil";
 import { isEmpty } from "lodash";
 
-const UserInfoEditorForm = (handleSubmit, userData = null, isAdmin = false) => {
-  const buttonText = userData ? "수정" : "등록";
-
+const UserInfoEditorForm = ({ handleSubmit, userData = null, isAdmin = false }) => {
   const onFinish = values => {
     console.log("Success:", values);
     handleSubmit();
@@ -66,13 +63,14 @@ const UserInfoEditorForm = (handleSubmit, userData = null, isAdmin = false) => {
           span: 16,
         }}
       >
-        <Button type='primary'>{buttonText}</Button>
+        <Button type='primary'>저장</Button>
       </Form.Item>
     </Form>
   );
 };
-UserInfoEditorForm.prototype = {
+UserInfoEditorForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   userData: PropTypes.object,
+  isAdmin: PropTypes.bool,
 };
 export default UserInfoEditorForm;
