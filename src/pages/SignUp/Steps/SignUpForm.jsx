@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
@@ -13,33 +12,41 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [isFormFilled, setIsFormFilled] = useState(false);
   const [timer, setTimer] = useState(0);
   const [countdown, setCountdown] = useState(null);
-  const [messages, setMessages] = useState({
-    idError: "",
-    idSuccess: "",
-    emailError: "",
-    emailSuccess: "",
-  });
+  const [idMessage, setIdMessage] = useState(null);
+  const [idValidateStatus, setIdValidateStatus] = useState("");
+  const [emailMessage, setEmailMessage] = useState(null);
+  const [emailValidateStatus, setEmailValidateStatus] = useState("");
   const messageApi = useMessageApi();
 
   // 회원가입 폼 제출
   const onFinish = async values => {
-    // 인증번호 검증
-    const isVerified = await handleVerifyAuthCode();
-    if (!isVerified) {
-      return; // 인증 실패 시 함수 종료
-    }
+    console.log("onFinish called with values:", values);
+    try {
+      // 인증번호 검증
+      const isVerified = await handleVerifyAuthCode();
+      if (!isVerified) {
+        console.log("Verification failed");
+        return; // 인증 실패 시 함수 종료
+      }
 
-    console.log("결과값: ", values);
-    handleData(values);
+      console.log("Verification succeeded, handleData called with values:", values);
+      handleData(values);
 
-    if (type !== "lawyer") {
-      await handleSubmit();
-    } else {
-      nextStep();
+      if (type !== "lawyer") {
+        console.log("Calling handleSubmit for non-lawyer with values:", values);
+        await handleSubmit(values);
+      } else {
+        console.log("Calling nextStep for lawyer");
+        nextStep();
+      }
+    } catch (error) {
+      console.error("Error in onFinish:", error);
     }
   };
+
   // 중복검사
   const handleBlur = async field => {
+    console.log("handleBlur called for field:", field);
     const value = form.getFieldValue(field);
     if (!value) return;
 
@@ -48,24 +55,34 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       email: "이메일",
     };
 
-    const setFieldMessages = (errorMessage, successMessage) => {
-      setMessages(prev => ({
-        ...prev,
-        [`${field}Error`]: errorMessage,
-        [`${field}Success`]: successMessage,
-      }));
+    const setFieldMessages = (field, errorMessage, successMessage) => {
+      if (field === "id") {
+        setIdMessage(errorMessage || successMessage);
+        setIdValidateStatus(errorMessage ? "error" : "success");
+      } else if (field === "email") {
+        setEmailMessage(errorMessage || successMessage);
+        setEmailValidateStatus(errorMessage ? "error" : "success");
+      }
     };
+
+    // 정규식 검사
+    if (field === "id" && !/^[a-z0-9]{4,16}$/.test(value)) {
+      setFieldMessages(field, "아이디는 영문 소문자와 숫자로 이루어진 4~16자로 입력해야 합니다!", "");
+      form.setFields([{ name: field, errors: ["아이디는 영문 소문자와 숫자로 이루어진 4~16자로 입력해야 합니다!"] }]);
+      return;
+    }
 
     try {
       const isDuplicate = await checkDuplicate(field, value);
       if (isDuplicate) {
-        setFieldMessages(`이미 사용 중인 ${fieldNames[field]}입니다.`, "");
+        setFieldMessages(field, `이미 사용 중인 ${fieldNames[field]}입니다.`, "");
         form.setFields([{ name: field, errors: [`이미 사용 중인 ${fieldNames[field]}입니다.`] }]);
       } else {
-        setFieldMessages("", `사용 가능한 ${fieldNames[field]}입니다.`);
+        setFieldMessages(field, "", `사용 가능한 ${fieldNames[field]}입니다.`);
         form.setFields([{ name: field, errors: [] }]);
       }
     } catch (error) {
+      console.error("Error in handleBlur:", error);
       messageApi.error(`${fieldNames[field]} 중복 검사 중 오류가 발생했습니다.`);
     }
   };
@@ -159,18 +176,17 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
 
     try {
-      // CHECKLIST: DY - 인증 만료 시간 체크
       await sendAuthCode(cleanedPhoneNumber, type);
-      // const expireTime = response.data.expireTime; //인증타임 있다면 설정
       messageApi.success("인증번호가 발송되었습니다.");
       setShowAuthenticationCodeField(true);
-      // startTimer(expireTime || 180); // expireTime이 없는 경우 기본값 180초 설정
-      startTimer(180); // expireTime이 없는 경우 기본값 180초 설정
+      startTimer(180); // 기본값 180초 설정
     } catch (error) {
+      console.error("Error in handleSendAuthCode:", error);
       messageApi.error("인증번호 발송에 실패했습니다.");
       setShowAuthenticationCodeField(false);
     }
   };
+
   // 인증 코드를 확인하는 함수
   const handleVerifyAuthCode = async () => {
     const phoneNumber = form.getFieldValue("phoneNumber").replace(/-/g, "");
@@ -184,6 +200,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       await verifyAuthCode(phoneNumber, verificationCode, type);
       return true;
     } catch (error) {
+      console.error("Error in handleVerifyAuthCode:", error);
       messageApi.error("인증번호가 올바르지 않습니다. 확인 후 다시 입력해 주세요.");
       return false;
     }
@@ -205,9 +222,8 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 message: "아이디는 영문 소문자와 숫자로 이루어진 4~16자로 입력해야 합니다!",
               },
             ]}
-            validateTrigger='onBlur'
-            validateStatus={messages.idError ? "error" : messages.idSuccess ? "success" : ""}
-            help={messages.idError || messages.idSuccess}
+            validateStatus={idValidateStatus}
+            help={idMessage}
           >
             <Input placeholder='아이디 입력' onBlur={() => handleBlur("id")} />
           </Form.Item>
@@ -229,14 +245,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                     (hasUpperCase ? 1 : 0) + (hasLowerCase ? 1 : 0) + (hasNumber ? 1 : 0) + (hasSpecialChar ? 1 : 0) >=
                     3;
 
-                  console.log(`비밀번호 검증:
-                    대문자 포함: ${hasUpperCase},
-                    소문자 포함: ${hasLowerCase},
-                    숫자 포함: ${hasNumber},
-                    특수문자 포함: ${hasSpecialChar},
-                    유효성: ${isValid}
-                  `);
-
                   if (value.length < 8 || value.length > 16 || !isValid) {
                     return Promise.reject(
                       new Error(
@@ -248,7 +256,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 },
               }),
             ]}
-            validateTrigger='onBlur'
           >
             <Input type='password' placeholder='비밀번호 입력' />
           </Form.Item>
@@ -270,7 +277,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 },
               }),
             ]}
-            validateTrigger='onBlur'
           >
             <Input type='password' placeholder='비밀번호 재확인' />
           </Form.Item>
@@ -289,9 +295,8 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 message: "이메일은 영문자와 숫자로만 이루어져야 합니다.",
               },
             ]}
-            validateTrigger='onBlur'
-            validateStatus={messages.emailError ? "error" : messages.emailSuccess ? "success" : ""}
-            help={messages.emailError || messages.emailSuccess}
+            validateStatus={emailValidateStatus}
+            help={emailMessage}
           >
             <Input placeholder='이메일 입력' onBlur={() => handleBlur("email")} />
           </Form.Item>
@@ -334,7 +339,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 },
               }),
             ]}
-            validateTrigger='onBlur'
           >
             <Input placeholder='생년월일 8자리' maxLength='10' onChange={handleBirthdayChange} />
           </Form.Item>
@@ -361,7 +365,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 message: "올바른 전화번호 양식이 아닙니다.",
               },
             ]}
-            validateTrigger='onBlur'
           >
             <Input
               style={{ width: "100%" }}
@@ -399,6 +402,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     </LoginForm>
   );
 };
+
 JoinForm.propTypes = {
   handleData: PropTypes.func.isRequired,
   nextStep: PropTypes.func.isRequired,
