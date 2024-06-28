@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Input, Button, Form } from "antd";
 import { useDispatch } from "react-redux";
@@ -40,9 +39,8 @@ const Login = () => {
   const title = `${typeName} 로그인`;
 
   const handleLogin = async values => {
-    // TODO: DY -  오류 메시지 받아서 messageApi에 띄우기
     const { success, message } = await dispatch(loginUser(values, type));
-    const successUrl = type === "admin" ? "/admin/mnageAdmin" : "/board";
+    const successUrl = type === "admin" ? "/admin/mnage-admin" : "/board";
     if (success) {
       messageApi.success("로그인 성공!");
       navigate(successUrl); // 로그인 성공 시 이동

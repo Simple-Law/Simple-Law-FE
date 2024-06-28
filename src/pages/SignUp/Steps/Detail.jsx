@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import PropTypes from "prop-types";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Button, Form, Input } from "antd";

@@ -1,4 +1,4 @@
-import React from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Tag } from "antd";
 
@@ -9,7 +9,6 @@ const StyledTag = styled(Tag)`
     font-weight: 400;
     line-height: 16px; /* 123.077% */
     letter-spacing: -0.26px;
-    border: none;
     padding: 3px 8px;
     display: inline-flex;
     align-items: center;
@@ -25,6 +24,7 @@ const StyledTag = styled(Tag)`
     }
   }
   &.status-tag.preparing {
+    border: none;
     color: #ff9200;
     background: rgba(255, 146, 0, 0.12);
     &::before {
@@ -33,6 +33,7 @@ const StyledTag = styled(Tag)`
   }
 
   &.status-tag.completed {
+    border: none;
     background: rgba(0, 110, 37, 0.1);
     color: #006e25;
     &::before {
@@ -41,6 +42,7 @@ const StyledTag = styled(Tag)`
   }
 
   &.status-tag.pending {
+    border: none;
     background: rgba(255, 66, 66, 0.12);
     color: #ff4242;
     &::before {
@@ -49,10 +51,29 @@ const StyledTag = styled(Tag)`
   }
 
   &.status-tag.refuse {
+    border: none;
     background: rgba(148, 163, 184, 0.1);
     color: #94a3b8;
     &::before {
       background-color: #94a3b8;
+    }
+  }
+
+  &.status-tag.true {
+    border: solid 1px #6e7780;
+    background: #ffffff;
+    color: #6e7780;
+    &::before {
+      background-color: #00bf40;
+    }
+  }
+
+  &.status-tag.false {
+    border: solid 1px #ff4242;
+    background: #ffffff;
+    color: #ff4242;
+    &::before {
+      background-color: #ff4242;
     }
   }
 `;
@@ -74,6 +95,22 @@ const StatusTag = ({ status }) => {
   };
 
   return <StyledTag className={`status-tag ${status}`}>{getStatusText(status)}</StyledTag>;
+};
+
+StatusTag.propTypes = {
+  status: PropTypes.string.isRequired,
+};
+
+export const LoginStatusTag = ({ status }) => {
+  console.log(status);
+  return status ? (
+    <StyledTag className={"status-tag true"}>활성화</StyledTag>
+  ) : (
+    <StyledTag className={"status-tag false"}>비활성화</StyledTag>
+  );
+};
+LoginStatusTag.propTypes = {
+  status: PropTypes.bool.isRequired,
 };
 
 export default StatusTag;

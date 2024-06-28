@@ -6,6 +6,13 @@ export default [
     { languageOptions: { globals: globals.browser } },
     pluginJs.configs.recommended,
     { files: ['**/*.jsx'], languageOptions: { parserOptions: { ecmaFeatures: { jsx: true } } } },
-    { rules: { semi: ['error', 'always'] } },
-    pluginReactConfig,
+    {
+        ...pluginReactConfig,
+        rules: {
+            ...pluginReactConfig.rules,
+            semi: ['error', 'always'],
+            'react/jsx-uses-react': 'off',
+            'react/react-in-jsx-scope': 'off',
+        },
+    },
 ];

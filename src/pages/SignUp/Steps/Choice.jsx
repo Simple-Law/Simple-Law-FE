@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SvgLogo from "components/Icons/Logo";
 import styled from "styled-components";
 import { Checkbox, Form, Button } from "antd";
@@ -11,13 +11,13 @@ import SvgShow from "components/Icons/Show";
 import SvgFight from "components/Icons/Fight";
 import SvgLawQuestion from "components/Icons/LawQuestion";
 import SvgDocument from "components/Icons/Document";
+import PropTypes from "prop-types";
 
 const Choice = ({ handleData, handleSubmit }) => {
   const [selectedValues, setSelectedValues] = useState([]);
   const [form] = Form.useForm();
 
   const onChange = checkedValues => {
-    console.log("checkedValues:", checkedValues);
     setSelectedValues(checkedValues);
   };
 
@@ -39,9 +39,8 @@ const Choice = ({ handleData, handleSubmit }) => {
       caseCategoryKeyList,
     };
     handleData(data);
-    console.log("결과값: ", data);
 
-    await handleSubmit();
+    await handleSubmit(data);
   };
 
   return (
@@ -76,7 +75,10 @@ const Choice = ({ handleData, handleSubmit }) => {
     </div>
   );
 };
-
+Choice.propTypes = {
+  handleData: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+};
 export default Choice;
 
 const StyledCheckGroup = styled(Checkbox.Group)`
