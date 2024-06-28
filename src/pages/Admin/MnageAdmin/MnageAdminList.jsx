@@ -96,6 +96,22 @@ const MnageAdminList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  useLayoutEffect(() => {
+    getAdminList();
+    console.log("mockData", mockData);
+  }, []);
+
+  const getAdminList = async () => {
+    const response = await mockData;
+    try {
+      //TODO: kmee - API status 체크
+      response.forEach(item => (item.key = item.id));
+      setData(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const insertAdmin = () => {
     console.log("insertAdmin");
   };
