@@ -1,31 +1,25 @@
-import { useCallback, useState } from "react";
+import { useCallback, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 import { Table, Button, Modal } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import SvgProfile from "components/Icons/Profile";
+import { useCommonContext } from "contexts/CommonContext";
 
 const MnageAdminList = () => {
-  //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
-
-  const [pageTitle] = useState("관리자 계정 관리");
-  const paginationConfig = {
-    pageSize: 10,
-    position: ["bottomCenter"],
-  };
   const columns = [
     {
       title: "이름",
-      key: "adminId",
-      dataIndex: "adminName",
+      key: "id",
+      dataIndex: "name",
       className: "name-column",
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
-          <SvgProfile className='w-8 h-8 mr-2' />
+          <SvgProfile className='mr-2' width='32' height='32' />
           <div>
-            <div>{record.adminName}</div>
-            <div>{record.adminId}</div>
+            <div>{record.name}</div>
+            <div>{record.id}</div>
           </div>
         </div>
       ),
@@ -38,26 +32,26 @@ const MnageAdminList = () => {
     },
     {
       title: "권한",
-      key: "adminType",
-      className: "adminTag-column",
-      render: (_, record) => <AdminTag adminType={record.adminType} />,
+      key: "userType",
+      className: "user-type-column",
+      render: (_, record) => <AdminTag adminType={record.userType} />,
     },
     {
       title: "가입일",
       key: "joinDate",
       dataIndex: "joinDate",
-      className: "joinDate-column",
+      className: "join-date-column",
     },
     {
       title: "최근 접속일",
       key: "accessDate",
       dataIndex: "accessDate",
-      className: "accessDate-column",
+      className: "access-date-column",
     },
     {
       title: "삭제",
-      key: "adminId",
-      className: "deleteBtn-column",
+      key: "delete",
+      className: "delete-column",
       render: () => (
         <Button danger size='small' onClick={deleteAdmin}>
           삭제
@@ -65,63 +59,93 @@ const MnageAdminList = () => {
       ),
     },
   ];
+
   const mockData = [
     {
-      adminId: "admin2",
-      adminName: "김최고",
-      adminType: "SUPER_ADMIN",
+      id: "admin2",
+      name: "김최고",
+      userType: "SUPER_ADMIN",
       email: "admin22@simplelaw.com",
       joinDate: "2023.09.01",
       accessDate: "2024.06.16",
     },
     {
-      adminId: "admin3",
-      adminName: "김일반",
-      adminType: "NORMAL_ADMIN",
+      id: "admin3",
+      name: "김일반",
+      userType: "NORMAL_ADMIN",
       email: "admin33@simplelaw.com",
       joinDate: "2024.09.01",
       accessDate: "2024.06.16",
     },
     {
-      adminId: "admin4",
-      adminName: "김노말",
-      adminType: "NORMAL_ADMIN",
+      id: "admin4",
+      name: "김노말",
+      userType: "NORMAL_ADMIN",
       email: "admin44@simplelaw.com",
       joinDate: "2023.09.01",
       accessDate: "2024.06.16",
     },
   ];
-  const userData = {
-    adminKey: null,
-    userId: null,
-    name: null,
-    email: null,
-  };
 
-  const [selectedUser, setSelectedUser] = useState(userData);
+  const [data, setData] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
+  const pageTitle = "관리자 계정 관리";
+  const { paginationConfig } = useCommonContext();
+
+  useLayoutEffect(() => {
+    getAdminList();
+    console.log("mockData", mockData);
+    console.log("paginationConfig", paginationConfig);
+  }, []);
+
+  const getAdminList = async () => {
+    const response = await mockData;
+    try {
+      //TODO: kmee - API status 체크
+      response.forEach(item => (item.key = item.id));
+      setData(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   const insertAdmin = () => {
     console.log("insertAdmin");
   };
 
-  const updateAdmin = useCallback(adminId => {
-    console.log("updateAdmin", adminId);
+  const updateAdmin = useCallback(id => {
+    console.log("updateAdmin", id);
   }, []);
 
   const deleteAdmin = () => {
     console.log("deleteAdmin");
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
+  /**
+   * 유저 정보 등록/수정 modal 열기
+   */
   const showModal = () => {
     setIsModalOpen(true);
   };
-  const handleOk = () => {
+  /**
+   * 유저 정보 등록/수정 modal 닫기
+   */
+  const closeModal = () => {
     setIsModalOpen(false);
+    setSelectedUser(null);
   };
-  const handleCancel = () => {
-    setIsModalOpen(false);
+
+  /**
+   * 유저 정보  저장
+   * @param {Object} formData : modal에서 입력한 formData
+   */
+  const onSubmit = formData => {
+    console.log("formData");
+    console.log(formData);
+    closeModal();
   };
 
   return (
@@ -135,36 +159,37 @@ const MnageAdminList = () => {
           // onmouseover="this.style.color='red'"
           // onmouseout="this.style.color='blue';"
           // style={{ hover: true }}
-          dataSource={mockData}
+          dataSource={data}
           columns={columns}
           pagination={paginationConfig}
-          onRow={(record, rowIndex) => {
+          onRow={record => {
             return {
-              onClick: e => {
-                console.log(e.target.value);
-                console.log(record);
-                console.log(rowIndex);
-              }, // click row
-              onDoubleClick: e => {
-                console.log(e.target.value);
-                console.log(record);
-                console.log(rowIndex);
-              }, // double click row
+              onDoubleClick: () => {
+                setSelectedUser(record);
+                showModal();
+              },
             };
           }}
         />
       </BoardDiv>
-
-      <Modal title='Basic Modal' open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
-        <p>유저 정보 입력폼</p>
-      </Modal>
+      <StyledModal open={isModalOpen} onCancel={closeModal} footer={null}>
+        <h5 className='text-center font-bold text-[20px] mb-4'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
+        <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
+      </StyledModal>
     </>
   );
 };
 
 export default MnageAdminList;
 
-//TODO: kmee- 테이블 컬럼에 맞춰 수정
+const StyledModal = styled(Modal)`
+    border-radius: 16px;
+    opacity: 0.5;
+    background: #fff;
+    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.04);
+  }
+`;
+
 const BoardDiv = styled.div`
   .ant-spin-container {
     height: 80vh;
@@ -184,19 +209,19 @@ const BoardDiv = styled.div`
     max-width: 300px;
     flex-basis: 300px;
   }
-  .adminTag-column {
+  .user-type-column {
     max-width: 150px;
     flex-basis: 150px;
   }
-  .joinDate-column {
+  .join-date-column {
     max-width: 150px;
     flex-basis: 150px;
   }
-  .accessDate-column {
+  .access-date-column {
     max-width: 150px;
     flex-basis: 150px;
   }
-  .deleteBtn-column {
+  .delete-column {
     max-width: 100px;
     flex-basis: 100px;
   }

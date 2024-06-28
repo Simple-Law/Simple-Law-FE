@@ -2,31 +2,26 @@ import { Table } from "antd";
 import SvgProfile from "components/Icons/Profile";
 import { LoginStatusTag } from "components/tags/StatusTag";
 import UserTag from "components/tags/UserTag";
-import { useState } from "react";
+import { useCommonContext } from "contexts/CommonContext";
+import { useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 
 const MnageUserList = () => {
-  const [pageTitle, setPageTitle] = useState("회원관리");
-  const paginationConfig = {
-    pageSize: 10,
-    position: ["bottomCenter"],
-  };
-
   const columns = [
     {
       title: "이름",
-      key: "userName",
-      dataIndex: "userName",
-      className: "userName-column",
+      key: "name",
+      dataIndex: "name",
+      className: "name-column",
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
           <SvgProfile className='w-8 h-8 mr-2' />
           <div>
             <div>
-              <spna>{record.userName}</spna>
+              <span>{record.name}</span>
             </div>
             <div>
-              <span className='userId'>{record.userId}</span>
+              <span className='id'>{record.id}</span>
             </div>
           </div>
         </div>
@@ -36,20 +31,20 @@ const MnageUserList = () => {
       title: "회원구분",
       key: "userType",
       dataIndex: "userType",
-      className: "userType-column",
+      className: "user-type-column",
       render: (_, record) => <UserTag userType={record.userType} />,
     },
     {
       title: "가입일",
       key: "joinDate",
       dataIndex: "joinDate",
-      className: "joinDate-column",
+      className: "join-date-column",
     },
     {
       title: "최근 접속일",
       key: "accessDate",
       dataIndex: "accessDate",
-      className: "accessDate-column",
+      className: "access-date-column",
     },
     {
       title: "상태",
@@ -62,8 +57,8 @@ const MnageUserList = () => {
 
   const mockData = [
     {
-      userId: "law123",
-      userName: "김변호",
+      id: "law123",
+      name: "김변호",
       userType: "LAWYER",
       email: "law123@simplelaw.com",
       joinDate: "2023.09.01",
@@ -71,8 +66,8 @@ const MnageUserList = () => {
       loginStatus: false,
     },
     {
-      userId: "mem123",
-      userName: "김의뢰",
+      id: "mem123",
+      name: "김의뢰",
       userType: "MEMBER",
       email: "mem123@simplelaw.com",
       joinDate: "2023.09.01",
@@ -81,6 +76,27 @@ const MnageUserList = () => {
     },
   ];
 
+  const [data, setData] = useState([]);
+  const [pageTitle, setPageTitle] = useState("회원관리");
+  const { paginationConfig } = useCommonContext();
+
+  useLayoutEffect(() => {
+    getAdminList();
+    console.log("mockData", mockData);
+    console.log("paginationConfig", paginationConfig);
+  }, []);
+
+  const getAdminList = async () => {
+    const response = await mockData;
+    try {
+      //TODO: kmee - API status 체크
+      response.forEach(item => (item.key = item.id));
+      setData(response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <>
       <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
@@ -88,7 +104,7 @@ const MnageUserList = () => {
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
         </div>
         <Table
-          dataSource={mockData}
+          dataSource={data}
           columns={columns}
           pagination={paginationConfig}
           onRow={(record, rowIndex) => {
