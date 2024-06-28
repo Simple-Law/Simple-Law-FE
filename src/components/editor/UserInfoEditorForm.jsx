@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Space } from "antd";
 import { SelectAdminTag } from "components/tags/UserTag";
 import { validateEmailType, validateRequired, validatePassword } from "utils/validateUtil";
 import { isEmpty } from "lodash";
@@ -20,7 +20,7 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
 
   return (
     <Form
-      name='basic'
+      layout='vertical'
       form={formData}
       labelCol={{
         span: 8,
@@ -37,16 +37,14 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
       onFinish={onSubmit}
     >
       <Form.Item label='아이디' name='id' rules={[validateRequired("아이디")]}>
-        <Input defaultValue={userData?.id} disabled={!isEmpty(userData)} />
+        <Input disabled={!isEmpty(userData)} />
       </Form.Item>
       <Form.Item label='이름' name='name' rules={[validateRequired("이름")]}>
-        {/* <Input defaultValue={userData?.name} /> */}
-        {/* <Input defaultValue='why' /> */}
-        <Input defaultValue='26888888' />
+        <Input />
       </Form.Item>
 
-      <Form.Item label='이메일' name='email' rules={[validateEmailType, validateRequired]}>
-        <Input placeholder='이메일' />
+      <Form.Item label='이메일' name='email' rules={[validateEmailType, validateRequired("이메일")]}>
+        <Input />
       </Form.Item>
 
       <Form.Item
@@ -68,18 +66,15 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
         </Form.Item>
       ) : null}
 
-      <Form.Item
-        wrapperCol={{
-          offset: 8,
-          span: 16,
-        }}
-      >
-        <Button type='primary' htmlType='submit'>
-          {userData ? "수정" : "등록"}
-        </Button>
-        <Button type='primary' onClick={closeModal}>
-          닫기
-        </Button>
+      <Form.Item>
+        <Space>
+          <Button type='primary' htmlType='submit'>
+            {userData ? "수정" : "등록"}
+          </Button>
+          <Button type='primary' onClick={closeModal}>
+            닫기
+          </Button>
+        </Space>
       </Form.Item>
     </Form>
   );
