@@ -34,7 +34,8 @@ export const loginUser = (values, userType) => async dispatch => {
 
     return { success: true }; // 성공 시 객체 반환
   } catch (error) {
+    const message = error.response?.data?.message || "로그인 실패!";
     console.error("Error during login process:", error.response?.data || error); // 오류 로그 추가
-    return { success: false, message: error.message }; // 실패 시 객체 반환
+    return { success: false, message: message }; // 실패 시 오류 메시지 반환
   }
 };
