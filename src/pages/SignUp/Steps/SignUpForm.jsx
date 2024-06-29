@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
 import { sendAuthCode, verifyAuthCode, checkDuplicate } from "apis/usersApi";
 import { useMessageApi } from "components/messaging/MessageProvider";
+import { delayedShowLoading, hideLoading, clearLoadingTimeout } from "../../../redux/actions/loadingAction";
 import PropTypes from "prop-types";
 import moment from "moment";
+import { useDispatch } from "react-redux";
+import LoadingSpinner from "components/layout/LoadingSpinner";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
@@ -16,11 +19,12 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [idValidateStatus, setIdValidateStatus] = useState("");
   const [emailMessage, setEmailMessage] = useState(null);
   const [emailValidateStatus, setEmailValidateStatus] = useState("");
+  const [timeoutId, setTimeoutId] = useState(null);
   const messageApi = useMessageApi();
+  const dispatch = useDispatch();
 
   // 회원가입 폼 제출
   const onFinish = async values => {
-    console.log("onFinish called with values:", values);
     try {
       // 인증번호 검증
       const isVerified = await handleVerifyAuthCode();
@@ -29,14 +33,11 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
         return; // 인증 실패 시 함수 종료
       }
 
-      console.log("Verification succeeded, handleData called with values:", values);
       handleData(values);
 
       if (type !== "lawyer") {
-        console.log("Calling handleSubmit for non-lawyer with values:", values);
         await handleSubmit(values);
       } else {
-        console.log("Calling nextStep for lawyer");
         nextStep();
       }
     } catch (error) {
@@ -174,7 +175,8 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     }
 
     const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
-
+    const timeout = dispatch(delayedShowLoading());
+    setTimeoutId(timeout);
     try {
       await sendAuthCode(cleanedPhoneNumber, type);
       messageApi.success("인증번호가 발송되었습니다.");
@@ -184,6 +186,8 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       console.error("Error in handleSendAuthCode:", error);
       messageApi.error("인증번호 발송에 실패했습니다.");
       setShowAuthenticationCodeField(false);
+    } finally {
+      dispatch(clearLoadingTimeout(timeout)); // 로딩 종료
     }
   };
 
@@ -205,9 +209,17 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       return false;
     }
   };
-
+  // 컴포넌트가 언마운트될 때 타임아웃 정리
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        dispatch(clearLoadingTimeout(timeoutId));
+      }
+    };
+  }, [timeoutId, dispatch]);
   return (
     <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
+      <LoadingSpinner />
       <Form form={form} name='validateOnly' onFinish={onFinish} onValuesChange={handleFormChange}>
         <div className='flex gap-2 flex-col'>
           <Form.Item
