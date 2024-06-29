@@ -76,6 +76,98 @@ const QuestPage = () => {
     />
   );
 
+  // const columns = [
+  //   {
+  //     key: "important",
+  //     dataIndex: "important",
+  //     width: 48,
+  //     onCell: record => ({
+  //       onClick: e => {
+  //         e.stopPropagation();
+  //         dispatch(toggleImportant(record.id)); // 중요 표시 토글 함수 호출
+  //       },
+  //     }),
+  //     render: (_, record) => (
+  //       <div
+  //         style={{
+  //           fontSize: "18px",
+  //           display: "flex",
+  //           justifyContent: "center",
+  //           color: record.isImportant ? "gold" : "#CDD8E2",
+  //         }}
+  //       >
+  //         {record.isImportant ? <FaStar /> : <FaRegStar />}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "상태",
+  //     key: "status",
+  //     dataIndex: "status",
+  //     render: status => <StatusTag status={status} />,
+  //     width: 150,
+  //     className: "status-column",
+  //   },
+  //   {
+  //     title: (
+  //       <div>
+  //         <span style={{ width: "27px", display: "inline-block" }}>분야</span>
+  //         <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
+  //         <span>세부 분야</span>
+  //       </div>
+  //     ),
+  //     key: "category",
+  //     dataIndex: "category",
+  //     className: "category-column",
+  //     render: (_, record) => (
+  //       <>
+  //         <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
+  //         <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
+  //         <span>{record.anytime}</span>
+  //       </>
+  //     ),
+  //   },
+  //   {
+  //     title: "제목",
+  //     dataIndex: "title",
+  //     key: "title",
+  //     className: "title-column",
+  //     render: (_, record) =>
+  //       record.parentTitle ? (
+  //         <div>
+  //           {record.parentTitle}
+  //           <div style={{ marginLeft: 20 }}>
+  //             <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
+  //           </div>
+  //         </div>
+  //       ) : (
+  //         record.title
+  //       ),
+  //   },
+  //   {
+  //     title: (
+  //       <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
+  //         <button
+  //           style={{
+  //             border: "none",
+  //             background: "none",
+  //             cursor: "pointer",
+  //             padding: 0,
+  //             display: "flex",
+  //             alignItems: "center",
+  //           }}
+  //           onClick={e => e.preventDefault()}
+  //         >
+  //           {headerTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
+  //         </button>
+  //       </Dropdown>
+  //     ),
+  //     key: "time",
+  //     dataIndex: timeColumn,
+  //     render: text => <span>{text}</span>,
+  //     className: "time-column",
+  //   },
+  // ];
   const columns = [
     {
       key: "important",
@@ -84,7 +176,7 @@ const QuestPage = () => {
       onCell: record => ({
         onClick: e => {
           e.stopPropagation();
-          dispatch(toggleImportant(record.id)); // 중요 표시 토글 함수 호출
+          toggleImportant(record.id, e);
         },
       }),
       render: (_, record) => (
@@ -105,7 +197,7 @@ const QuestPage = () => {
       key: "status",
       dataIndex: "status",
       render: status => <StatusTag status={status} />,
-      width: 150,
+      width: 150, // 상태 컬럼 고정 너비
       className: "status-column",
     },
     {
@@ -118,6 +210,7 @@ const QuestPage = () => {
       ),
       key: "category",
       dataIndex: "category",
+      width: 260, // 분야|세부 분야 컬럼 고정 너비
       className: "category-column",
       render: (_, record) => (
         <>
@@ -132,6 +225,7 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
+      // '제목' 컬럼은 flex로 남은 공간을 채웁니다.
       render: (_, record) =>
         record.parentTitle ? (
           <div>
@@ -165,6 +259,7 @@ const QuestPage = () => {
       key: "time",
       dataIndex: timeColumn,
       render: text => <span>{text}</span>,
+      width: 150, // 의뢰 요청시간 컬럼 고정 너비
       className: "time-column",
     },
   ];
