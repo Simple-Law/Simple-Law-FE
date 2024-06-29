@@ -34,12 +34,12 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       }
 
       handleData(values);
-
       if (type !== "lawyer") {
         await handleSubmit(values);
       } else {
         nextStep();
       }
+      console.log("폼 제출:", values);
     } catch (error) {
       console.error("Error in onFinish:", error);
     }
@@ -47,7 +47,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
   // 중복검사
   const handleBlur = async field => {
-    console.log("handleBlur called for field:", field);
     const value = form.getFieldValue(field);
     if (!value) return;
 

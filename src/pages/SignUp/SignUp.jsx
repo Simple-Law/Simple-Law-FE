@@ -73,7 +73,6 @@ const SignUp = () => {
         caseCategoryKeyList: caseCategoryKeyList.map(Number),
       });
     }
-    console.log("페이로드 확인: ", userData);
 
     try {
       const response = await registerUser(userData);

@@ -12,7 +12,7 @@ export const delayedShowLoading = () => {
   return dispatch => {
     const timeoutId = setTimeout(() => {
       dispatch(showLoading());
-    }, 2000); // 3초 후에 로딩 표시
+    }, 1500); // 1.5초 후에 로딩 표시
 
     return timeoutId;
   };
