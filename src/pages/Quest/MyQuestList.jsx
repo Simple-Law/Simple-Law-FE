@@ -4,12 +4,11 @@ import { Dropdown, Input, Menu, Table } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
-import { updateMail } from "apis/mailsApi";
 import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { setMails, setData, updateCounts, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { setTableData, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
 
 const { Search } = Input;
 
@@ -61,36 +60,10 @@ const QuestPage = () => {
     setPageTitle(titles[statusKey] || "전체 의뢰함");
   }, [statusKey]);
 
-  const toggleImportant = async (id, event) => {
-    event.stopPropagation();
-    const newData = mails.map(item => {
-      if (item.id === id) {
-        item.isImportant = !item.isImportant;
-      }
-      return item;
-    });
-
-    dispatch(setData(newData));
-    dispatch(updateCounts(newData));
-
-    try {
-      const updatedItem = newData.find(item => item.id === id);
-      await updateMail(id, { isImportant: updatedItem.isImportant });
-
-      if (statusKey === "important" && !updatedItem.isImportant) {
-        const filteredMails = newData.filter(mail => mail.isImportant);
-        dispatch(setMails(filteredMails));
-        dispatch(setTableData(filteredMails)); // 추가: tableData 업데이트
-      }
-    } catch (error) {
-      console.error("Error updating important status:", error);
-    }
-  };
-
   const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
     setHeaderTitle(e.item.props.children);
-    setDropdownOpen(false); // 드롭다운 닫기
+    setDropdownOpen(false);
   };
 
   const menu = (
@@ -110,8 +83,8 @@ const QuestPage = () => {
       width: 48,
       onCell: record => ({
         onClick: e => {
-          e.stopPropagation(); // 이벤트 버블링 중지
-          toggleImportant(record.id, e); // 중요 표시 토글 함수 호출
+          e.stopPropagation();
+          dispatch(toggleImportant(record.id)); // 중요 표시 토글 함수 호출
         },
       }),
       render: (_, record) => (
@@ -272,16 +245,16 @@ const BoardDiv = styled.div`
   }
 
   .category-column {
-    max-width: 320px;
-    flex-basis: 320px;
+    max-width: 120px;
+    flex-basis: 120px;
   }
   .title-column {
     flex: 1 1 auto;
     min-width: 0;
   }
   .time-column {
-    max-width: 140px;
-    flex-basis: 140px;
+    max-width: 150px;
+    flex-basis: 150px;
   }
 `;
 

@@ -1,4 +1,4 @@
-import { createMail as apiCreateMail, fetchMails as apiFetchMails } from "apis/mailsApi";
+import { createMail as apiCreateMail, fetchMails as apiFetchMails, updateMail as apiUpdateMail } from "apis/mailsApi";
 import { SET_MAILS, SET_DATA, UPDATE_COUNTS, SET_TABLE_DATA } from "../types";
 
 export const setMails = mails => ({
@@ -42,4 +42,30 @@ export const createMail = mailData => async dispatch => {
   dispatch(updateCounts(fetchedMails));
   dispatch(setTableData(fetchedMails));
   return response;
+};
+
+export const toggleImportant = id => async (dispatch, getState) => {
+  const { mails } = getState().mail;
+
+  const updatedMails = mails.map(item => {
+    if (item.id === id) {
+      return {
+        ...item,
+        isImportant: !item.isImportant,
+      };
+    }
+    return item;
+  });
+
+  dispatch(setData(updatedMails));
+  dispatch(setMails(updatedMails.filter(mail => mail.status !== "휴지통")));
+  dispatch(updateCounts(updatedMails));
+  dispatch(setTableData(updatedMails));
+
+  try {
+    const updatedItem = updatedMails.find(item => item.id === id);
+    await apiUpdateMail(id, { isImportant: updatedItem.isImportant });
+  } catch (error) {
+    console.error("중요 표시 업데이트 중 오류 발생:", error);
+  }
 };
