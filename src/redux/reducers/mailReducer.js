@@ -31,6 +31,7 @@ const mailReducer = (state = initialState, action) => {
         important: nonTrashData.filter(mail => mail.isImportant).length,
         trash: mails.filter(mail => mail.status === "휴지통").length,
       };
+
       return { ...state, counts };
     }
     case "SET_TABLE_DATA":

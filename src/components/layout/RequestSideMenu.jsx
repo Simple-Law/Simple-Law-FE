@@ -34,8 +34,9 @@ const RequestSideMenu = () => {
     } else if (statusKey !== "All_request") {
       filteredMails = data.filter(mail => mail.status === statusKey);
     }
-    dispatch(setMails(filteredMails)); // dispatch the action
-    dispatch(setTableData(filteredMails)); // 추가: tableData 업데이트
+
+    dispatch(setMails(filteredMails));
+    dispatch(setTableData(filteredMails));
     navigate(`/board?status=${statusKey}`);
   };
 

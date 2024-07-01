@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Dropdown, Input, Menu, Table } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -24,30 +24,24 @@ const QuestPage = () => {
   const statusKey = queryParams.get("status");
 
   const dispatch = useDispatch();
-  const { mails, tableData } = useSelector(state => state.mail);
+
+  const { data, tableData } = useSelector(state => state.mail);
 
   useEffect(() => {
     dispatch(fetchMailsAction());
   }, [dispatch]);
 
   useEffect(() => {
-    const combinedData = [];
-    mails.forEach(item => {
-      combinedData.push(item);
-      if (item.replies && item.replies.length > 0) {
-        item.replies.forEach((reply, index) => {
-          combinedData.push({
-            ...reply,
-            parentTitle: item.title,
-            key: `${item.id}-${index}`,
-          });
-        });
-      }
-    });
-    dispatch(setTableData(combinedData));
-  }, [mails, dispatch]);
+    let filteredMails = data;
+    if (statusKey === "important") {
+      filteredMails = data.filter(mail => mail.isImportant);
+    } else if (statusKey === "trash") {
+      filteredMails = data.filter(mail => mail.status === "휴지통");
+    } else if (statusKey !== "All_request") {
+      filteredMails = data.filter(mail => mail.status === statusKey);
+    }
+    dispatch(setTableData(filteredMails));
 
-  useEffect(() => {
     const titles = {
       All_request: "전체 의뢰함",
       important: "전체 의뢰함(중요 의뢰함)",
@@ -58,7 +52,7 @@ const QuestPage = () => {
       trash: "휴지통",
     };
     setPageTitle(titles[statusKey] || "전체 의뢰함");
-  }, [statusKey]);
+  }, [statusKey, data, dispatch]);
 
   const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
@@ -66,6 +60,10 @@ const QuestPage = () => {
     setDropdownOpen(false);
   };
 
+  const handleToggleImportant = (id, event) => {
+    event.stopPropagation();
+    dispatch(toggleImportant(id));
+  };
   const menu = (
     <Menu
       items={[
@@ -76,98 +74,6 @@ const QuestPage = () => {
     />
   );
 
-  // const columns = [
-  //   {
-  //     key: "important",
-  //     dataIndex: "important",
-  //     width: 48,
-  //     onCell: record => ({
-  //       onClick: e => {
-  //         e.stopPropagation();
-  //         dispatch(toggleImportant(record.id)); // 중요 표시 토글 함수 호출
-  //       },
-  //     }),
-  //     render: (_, record) => (
-  //       <div
-  //         style={{
-  //           fontSize: "18px",
-  //           display: "flex",
-  //           justifyContent: "center",
-  //           color: record.isImportant ? "gold" : "#CDD8E2",
-  //         }}
-  //       >
-  //         {record.isImportant ? <FaStar /> : <FaRegStar />}
-  //       </div>
-  //     ),
-  //   },
-  //   {
-  //     title: "상태",
-  //     key: "status",
-  //     dataIndex: "status",
-  //     render: status => <StatusTag status={status} />,
-  //     width: 150,
-  //     className: "status-column",
-  //   },
-  //   {
-  //     title: (
-  //       <div>
-  //         <span style={{ width: "27px", display: "inline-block" }}>분야</span>
-  //         <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
-  //         <span>세부 분야</span>
-  //       </div>
-  //     ),
-  //     key: "category",
-  //     dataIndex: "category",
-  //     className: "category-column",
-  //     render: (_, record) => (
-  //       <>
-  //         <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
-  //         <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
-  //         <span>{record.anytime}</span>
-  //       </>
-  //     ),
-  //   },
-  //   {
-  //     title: "제목",
-  //     dataIndex: "title",
-  //     key: "title",
-  //     className: "title-column",
-  //     render: (_, record) =>
-  //       record.parentTitle ? (
-  //         <div>
-  //           {record.parentTitle}
-  //           <div style={{ marginLeft: 20 }}>
-  //             <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
-  //           </div>
-  //         </div>
-  //       ) : (
-  //         record.title
-  //       ),
-  //   },
-  //   {
-  //     title: (
-  //       <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
-  //         <button
-  //           style={{
-  //             border: "none",
-  //             background: "none",
-  //             cursor: "pointer",
-  //             padding: 0,
-  //             display: "flex",
-  //             alignItems: "center",
-  //           }}
-  //           onClick={e => e.preventDefault()}
-  //         >
-  //           {headerTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
-  //         </button>
-  //       </Dropdown>
-  //     ),
-  //     key: "time",
-  //     dataIndex: timeColumn,
-  //     render: text => <span>{text}</span>,
-  //     className: "time-column",
-  //   },
-  // ];
   const columns = [
     {
       key: "important",
@@ -175,8 +81,9 @@ const QuestPage = () => {
       width: 48,
       onCell: record => ({
         onClick: e => {
-          e.stopPropagation();
-          toggleImportant(record.id, e);
+          handleToggleImportant(record.id, e);
+          // e.stopPropagation();
+          // dispatch(toggleImportant(record.id));
         },
       }),
       render: (_, record) => (
