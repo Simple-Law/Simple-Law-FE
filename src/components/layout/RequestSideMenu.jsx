@@ -227,7 +227,7 @@ export const AdminSideMenu = () => {
   ];
   const accountMenuItems = [
     {
-      key: "mnage-admin",
+      key: "manage-admin",
       icon: <SvgManageAdmin />,
       label: "관리자 계정 관리",
     },
@@ -237,7 +237,7 @@ export const AdminSideMenu = () => {
       icon: <SvgManageUser />,
       children: [
         {
-          key: "mnage-user",
+          key: "manage-user",
           label: "전체 사용자",
         },
         {
