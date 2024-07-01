@@ -1,6 +1,5 @@
 import { Button } from "antd";
 import LoginForm from "components/layout/AuthFormLayout";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
@@ -23,6 +22,9 @@ const Home = () => {
         </Button>
         <Button block className='mt-1' onClick={() => navigate("/admin/mnage-admin")}>
           [관리자] 관리자 계정 관리
+        </Button>
+        <Button block className='mt-1' onClick={() => navigate("/admin/mnage-user")}>
+          [관리자] 회원 관리
         </Button>
       </LoginForm>
     </>
