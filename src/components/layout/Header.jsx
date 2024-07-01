@@ -35,7 +35,7 @@ const Header = () => {
       <div className='flex justify-between items-center h-16 w-full'>
         <div className='pl-[47px]'>
           <Link to='/'>
-            <SvgLogo width='115px' height='auto' className='mx-auto' />
+            <SvgLogo width='115px' height='30px' className='mx-auto' />
           </Link>
         </div>
         <div className='flex items-center pr-[32px] gap-[10px]'>

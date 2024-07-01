@@ -4,12 +4,11 @@ import { Dropdown, Input, Menu, Table } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
-import { updateMail } from "apis/mailsApi";
 import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { setMails, setData, updateCounts, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { setTableData, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
 
 const { Search } = Input;
 
@@ -61,36 +60,10 @@ const QuestPage = () => {
     setPageTitle(titles[statusKey] || "전체 의뢰함");
   }, [statusKey]);
 
-  const toggleImportant = async (id, event) => {
-    event.stopPropagation();
-    const newData = mails.map(item => {
-      if (item.id === id) {
-        item.isImportant = !item.isImportant;
-      }
-      return item;
-    });
-
-    dispatch(setData(newData));
-    dispatch(updateCounts(newData));
-
-    try {
-      const updatedItem = newData.find(item => item.id === id);
-      await updateMail(id, { isImportant: updatedItem.isImportant });
-
-      if (statusKey === "important" && !updatedItem.isImportant) {
-        const filteredMails = newData.filter(mail => mail.isImportant);
-        dispatch(setMails(filteredMails));
-        dispatch(setTableData(filteredMails)); // 추가: tableData 업데이트
-      }
-    } catch (error) {
-      console.error("Error updating important status:", error);
-    }
-  };
-
   const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
     setHeaderTitle(e.item.props.children);
-    setDropdownOpen(false); // 드롭다운 닫기
+    setDropdownOpen(false);
   };
 
   const menu = (
@@ -103,6 +76,98 @@ const QuestPage = () => {
     />
   );
 
+  // const columns = [
+  //   {
+  //     key: "important",
+  //     dataIndex: "important",
+  //     width: 48,
+  //     onCell: record => ({
+  //       onClick: e => {
+  //         e.stopPropagation();
+  //         dispatch(toggleImportant(record.id)); // 중요 표시 토글 함수 호출
+  //       },
+  //     }),
+  //     render: (_, record) => (
+  //       <div
+  //         style={{
+  //           fontSize: "18px",
+  //           display: "flex",
+  //           justifyContent: "center",
+  //           color: record.isImportant ? "gold" : "#CDD8E2",
+  //         }}
+  //       >
+  //         {record.isImportant ? <FaStar /> : <FaRegStar />}
+  //       </div>
+  //     ),
+  //   },
+  //   {
+  //     title: "상태",
+  //     key: "status",
+  //     dataIndex: "status",
+  //     render: status => <StatusTag status={status} />,
+  //     width: 150,
+  //     className: "status-column",
+  //   },
+  //   {
+  //     title: (
+  //       <div>
+  //         <span style={{ width: "27px", display: "inline-block" }}>분야</span>
+  //         <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
+  //         <span>세부 분야</span>
+  //       </div>
+  //     ),
+  //     key: "category",
+  //     dataIndex: "category",
+  //     className: "category-column",
+  //     render: (_, record) => (
+  //       <>
+  //         <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
+  //         <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
+  //         <span>{record.anytime}</span>
+  //       </>
+  //     ),
+  //   },
+  //   {
+  //     title: "제목",
+  //     dataIndex: "title",
+  //     key: "title",
+  //     className: "title-column",
+  //     render: (_, record) =>
+  //       record.parentTitle ? (
+  //         <div>
+  //           {record.parentTitle}
+  //           <div style={{ marginLeft: 20 }}>
+  //             <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
+  //           </div>
+  //         </div>
+  //       ) : (
+  //         record.title
+  //       ),
+  //   },
+  //   {
+  //     title: (
+  //       <Dropdown overlay={menu} onVisibleChange={visible => setDropdownOpen(visible)} trigger={["click"]}>
+  //         <button
+  //           style={{
+  //             border: "none",
+  //             background: "none",
+  //             cursor: "pointer",
+  //             padding: 0,
+  //             display: "flex",
+  //             alignItems: "center",
+  //           }}
+  //           onClick={e => e.preventDefault()}
+  //         >
+  //           {headerTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
+  //         </button>
+  //       </Dropdown>
+  //     ),
+  //     key: "time",
+  //     dataIndex: timeColumn,
+  //     render: text => <span>{text}</span>,
+  //     className: "time-column",
+  //   },
+  // ];
   const columns = [
     {
       key: "important",
@@ -110,8 +175,8 @@ const QuestPage = () => {
       width: 48,
       onCell: record => ({
         onClick: e => {
-          e.stopPropagation(); // 이벤트 버블링 중지
-          toggleImportant(record.id, e); // 중요 표시 토글 함수 호출
+          e.stopPropagation();
+          toggleImportant(record.id, e);
         },
       }),
       render: (_, record) => (
@@ -132,7 +197,7 @@ const QuestPage = () => {
       key: "status",
       dataIndex: "status",
       render: status => <StatusTag status={status} />,
-      width: 150,
+      width: 150, // 상태 컬럼 고정 너비
       className: "status-column",
     },
     {
@@ -145,6 +210,7 @@ const QuestPage = () => {
       ),
       key: "category",
       dataIndex: "category",
+      width: 260, // 분야|세부 분야 컬럼 고정 너비
       className: "category-column",
       render: (_, record) => (
         <>
@@ -159,6 +225,7 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
+      // '제목' 컬럼은 flex로 남은 공간을 채웁니다.
       render: (_, record) =>
         record.parentTitle ? (
           <div>
@@ -192,6 +259,7 @@ const QuestPage = () => {
       key: "time",
       dataIndex: timeColumn,
       render: text => <span>{text}</span>,
+      width: 150, // 의뢰 요청시간 컬럼 고정 너비
       className: "time-column",
     },
   ];
@@ -272,16 +340,16 @@ const BoardDiv = styled.div`
   }
 
   .category-column {
-    max-width: 320px;
-    flex-basis: 320px;
+    max-width: 120px;
+    flex-basis: 120px;
   }
   .title-column {
     flex: 1 1 auto;
     min-width: 0;
   }
   .time-column {
-    max-width: 140px;
-    flex-basis: 140px;
+    max-width: 150px;
+    flex-basis: 150px;
   }
 `;
 

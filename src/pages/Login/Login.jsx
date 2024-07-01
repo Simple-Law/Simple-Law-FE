@@ -9,16 +9,16 @@ import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
 import { loginUser } from "../../redux/actions/authActions";
 import { useMessageApi } from "components/messaging/MessageProvider";
+import { delayedShowLoading, clearLoadingTimeout } from "../../redux/actions/loadingAction";
+import LoadingSpinner from "components/layout/LoadingSpinner";
+import { useEffect, useState } from "react";
+
 const Login = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const messageApi = useMessageApi();
-
-  // const isLawyerLogin = type === "lawyer";
-  // const { title, toggleType, toggleText } = isLawyerLogin
-  //   ? { title: "변호사 로그인", toggleType: "quest", toggleText: "의뢰인이신가요?" }
-  //   : { title: "의뢰인 로그인", toggleType: "lawyer", toggleText: "변호사이신가요?" };
+  const [timeoutId, setTimeoutId] = useState(null);
 
   let { typeName, toggleType, toggleText } = "";
   switch (type) {
@@ -39,21 +39,40 @@ const Login = () => {
   const title = `${typeName} 로그인`;
 
   const handleLogin = async values => {
-    const { success, message } = await dispatch(loginUser(values, type));
-    const successUrl = type === "admin" ? "/admin/mnage-admin" : "/board";
-    if (success) {
-      messageApi.success("로그인 성공!");
-      navigate(successUrl); // 로그인 성공 시 이동
-    } else {
-      messageApi.error(message || "로그인 실패!");
-      if (message === "pending-approval") {
-        messageApi.warning("가입 승인 중입니다.");
+    const timeout = dispatch(delayedShowLoading()); // 3초 후 로딩 시작
+    setTimeoutId(timeout);
+    try {
+      const { success, message } = await dispatch(loginUser(values, type));
+      const successUrl = type === "admin" ? "/admin/manage-admin" : "/board";
+
+      if (success) {
+        messageApi.success("로그인 성공!");
+        navigate(successUrl); // 로그인 성공 시 이동
+      } else {
+        messageApi.error(message || "로그인 실패!");
+        if (message === "pending-approval") {
+          messageApi.warning("가입 승인 중입니다.");
+        }
       }
+    } catch (error) {
+      messageApi.error("로그인 중 오류가 발생했습니다.");
+    } finally {
+      dispatch(clearLoadingTimeout(timeout));
     }
   };
 
+  // 컴포넌트가 언마운트될 때 타임아웃 정리
+  useEffect(() => {
+    return () => {
+      if (timeoutId) {
+        dispatch(clearLoadingTimeout(timeoutId));
+      }
+    };
+  }, [timeoutId, dispatch]);
+
   return (
     <LoginForm title={title}>
+      <LoadingSpinner />
       <Form onFinish={handleLogin}>
         <div className='gap-10 flex justify-center flex-col'>
           <div>
