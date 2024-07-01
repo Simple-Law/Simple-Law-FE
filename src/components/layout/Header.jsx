@@ -39,7 +39,8 @@ const Header = () => {
           </Link>
         </div>
         <div className='flex items-center pr-[32px] gap-[10px]'>
-          {user ? <p>{user.name}</p> : <Link to='/login'>로그인</Link>} {/* 로그인한 사용자의 이름 표시 */}
+          {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to='/login'>로그인</Link>}{" "}
+          {/* 로그인한 사용자의 이름 표시 */}
           <div onClick={showLogoutModal}>
             <SvgProfile />
           </div>
