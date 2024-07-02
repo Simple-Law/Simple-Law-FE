@@ -34,8 +34,9 @@ const RequestSideMenu = () => {
     } else if (statusKey !== "All_request") {
       filteredMails = data.filter(mail => mail.status === statusKey);
     }
-    dispatch(setMails(filteredMails)); // dispatch the action
-    dispatch(setTableData(filteredMails)); // 추가: tableData 업데이트
+
+    dispatch(setMails(filteredMails));
+    dispatch(setTableData(filteredMails));
     navigate(`/board?status=${statusKey}`);
   };
 
@@ -227,7 +228,7 @@ export const AdminSideMenu = () => {
   ];
   const accountMenuItems = [
     {
-      key: "mnage-admin",
+      key: "manage-admin",
       icon: <SvgManageAdmin />,
       label: "관리자 계정 관리",
     },
@@ -237,7 +238,7 @@ export const AdminSideMenu = () => {
       icon: <SvgManageUser />,
       children: [
         {
-          key: "mnage-user",
+          key: "manage-user",
           label: "전체 사용자",
         },
         {

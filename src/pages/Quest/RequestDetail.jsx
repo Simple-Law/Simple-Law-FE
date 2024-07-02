@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { fetchMails, getMailById, updateMail } from "apis/mailsApi";
+import { fetchMails, updateMail } from "apis/mailsApi";
 import moment from "moment";
 import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Modal, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setData, setMails, updateCounts } from "../../redux/actions/mailActions";
+import { setData, setMails, updateCounts, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import StatusTag from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
@@ -59,41 +59,35 @@ const PageSearch = styled(Search)`
 
 const DetailPage = () => {
   const { id } = useParams();
-  const [mail, setMail] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const mails = useSelector(state => state.mail.mails);
+  const { mails } = useSelector(state => state.mail);
+  const mail = mails.find(m => m.id === id);
 
   useEffect(() => {
     moment.locale("ko");
-    const fetchMail = async () => {
-      try {
-        const data = await getMailById(id);
-        setMail(data);
-      } catch (error) {
-        console.error("Error fetching mail:", error);
-      }
-    };
-    fetchMail();
-  }, [id]);
-
-  const toggleImportant = async (id, event) => {
-    event.stopPropagation();
-    const updatedMail = { ...mail, isImportant: !mail.isImportant };
-    setMail(updatedMail);
-
-    try {
-      await updateMail(id, { isImportant: updatedMail.isImportant });
-      const { data: mailData } = await fetchMails();
-
-      dispatch(setData(mailData));
-      dispatch(updateCounts(mailData));
-    } catch (error) {
-      console.error("Error updating important status:", error);
+    if (!mail) {
+      dispatch(fetchMailsAction());
     }
-  };
+  }, [id, mail, dispatch]);
 
+  // const handleToggleImportant = async (id, event) => {
+  //   event.stopPropagation();
+  //   try {
+  //     await updateMail(id, { isImportant: !mail.isImportant });
+  //     setMail({ ...mail, isImportant: !mail.isImportant });
+  //     const { data: mailData } = await fetchMails();
+  //     dispatch(setData(mailData));
+  //     dispatch(updateCounts(mailData));
+  //   } catch (error) {
+  //     console.error("Error updating important status:", error);
+  //   }
+  // };
+  const handleToggleImportant = (id, event) => {
+    event.stopPropagation();
+    dispatch(toggleImportant(id));
+  };
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -119,6 +113,7 @@ const DetailPage = () => {
   if (!mail) {
     return <div>Loading...</div>;
   }
+
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
   return (
@@ -143,7 +138,7 @@ const DetailPage = () => {
         </div>
         <div className='mx-8 mt-[20px]'>
           <div className='flex items-center gap-1'>
-            <span onClick={e => toggleImportant(mail.id, e)}>
+            <span onClick={e => handleToggleImportant(mail.id, e)} className='cursor-pointer'>
               {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
             <div className='text-zinc-800 text-base font-medium  leading-normal'>{mail.title}</div>
