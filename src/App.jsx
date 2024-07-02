@@ -55,8 +55,7 @@ const LayoutWithHeader = () => {
 const LayoutWithSidebar = () => {
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail); // Redux state에서 가져옵니다.
-  //TODO: kmee - 임시. /me API 수정 시 유저타입으로 수정
-  const userType = useSelector(state => state?.auth?.user?.id);
+  const userType = useSelector(state => state?.auth?.user?.type);
 
   const handleMenuClick = filteredMails => {
     dispatch({ type: "SET_MAILS", payload: filteredMails });
@@ -64,7 +63,7 @@ const LayoutWithSidebar = () => {
 
   return (
     <div className='flex w-full pt-16'>
-      {userType === "admin" ? (
+      {userType === "ADMIN" ? (
         <AdminSideMenu />
       ) : (
         <RequestSideMenu data={data} counts={counts} onMenuClick={handleMenuClick} />

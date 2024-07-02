@@ -1,13 +1,11 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { Button } from "antd";
 import { useSelector } from "react-redux";
 
-const AuthButton = ({ text, clickHandler, authRoles, colorType = "primary", size = "default" }) => {
-  //TODO: kmee - 관리자/me API roleList 추가 완료 후 로그인 정보 가져오기
-  // const loginUserROle = useSelector(state => state.auth.userRole);
-  const loginUserROle = "SUPER_ADMIN";
-  if (authRoles.includes(loginUserROle)) {
+const AuthButton = ({ text, clickHandler, adminRoleList, colorType = "primary", size = "default" }) => {
+  const loginUserRole = useSelector(state => state?.auth?.user?.adminRoleList?.[0]);
+
+  if (adminRoleList.includes(loginUserRole)) {
     return (
       <Button type={colorType} size={size} onClick={clickHandler}>
         {text}
@@ -20,7 +18,7 @@ const AuthButton = ({ text, clickHandler, authRoles, colorType = "primary", size
 AuthButton.propTypes = {
   text: PropTypes.string.isRequired,
   clickHandler: PropTypes.func.isRequired,
-  authRoles: PropTypes.arrayOf(String).isRequired,
+  adminRoleList: PropTypes.arrayOf(String).isRequired,
   colorType: PropTypes.string,
   size: PropTypes.oneOf(["small", "default", "large"]),
 };

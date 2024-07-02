@@ -6,10 +6,15 @@ export const login = (tokens, user) => ({
   payload: { tokens, user },
 });
 
-export const setUserInfo = userInfo => ({
-  type: SET_USER_INFO,
-  payload: userInfo,
-});
+export const setUserInfo = userInfo => (dispatch, getState) => {
+  const currentState = getState().auth.user;
+  const updatedUserInfo = { ...currentState, ...userInfo };
+
+  dispatch({
+    type: SET_USER_INFO,
+    payload: updatedUserInfo,
+  });
+};
 
 export const logout = () => ({
   type: LOGOUT,
