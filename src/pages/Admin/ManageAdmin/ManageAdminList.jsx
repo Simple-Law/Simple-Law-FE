@@ -7,7 +7,7 @@ import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 
-const MnageAdminList = () => {
+const ManageAdminList = () => {
   const columns = [
     {
       title: "이름",
@@ -180,7 +180,7 @@ const MnageAdminList = () => {
   );
 };
 
-export default MnageAdminList;
+export default ManageAdminList;
 
 const StyledModal = styled(Modal)`
     border-radius: 16px;
