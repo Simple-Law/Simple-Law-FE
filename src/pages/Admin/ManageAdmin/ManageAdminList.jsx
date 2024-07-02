@@ -153,7 +153,7 @@ const ManageAdminList = () => {
       <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-          <AuthButton text='계정 추가' size='large' clickHandler={showModal} authRoles={["SUPER_ADMIN"]} />
+          <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
         <Table
           // onmouseover="this.style.color='red'"
