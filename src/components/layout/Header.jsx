@@ -14,11 +14,11 @@ const Header = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/admin") ? true : false;
+  const isAdmin = location.pathname.startsWith("/admin");
   const loginUrl = isAdmin ? "/admin/login" : "/login";
 
   const showLogoutModal = () => {
-    setIsModalVisible(true);
+    if (user) setIsModalVisible(true);
   };
 
   const handleOk = () => {
@@ -42,7 +42,7 @@ const Header = () => {
           </div>
         </Link>
         <div className='flex items-center pr-[32px] gap-[10px]'>
-          {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to='loginUrl'>로그인</Link>}{" "}
+          {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to={loginUrl}>로그인</Link>}{" "}
           {/* 로그인한 사용자의 이름 표시 */}
           <div onClick={showLogoutModal}>
             <SvgProfile />
