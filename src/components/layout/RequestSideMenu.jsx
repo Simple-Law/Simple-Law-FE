@@ -17,6 +17,8 @@ const RequestSideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail);
+  const user = useSelector(state => state.user) || {}; // 유저 객체 가져오기, 기본 값은 빈 객체
+  const userType = user.type || "guest"; // 유저 타입 가져오기, 기본 값은 'guest'
 
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
@@ -26,7 +28,9 @@ const RequestSideMenu = () => {
   }, []);
 
   const handleMenuClick = statusKey => {
+    console.log(statusKey);
     let filteredMails = data;
+
     if (statusKey === "important") {
       filteredMails = data.filter(mail => mail.isImportant);
     } else if (statusKey === "trash") {
@@ -39,7 +43,27 @@ const RequestSideMenu = () => {
     dispatch(setTableData(filteredMails));
     navigate(`/board?status=${statusKey}`);
   };
-
+  const statusLabels = {
+    lawyer: {
+      preparing: "컨택 요청 중",
+      pending: "해결 진행 중",
+      completed: "해결 완료",
+      refuse: "신청거절",
+    },
+    quest: {
+      preparing: "의뢰 요청 중",
+      pending: "해결 진행 중",
+      completed: "해결 완료",
+      refuse: "신청거절",
+    },
+    guest: {
+      preparing: "비로그인 요청 중",
+      pending: "비로그인 해결 진행 중",
+      completed: "비로그인 해결 완료",
+      refuse: "비로그인 신청거절",
+    },
+  };
+  const statusTypes = statusLabels[userType] || statusLabels["guest"];
   const menuItems = [
     {
       key: "All_request",
@@ -51,76 +75,25 @@ const RequestSideMenu = () => {
       ),
       icon: <SvgMailAll />,
       onTitleClick: () => handleMenuClick("All_request"),
-      children: [
-        {
-          key: "preparing",
-          label: (
-            <span>
-              컨택 요청 중
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.preparing}
-              </span>
+
+      children: Object.keys(statusTypes).map(statusKey => ({
+        key: statusKey,
+        label: (
+          <span>
+            {statusTypes[statusKey]}
+            <span
+              style={{
+                marginLeft: "8px",
+                color: "#2E7FF8",
+                fontSize: "14px",
+              }}
+            >
+              {counts[statusKey]}
             </span>
-          ),
-        },
-        {
-          key: "pending",
-          label: (
-            <span>
-              해결 진행 중
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.pending}
-              </span>
-            </span>
-          ),
-        },
-        {
-          key: "completed",
-          label: (
-            <span>
-              해결 완료
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.completed}
-              </span>
-            </span>
-          ),
-        },
-        {
-          key: "refuse",
-          label: (
-            <span>
-              신청거절
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.refuse}
-              </span>
-            </span>
-          ),
-        },
-      ],
+          </span>
+        ),
+        // onClick: () => handleMenuClick(statusKey), // 추가된 부분
+      })),
     },
     {
       key: "important",
