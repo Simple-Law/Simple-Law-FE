@@ -262,8 +262,8 @@ export const AdminSideMenu = () => {
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["main"]}
+        defaultOpenKeys={["questMain", "AccountMain"]}
+        defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
