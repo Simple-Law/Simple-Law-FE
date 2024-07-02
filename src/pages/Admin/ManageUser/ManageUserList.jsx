@@ -6,7 +6,7 @@ import { useCommonContext } from "contexts/CommonContext";
 import { useLayoutEffect, useState } from "react";
 import styled from "styled-components";
 
-const MnageUserList = () => {
+const ManageUserList = () => {
   const columns = [
     {
       title: "이름",
@@ -139,4 +139,4 @@ const BoardDiv = styled.div`
   }
 `;
 
-export default MnageUserList;
+export default ManageUserList;

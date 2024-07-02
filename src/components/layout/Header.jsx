@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SvgLogo from "components/Icons/Logo";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import SvgProfile from "components/Icons/Profile";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,8 +14,9 @@ const Header = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   //TODO: kmee - 임시. /me API 수정 시 userType으로 수정
-  const userType = useSelector(state => state?.auth?.user?.id);
-  const loginUrl = userType === "admin" ? "/admin/login" : "/login";
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin") ? true : false;
+  const loginUrl = isAdmin ? "/admin/login" : "/login";
 
   const showLogoutModal = () => {
     setIsModalVisible(true);
@@ -35,14 +36,12 @@ const Header = () => {
   return (
     <div className='h-16 border-b-[1px] w-full fixed top-0 left-0 bg-white z-[1000000]'>
       <div className='flex justify-between items-center h-16 w-full'>
-        <div className='pl-[47px]'>
-          <Link to='/'>
-            <div>
-              <SvgLogo width='115px' height='auto' className='mx-auto' />
-              {userType === "admin" ? <UserTag userType={"ADMIN"} /> : null}
-            </div>
-          </Link>
-        </div>
+        <Link to='/'>
+          <div className='flex pl-[47px]'>
+            <SvgLogo width='115px' height='auto' className='mx-auto' />
+            {isAdmin ? <UserTag className='ml-10' userType={"ADMIN"} /> : null}
+          </div>
+        </Link>
         <div className='flex items-center pr-[32px] gap-[10px]'>
           {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to='loginUrl'>로그인</Link>}{" "}
           {/* 로그인한 사용자의 이름 표시 */}
