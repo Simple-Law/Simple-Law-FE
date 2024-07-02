@@ -28,23 +28,21 @@ const RequestSideMenu = () => {
   }, []);
 
   const handleMenuClick = statusKey => {
-    console.log("statusKey", statusKey);
+    console.log(statusKey);
     let filteredMails = data;
+
     if (statusKey === "important") {
       filteredMails = data.filter(mail => mail.isImportant);
     } else if (statusKey === "trash") {
       filteredMails = data.filter(mail => mail.status === "휴지통");
     } else if (statusKey !== "All_request") {
       filteredMails = data.filter(mail => mail.status === statusKey);
-    } else {
-      filteredMails = data; // 전체 의뢰함일 경우 필터링하지 않음
     }
 
     dispatch(setMails(filteredMails));
     dispatch(setTableData(filteredMails));
     navigate(`/board?status=${statusKey}`);
   };
-
   const statusLabels = {
     lawyer: {
       preparing: "컨택 요청 중",
@@ -59,14 +57,13 @@ const RequestSideMenu = () => {
       refuse: "신청거절",
     },
     guest: {
-      preparing: "아무거나 요청 중",
-      pending: "아무거나 해결 진행 중",
-      completed: "아무거나 해결 완료",
-      refuse: "아무거나 신청거절",
+      preparing: "비로그인 요청 중",
+      pending: "비로그인 해결 진행 중",
+      completed: "비로그인 해결 완료",
+      refuse: "비로그인 신청거절",
     },
   };
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
-
   const menuItems = [
     {
       key: "All_request",
@@ -77,7 +74,8 @@ const RequestSideMenu = () => {
         </span>
       ),
       icon: <SvgMailAll />,
-      onClick: () => handleMenuClick("All_request"),
+      onTitleClick: () => handleMenuClick("All_request"),
+
       children: Object.keys(statusTypes).map(statusKey => ({
         key: statusKey,
         label: (
@@ -94,10 +92,7 @@ const RequestSideMenu = () => {
             </span>
           </span>
         ),
-        onClick: e => {
-          e.domEvent.stopPropagation(); // 추가된 부분
-          handleMenuClick(statusKey);
-        },
+        // onClick: () => handleMenuClick(statusKey), // 추가된 부분
       })),
     },
     {
@@ -108,14 +103,15 @@ const RequestSideMenu = () => {
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span>
         </span>
       ),
-      onClick: () => handleMenuClick("important"),
+      onTitleClick: () => handleMenuClick("important"),
       icon: <SvgMailStar />,
     },
     {
-      key: "endRequest",
+      key: "sub4",
       label: <span className='text-stone-950'>종료된 의뢰함</span>,
       icon: <SvgMail />,
     },
+
     {
       type: "divider",
     },
@@ -127,29 +123,8 @@ const RequestSideMenu = () => {
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.trash}</span>
         </span>
       ),
-      onClick: () => handleMenuClick("trash"),
+      onTitleClick: () => handleMenuClick("trash"),
       icon: <SvgTrash />,
-    },
-  ];
-
-  const items = [
-    {
-      key: "main",
-      label: (
-        <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
-          내 의뢰함
-        </span>
-      ),
-      children: menuItems.map(menuItem => ({
-        key: menuItem.key,
-        label: menuItem.label,
-        icon: menuItem.icon,
-        children: menuItem.children?.map(childItem => ({
-          key: childItem.key,
-          label: childItem.label,
-          onClick: childItem.onClick,
-        })),
-      })),
     },
   ];
 
@@ -160,7 +135,7 @@ const RequestSideMenu = () => {
 
   return (
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
-      {/* <Button
+      <Button
         type='primary'
         block
         className='my-6 flex items-center justify-center'
@@ -168,14 +143,24 @@ const RequestSideMenu = () => {
       >
         <FaPlus className='mr-1' />
         의뢰 요청하기
-      </Button> */}
+      </Button>
       <Menu
         onClick={onClick}
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["main"]}
         mode='inline'
         className='w-full border-e-0'
-        items={items}
+        items={[
+          {
+            key: "main",
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
+                내 의뢰함
+              </span>
+            ),
+            children: menuItems,
+          },
+        ]}
       />
     </Board>
   );
@@ -250,8 +235,8 @@ export const AdminSideMenu = () => {
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["main"]}
+        defaultOpenKeys={["questMain", "AccountMain"]}
+        defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
