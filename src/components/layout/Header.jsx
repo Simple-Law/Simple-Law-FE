@@ -13,7 +13,6 @@ const Header = () => {
   const user = useSelector(state => state.auth.user);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
-  //TODO: kmee - 임시. /me API 수정 시 userType으로 수정
   const location = useLocation();
   const isAdmin = location.pathname.startsWith("/admin") ? true : false;
   const loginUrl = isAdmin ? "/admin/login" : "/login";
