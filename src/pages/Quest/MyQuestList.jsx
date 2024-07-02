@@ -26,6 +26,8 @@ const QuestPage = () => {
   const dispatch = useDispatch();
 
   const { data, tableData } = useSelector(state => state.mail);
+  const user = useSelector(state => state.user) || {}; // 유저 객체 가져오기, 기본 값은 빈 객체
+  const userType = user.type || "guest"; // 유저 타입 가져오기, 기본 값은 'guest'
 
   useEffect(() => {
     dispatch(fetchMailsAction());
@@ -45,7 +47,7 @@ const QuestPage = () => {
     const titles = {
       All_request: "전체 의뢰함",
       important: "전체 의뢰함(중요 의뢰함)",
-      preparing: "전체 의뢰함(컨택 요청 중)",
+      preparing: `전체 의뢰함(${userType === "lawyer" ? "컨택 요청 중" : "의뢰 요청 중"})`,
       pending: "전체 의뢰함(해결 진행 중)",
       completed: "전체 의뢰함(해결 완료)",
       refuse: "신청거절",
@@ -82,8 +84,6 @@ const QuestPage = () => {
       onCell: record => ({
         onClick: e => {
           handleToggleImportant(record.id, e);
-          // e.stopPropagation();
-          // dispatch(toggleImportant(record.id));
         },
       }),
       render: (_, record) => (
@@ -104,7 +104,7 @@ const QuestPage = () => {
       key: "status",
       dataIndex: "status",
       render: status => <StatusTag status={status} />,
-      width: 150, // 상태 컬럼 고정 너비
+      width: 150,
       className: "status-column",
     },
     {
@@ -117,7 +117,7 @@ const QuestPage = () => {
       ),
       key: "category",
       dataIndex: "category",
-      width: 260, // 분야|세부 분야 컬럼 고정 너비
+      width: 260,
       className: "category-column",
       render: (_, record) => (
         <>
@@ -132,7 +132,7 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
-      // '제목' 컬럼은 flex로 남은 공간을 채웁니다.
+
       render: (_, record) =>
         record.parentTitle ? (
           <div>
@@ -166,13 +166,13 @@ const QuestPage = () => {
       key: "time",
       dataIndex: timeColumn,
       render: text => <span>{text}</span>,
-      width: 150, // 의뢰 요청시간 컬럼 고정 너비
+      width: 150,
       className: "time-column",
     },
   ];
 
   const paginationConfig = {
-    pageSize: 10, // Set the number of items per page
+    pageSize: 10,
     position: ["bottomCenter"],
   };
 
@@ -182,7 +182,10 @@ const QuestPage = () => {
     const emptyTexts = {
       All_request: "전체 의뢰함에 의뢰가 없습니다.",
       important: "중요 의뢰함에 의뢰가 없습니다.",
-      preparing: "컨택 요청 중 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.",
+      preparing:
+        userType === "lawyer"
+          ? "컨택 요청 중 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다."
+          : "의뢰 요청 중 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.",
       pending: "해결 진행 중 의뢰가 없습니다.",
       completed: "해결 완료된 의뢰가 없습니다.",
       refuse: "신청거절된 의뢰가 없습니다.",
@@ -190,7 +193,6 @@ const QuestPage = () => {
     };
     return emptyTexts[statusKey] || "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
   };
-
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>

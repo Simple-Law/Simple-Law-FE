@@ -17,6 +17,8 @@ const RequestSideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data, counts } = useSelector(state => state.mail);
+  const user = useSelector(state => state.user) || {}; // 유저 객체 가져오기, 기본 값은 빈 객체
+  const userType = user.type || "guest"; // 유저 타입 가져오기, 기본 값은 'guest'
 
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
@@ -26,6 +28,7 @@ const RequestSideMenu = () => {
   }, []);
 
   const handleMenuClick = statusKey => {
+    console.log("statusKey", statusKey);
     let filteredMails = data;
     if (statusKey === "important") {
       filteredMails = data.filter(mail => mail.isImportant);
@@ -33,12 +36,36 @@ const RequestSideMenu = () => {
       filteredMails = data.filter(mail => mail.status === "휴지통");
     } else if (statusKey !== "All_request") {
       filteredMails = data.filter(mail => mail.status === statusKey);
+    } else {
+      filteredMails = data; // 전체 의뢰함일 경우 필터링하지 않음
     }
 
     dispatch(setMails(filteredMails));
     dispatch(setTableData(filteredMails));
     navigate(`/board?status=${statusKey}`);
   };
+
+  const statusLabels = {
+    lawyer: {
+      preparing: "컨택 요청 중",
+      pending: "해결 진행 중",
+      completed: "해결 완료",
+      refuse: "신청거절",
+    },
+    quest: {
+      preparing: "의뢰 요청 중",
+      pending: "해결 진행 중",
+      completed: "해결 완료",
+      refuse: "신청거절",
+    },
+    guest: {
+      preparing: "아무거나 요청 중",
+      pending: "아무거나 해결 진행 중",
+      completed: "아무거나 해결 완료",
+      refuse: "아무거나 신청거절",
+    },
+  };
+  const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const menuItems = [
     {
@@ -50,77 +77,28 @@ const RequestSideMenu = () => {
         </span>
       ),
       icon: <SvgMailAll />,
-      onTitleClick: () => handleMenuClick("All_request"),
-      children: [
-        {
-          key: "preparing",
-          label: (
-            <span>
-              컨택 요청 중
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.preparing}
-              </span>
+      onClick: () => handleMenuClick("All_request"),
+      children: Object.keys(statusTypes).map(statusKey => ({
+        key: statusKey,
+        label: (
+          <span>
+            {statusTypes[statusKey]}
+            <span
+              style={{
+                marginLeft: "8px",
+                color: "#2E7FF8",
+                fontSize: "14px",
+              }}
+            >
+              {counts[statusKey]}
             </span>
-          ),
+          </span>
+        ),
+        onClick: e => {
+          e.domEvent.stopPropagation(); // 추가된 부분
+          handleMenuClick(statusKey);
         },
-        {
-          key: "pending",
-          label: (
-            <span>
-              해결 진행 중
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.pending}
-              </span>
-            </span>
-          ),
-        },
-        {
-          key: "completed",
-          label: (
-            <span>
-              해결 완료
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.completed}
-              </span>
-            </span>
-          ),
-        },
-        {
-          key: "refuse",
-          label: (
-            <span>
-              신청거절
-              <span
-                style={{
-                  marginLeft: "8px",
-                  color: "#2E7FF8",
-                  fontSize: "14px",
-                }}
-              >
-                {counts.refuse}
-              </span>
-            </span>
-          ),
-        },
-      ],
+      })),
     },
     {
       key: "important",
@@ -130,15 +108,14 @@ const RequestSideMenu = () => {
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span>
         </span>
       ),
-      onTitleClick: () => handleMenuClick("important"),
+      onClick: () => handleMenuClick("important"),
       icon: <SvgMailStar />,
     },
     {
-      key: "sub4",
+      key: "endRequest",
       label: <span className='text-stone-950'>종료된 의뢰함</span>,
       icon: <SvgMail />,
     },
-
     {
       type: "divider",
     },
@@ -150,8 +127,29 @@ const RequestSideMenu = () => {
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.trash}</span>
         </span>
       ),
-      onTitleClick: () => handleMenuClick("trash"),
+      onClick: () => handleMenuClick("trash"),
       icon: <SvgTrash />,
+    },
+  ];
+
+  const items = [
+    {
+      key: "main",
+      label: (
+        <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
+          내 의뢰함
+        </span>
+      ),
+      children: menuItems.map(menuItem => ({
+        key: menuItem.key,
+        label: menuItem.label,
+        icon: menuItem.icon,
+        children: menuItem.children?.map(childItem => ({
+          key: childItem.key,
+          label: childItem.label,
+          onClick: childItem.onClick,
+        })),
+      })),
     },
   ];
 
@@ -162,7 +160,7 @@ const RequestSideMenu = () => {
 
   return (
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
-      <Button
+      {/* <Button
         type='primary'
         block
         className='my-6 flex items-center justify-center'
@@ -170,24 +168,14 @@ const RequestSideMenu = () => {
       >
         <FaPlus className='mr-1' />
         의뢰 요청하기
-      </Button>
+      </Button> */}
       <Menu
         onClick={onClick}
         defaultSelectedKeys={["1"]}
         defaultOpenKeys={["main"]}
         mode='inline'
         className='w-full border-e-0'
-        items={[
-          {
-            key: "main",
-            label: (
-              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
-                내 의뢰함
-              </span>
-            ),
-            children: menuItems,
-          },
-        ]}
+        items={items}
       />
     </Board>
   );
