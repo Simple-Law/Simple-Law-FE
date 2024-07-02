@@ -27,22 +27,6 @@ const RequestSideMenu = () => {
     }
   }, []);
 
-  const handleMenuClick = statusKey => {
-    console.log(statusKey);
-    let filteredMails = data;
-
-    if (statusKey === "important") {
-      filteredMails = data.filter(mail => mail.isImportant);
-    } else if (statusKey === "trash") {
-      filteredMails = data.filter(mail => mail.status === "휴지통");
-    } else if (statusKey !== "All_request") {
-      filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-
-    dispatch(setMails(filteredMails));
-    dispatch(setTableData(filteredMails));
-    navigate(`/board?status=${statusKey}`);
-  };
   const statusLabels = {
     lawyer: {
       preparing: "컨택 요청 중",
@@ -64,6 +48,23 @@ const RequestSideMenu = () => {
     },
   };
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
+  const handleMenuClick = statusKey => {
+    console.log(statusKey);
+    let filteredMails = data;
+
+    if (statusKey === "important") {
+      filteredMails = data.filter(mail => mail.isImportant);
+    } else if (statusKey === "trash") {
+      filteredMails = data.filter(mail => mail.status === "휴지통");
+    } else if (statusKey !== "All_request") {
+      filteredMails = data.filter(mail => mail.status === statusKey);
+    }
+
+    dispatch(setMails(filteredMails));
+    dispatch(setTableData({ mails: filteredMails, statusKey }));
+    navigate(`/board?status=${statusKey}`);
+  };
+
   const menuItems = [
     {
       key: "All_request",

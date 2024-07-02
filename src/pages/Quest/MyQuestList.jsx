@@ -16,7 +16,6 @@ const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
-  const [pageTitle, setPageTitle] = useState("전체 의뢰함");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,15 +33,7 @@ const QuestPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    let filteredMails = data;
-    if (statusKey === "important") {
-      filteredMails = data.filter(mail => mail.isImportant);
-    } else if (statusKey === "trash") {
-      filteredMails = data.filter(mail => mail.status === "휴지통");
-    } else if (statusKey !== "All_request") {
-      filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-    dispatch(setTableData(filteredMails));
+    console.log("tableData:", tableData); // 콘솔에 tableData 출력
 
     const titles = {
       All_request: "전체 의뢰함",
@@ -53,7 +44,19 @@ const QuestPage = () => {
       refuse: "신청거절",
       trash: "휴지통",
     };
-    setPageTitle(titles[statusKey] || "전체 의뢰함");
+    setHeaderTitle(titles[tableData.statusKey] || "전체 의뢰함");
+  }, [tableData.statusKey, userType]);
+
+  useEffect(() => {
+    let filteredMails = data;
+    if (statusKey === "important") {
+      filteredMails = data.filter(mail => mail.isImportant);
+    } else if (statusKey === "trash") {
+      filteredMails = data.filter(mail => mail.status === "휴지통");
+    } else if (statusKey !== "All_request") {
+      filteredMails = data.filter(mail => mail.status === statusKey);
+    }
+    dispatch(setTableData({ mails: filteredMails, statusKey }));
   }, [statusKey, data, dispatch]);
 
   const handleTimeMenuClick = e => {
@@ -66,6 +69,7 @@ const QuestPage = () => {
     event.stopPropagation();
     dispatch(toggleImportant(id));
   };
+
   const menu = (
     <Menu
       items={[
@@ -191,12 +195,13 @@ const QuestPage = () => {
       refuse: "신청거절된 의뢰가 없습니다.",
       trash: "휴지통에 의뢰가 없습니다.",
     };
-    return emptyTexts[statusKey] || "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
+    return emptyTexts[tableData.statusKey] || "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
   };
+
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
-        <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
+        <h2 className=' font-bold text-[20px]'>{headerTitle}</h2>
         <PageSearch
           placeholder='Placeholder'
           onSearch={onSearch}
@@ -207,7 +212,7 @@ const QuestPage = () => {
         />
       </div>
       <Table
-        dataSource={tableData}
+        dataSource={Array.isArray(tableData.mails) ? tableData.mails : []}
         columns={columns}
         pagination={paginationConfig}
         locale={{
