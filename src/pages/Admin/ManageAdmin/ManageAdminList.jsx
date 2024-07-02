@@ -50,10 +50,16 @@ const ManageAdminList = () => {
     },
     {
       title: "삭제",
-      key: "delete",
-      className: "delete-column",
-      render: () => (
-        <Button danger size='small' onClick={deleteAdmin}>
+      key: "adminId",
+      className: "deleteBtn-column",
+      render: (_, record) => (
+        <Button
+          danger
+          size='small'
+          onClick={() => {
+            deleteAdmin(record.key, record.id);
+          }}
+        >
           삭제
         </Button>
       ),
@@ -62,6 +68,7 @@ const ManageAdminList = () => {
 
   const mockData = [
     {
+      key: 1,
       id: "admin2",
       name: "김최고",
       userType: "SUPER_ADMIN",
@@ -70,6 +77,7 @@ const ManageAdminList = () => {
       accessDate: "2024.06.16",
     },
     {
+      key: 2,
       id: "admin3",
       name: "김일반",
       userType: "NORMAL_ADMIN",
@@ -78,6 +86,7 @@ const ManageAdminList = () => {
       accessDate: "2024.06.16",
     },
     {
+      key: 3,
       id: "admin4",
       name: "김노말",
       userType: "NORMAL_ADMIN",
@@ -90,6 +99,7 @@ const ManageAdminList = () => {
   const [data, setData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const { confirm } = Modal;
 
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
   const pageTitle = "관리자 계정 관리";
@@ -120,18 +130,35 @@ const ManageAdminList = () => {
     console.log("updateAdmin", id);
   }, []);
 
-  const deleteAdmin = () => {
-    console.log("deleteAdmin");
+  /**
+   * 관리자 계정 삭제
+   * @param {String} targetKey 유저 식별키
+   * @param {String} targetId 유저 아이디
+   */
+  const deleteAdmin = (targetKey, targetId) => {
+    confirm({
+      title: `${targetId} 계정을 삭제하시겠습니까?`,
+      bodyStyle: { textAlign: "center" },
+      okText: "삭제",
+      okType: "primary",
+      onOk() {
+        console.log("OK : ", targetKey + "로 api 호출");
+      },
+      cancelText: "취소",
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
   };
 
   /**
-   * 유저 정보 등록/수정 modal 열기
+   * 관리자 계정 등록/수정 modal 열기
    */
   const showModal = () => {
     setIsModalOpen(true);
   };
   /**
-   * 유저 정보 등록/수정 modal 닫기
+   * 관리자 계정 등록/수정 modal 닫기
    */
   const closeModal = () => {
     setIsModalOpen(false);
@@ -139,7 +166,7 @@ const ManageAdminList = () => {
   };
 
   /**
-   * 유저 정보  저장
+   * 관리자 계정 등록/수정 저장
    * @param {Object} formData : modal에서 입력한 formData
    */
   const onSubmit = formData => {
@@ -153,7 +180,7 @@ const ManageAdminList = () => {
       <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
-          <AuthButton text='계정 추가' size='large' clickHandler={showModal} authRoles={["SUPER_ADMIN"]} />
+          <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
         <Table
           // onmouseover="this.style.color='red'"
@@ -174,7 +201,13 @@ const ManageAdminList = () => {
       </BoardDiv>
       <StyledModal open={isModalOpen} onCancel={closeModal} footer={null}>
         <h5 className='text-center font-bold text-[20px] mb-4'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
-        <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
+        <UserInfoEditorForm
+          className='flex justify-center'
+          userData={selectedUser}
+          onSubmit={onSubmit}
+          closeModal={closeModal}
+          isAdmin={true}
+        />
       </StyledModal>
     </>
   );
@@ -184,7 +217,6 @@ export default ManageAdminList;
 
 const StyledModal = styled(Modal)`
     border-radius: 16px;
-    opacity: 0.5;
     background: #fff;
     box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.04);
   }

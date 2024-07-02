@@ -4,6 +4,7 @@ import { SelectAdminTag } from "components/tags/UserTag";
 import { validateEmailType, validateRequired, validatePassword } from "utils/validateUtil";
 import { isEmpty } from "lodash";
 import { useEffect } from "react";
+import styled from "styled-components";
 
 const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = false }) => {
   const [formData] = Form.useForm();
@@ -18,8 +19,14 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
     });
   }, [userData]);
 
+  const onCancle = () => {
+    formData.resetFields();
+    closeModal();
+  };
+
   return (
     <Form
+      className=''
       layout='vertical'
       form={formData}
       labelCol={{
@@ -28,53 +35,52 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
       wrapperCol={{
         span: 16,
       }}
-      style={{
-        maxWidth: 600,
-      }}
       initialValues={{
         remember: true,
       }}
       onFinish={onSubmit}
     >
-      <Form.Item label='아이디' name='id' rules={[validateRequired("아이디")]}>
+      <StyledFormItem label='아이디' name='id' rules={[validateRequired("아이디를")]}>
         <Input disabled={!isEmpty(userData)} />
-      </Form.Item>
-      <Form.Item label='이름' name='name' rules={[validateRequired("이름")]}>
+      </StyledFormItem>
+      <StyledFormItem label='이름' name='name' rules={[validateRequired("이름을")]}>
         <Input />
-      </Form.Item>
+      </StyledFormItem>
 
-      <Form.Item label='이메일' name='email' rules={[validateEmailType, validateRequired("이메일")]}>
+      <StyledFormItem label='이메일' name='email' rules={[validateEmailType, validateRequired("이메일을")]}>
         <Input />
-      </Form.Item>
+      </StyledFormItem>
 
-      <Form.Item
+      <StyledFormItem
         label='비밀번호'
         name='password'
         rules={[
-          validateRequired("비밀번호"),
+          validateRequired("비밀번호를"),
           () => ({
             validatePassword,
           }),
         ]}
       >
         <Input.Password />
-      </Form.Item>
+      </StyledFormItem>
 
       {isAdmin ? (
-        <Form.Item label='권한' name='userType' rules={[validateRequired("권한")]}>
-          <SelectAdminTag defaultValue={userData?.userType} />
-        </Form.Item>
+        <StyledFormItem label='권한' name='userType' rules={[validateRequired("권한을")]}>
+          <SelectAdminTag
+            defaultValue={userData?.userType}
+            value={formData.getFieldValue("userType")}
+            onChange={value => formData.setFieldsValue({ userType: value })}
+          />
+        </StyledFormItem>
       ) : null}
 
       <Form.Item>
-        <Space>
-          <Button type='primary' htmlType='submit'>
-            {userData ? "수정" : "등록"}
-          </Button>
-          <Button type='primary' onClick={closeModal}>
-            닫기
-          </Button>
-        </Space>
+        <Button className='w-1/2' onClick={onCancle}>
+          취소
+        </Button>
+        <Button className='w-1/2' type='primary' htmlType='submit'>
+          {userData ? "수정" : "등록"}하기
+        </Button>
       </Form.Item>
     </Form>
   );
@@ -85,4 +91,8 @@ UserInfoEditorForm.propTypes = {
   userData: PropTypes.object,
   isAdmin: PropTypes.bool,
 };
+
+const StyledFormItem = styled(Form.Item)`
+  margin-bottom: 20px;
+`;
 export default UserInfoEditorForm;
