@@ -31,7 +31,7 @@ const App = () => {
             <Route element={<LayoutWithHeader />}>
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
-                <Route path='board' element={<MyQuestListPage />} />
+                <Route path='board' element={<Navigate to='/board?status=All_request' replace />} />
                 <Route path='admin/manage-admin' element={<ManageAdminList />} />
                 <Route path='admin/manage-user' element={<ManageUserList />} />
               </Route>
