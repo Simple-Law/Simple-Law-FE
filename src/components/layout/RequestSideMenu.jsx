@@ -12,6 +12,7 @@ import SvgTrash from "components/Icons/Trash";
 import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
+import statusLabels from "utils/statusLabels";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -27,29 +28,8 @@ const RequestSideMenu = () => {
     }
   }, []);
 
-  const statusLabels = {
-    lawyer: {
-      preparing: "컨택 요청 중",
-      pending: "해결 진행 중",
-      completed: "해결 완료",
-      refuse: "신청거절",
-    },
-    quest: {
-      preparing: "의뢰 요청 중",
-      pending: "해결 진행 중",
-      completed: "해결 완료",
-      refuse: "신청거절",
-    },
-    guest: {
-      preparing: "비로그인 요청 중",
-      pending: "비로그인 해결 진행 중",
-      completed: "비로그인 해결 완료",
-      refuse: "비로그인 신청거절",
-    },
-  };
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
   const handleMenuClick = statusKey => {
-    console.log(statusKey);
     let filteredMails = data;
 
     if (statusKey === "important") {
@@ -93,7 +73,6 @@ const RequestSideMenu = () => {
             </span>
           </span>
         ),
-        // onClick: () => handleMenuClick(statusKey), // 추가된 부분
       })),
     },
     {
