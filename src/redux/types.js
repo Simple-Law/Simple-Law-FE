@@ -1,7 +1,6 @@
 // auth 관련 액션 타입
 export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
-export const SET_USER_INFO = "SET_USER_INFO";
 
 // mail 관련 액션 타입
 export const SET_MAILS = "SET_MAILS";
