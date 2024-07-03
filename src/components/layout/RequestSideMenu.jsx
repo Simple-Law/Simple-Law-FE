@@ -12,7 +12,7 @@ import SvgTrash from "components/Icons/Trash";
 import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
-import statusLabels from "utils/statusLabels";
+import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -29,15 +29,22 @@ const RequestSideMenu = () => {
   }, []);
 
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
-  const handleMenuClick = statusKey => {
-    let filteredMails = data;
 
-    if (statusKey === "important") {
-      filteredMails = data.filter(mail => mail.isImportant);
-    } else if (statusKey === "trash") {
-      filteredMails = data.filter(mail => mail.status === "휴지통");
-    } else if (statusKey !== "All_request") {
-      filteredMails = data.filter(mail => mail.status === statusKey);
+  const handleMenuClick = statusKey => {
+    console.log("메일데이터안나와?", data);
+    let filteredMails;
+    switch (statusKey) {
+      case "important":
+        filteredMails = data.filter(mail => mail.isImportant);
+        break;
+      case "trash":
+        filteredMails = data.filter(mail => mail.status === "휴지통");
+        break;
+      case "All_request":
+        filteredMails = data;
+        break;
+      default:
+        filteredMails = data.filter(mail => mail.status === statusKey);
     }
 
     dispatch(setMails(filteredMails));
@@ -50,7 +57,7 @@ const RequestSideMenu = () => {
       key: "All_request",
       label: (
         <span className='ml-2 text-stone-950'>
-          전체 의뢰함
+          {commonStatusLabels.All_request}
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.total}</span>
         </span>
       ),
@@ -79,7 +86,7 @@ const RequestSideMenu = () => {
       key: "important",
       label: (
         <span className='text-stone-950'>
-          중요 의뢰함
+          {commonStatusLabels.important}
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span>
         </span>
       ),
@@ -99,7 +106,7 @@ const RequestSideMenu = () => {
       key: "trash",
       label: (
         <span className='text-stone-950'>
-          휴지통
+          {commonStatusLabels.trash}
           <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.trash}</span>
         </span>
       ),
