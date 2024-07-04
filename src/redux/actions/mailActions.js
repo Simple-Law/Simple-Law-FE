@@ -1,5 +1,6 @@
 import { createMail as apiCreateMail, fetchMails as apiFetchMails, updateMail as apiUpdateMail } from "apis/mailsApi";
 import { SET_MAILS, SET_DATA, UPDATE_COUNTS, SET_TABLE_DATA } from "../types";
+import { showUserLoading, hideUserLoading } from "../../redux/actions/loadingAction";
 
 export const setMails = mails => ({
   type: SET_MAILS,
@@ -22,15 +23,17 @@ export const setTableData = data => ({
 });
 
 export const fetchMailsAction = () => async dispatch => {
+  dispatch(showUserLoading());
   try {
     const { data } = await apiFetchMails();
-
     dispatch(setData(data));
     dispatch(setMails(data.filter(mail => mail.status !== "휴지통")));
     dispatch(updateCounts(data));
-    dispatch(setTableData(data.filter(mail => mail.status !== "휴지통")));
+    dispatch(setTableData({ mails: data.filter(mail => mail.status !== "휴지통") }));
+    dispatch(hideUserLoading());
   } catch (error) {
     console.error("Error fetching mails:", error);
+    dispatch(hideUserLoading());
   }
 };
 
