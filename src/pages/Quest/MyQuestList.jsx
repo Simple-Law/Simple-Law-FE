@@ -21,8 +21,8 @@ const QuestPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { tableData } = useSelector(state => state.mail);
-  const user = useSelector(state => state.user) || {}; // 유저 객체 가져오기, 기본 값은 빈 객체
-  const userType = user.type || "guest"; // 유저 타입 가져오기, 기본 값은 'guest'
+  const user = useSelector(state => state.auth.user) || {};
+  const userType = user.type || "guest";
   useEffect(() => {
     dispatch(fetchMailsAction());
   }, [dispatch]);
