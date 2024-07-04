@@ -5,13 +5,13 @@ const commonStatusLabels = {
 };
 
 const statusLabels = {
-  lawyer: {
+  LAWYER: {
     preparing: "컨택 요청 중",
     pending: "해결 진행 중",
     completed: "해결 완료",
     refuse: "신청거절",
   },
-  quest: {
+  MEMBER: {
     preparing: "의뢰 요청 중",
     pending: "해결 진행 중",
     completed: "해결 완료",
