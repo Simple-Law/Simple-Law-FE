@@ -1,3 +1,9 @@
+const commonStatusLabels = {
+  All_request: "전체 의뢰함",
+  important: "중요 의뢰함",
+  trash: "휴지통",
+};
+
 const statusLabels = {
   lawyer: {
     preparing: "컨택 요청 중",
@@ -19,4 +25,4 @@ const statusLabels = {
   },
 };
 
-export default statusLabels;
+export { commonStatusLabels, statusLabels };

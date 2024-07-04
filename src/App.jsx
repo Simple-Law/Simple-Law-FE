@@ -31,7 +31,7 @@ const App = () => {
             <Route element={<LayoutWithHeader />}>
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
-                <Route path='board' element={<Navigate to='/board?status=All_request' replace />} />
+                <Route path='board' element={<MyQuestListPage />} />
                 <Route path='admin/manage-admin' element={<ManageAdminList />} />
                 <Route path='admin/manage-user' element={<ManageUserList />} />
               </Route>
@@ -54,7 +54,7 @@ const LayoutWithHeader = () => {
 
 const LayoutWithSidebar = () => {
   const dispatch = useDispatch();
-  const { data, counts } = useSelector(state => state.mail); // Redux state에서 가져옵니다.
+  const { data, counts } = useSelector(state => state.mail);
   const userType = useSelector(state => state?.auth?.user?.type);
 
   const handleMenuClick = filteredMails => {

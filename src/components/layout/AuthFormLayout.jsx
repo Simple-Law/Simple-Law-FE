@@ -1,7 +1,6 @@
-import React from "react";
 import SvgLogo from "components/Icons/Logo";
 import { Link } from "react-router-dom";
-
+import PropTypes from "prop-types";
 const LoginForm = ({ children, title }) => {
   return (
     <div className='min-h-screen relative flex flex-col justify-center'>
@@ -18,6 +17,10 @@ const LoginForm = ({ children, title }) => {
       </div>
     </div>
   );
+};
+LoginForm.propTypes = {
+  children: PropTypes.node,
+  title: PropTypes.string,
 };
 
 export default LoginForm;

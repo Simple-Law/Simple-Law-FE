@@ -9,7 +9,7 @@ import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
 import { fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
-import statusLabels from "utils/statusLabels";
+import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 
 const { Search } = Input;
 
@@ -23,22 +23,19 @@ const QuestPage = () => {
   const { tableData } = useSelector(state => state.mail);
   const user = useSelector(state => state.user) || {}; // 유저 객체 가져오기, 기본 값은 빈 객체
   const userType = user.type || "guest"; // 유저 타입 가져오기, 기본 값은 'guest'
-
   useEffect(() => {
     dispatch(fetchMailsAction());
   }, [dispatch]);
 
   useEffect(() => {
-    const titles = {
-      All_request: "전체 의뢰함",
-      important: "전체 의뢰함(중요 의뢰함)",
-      ...Object.keys(statusLabels[userType]).reduce((acc, key) => {
-        acc[key] = `전체 의뢰함(${statusLabels[userType][key]})`;
-        return acc;
-      }, {}),
-      trash: "휴지통",
-    };
-    setHeaderTitle(titles[tableData.statusKey] || "전체 의뢰함");
+    const userSpecificStatus = statusLabels[userType] || {};
+    const statusKey = tableData.statusKey;
+
+    if (userSpecificStatus[statusKey]) {
+      setHeaderTitle(`전체 의뢰함 (${userSpecificStatus[statusKey]})`);
+    } else {
+      setHeaderTitle(commonStatusLabels[statusKey] || "전체 의뢰함");
+    }
   }, [tableData.statusKey, userType]);
 
   const handleTimeMenuClick = e => {
@@ -167,18 +164,18 @@ const QuestPage = () => {
   const getEmptyText = () => {
     const defaultText = "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
     const statusKey = tableData.statusKey || "All_request";
-    if (statusKey === "important") {
-      return "중요 의뢰함에 의뢰가 없습니다.";
-    }
-    if (statusKey === "trash") {
-      return "휴지통에 의뢰가 없습니다.";
+    const commonLabels = {
+      important: "중요 의뢰함에 의뢰가 없습니다.",
+      trash: "휴지통에 의뢰가 없습니다.",
+    };
+    if (commonLabels[statusKey]) {
+      return commonLabels[statusKey];
     }
     if (statusLabels[userType] && statusLabels[userType][statusKey]) {
       return `${statusLabels[userType][statusKey]} 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.`;
     }
     return defaultText;
   };
-
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
