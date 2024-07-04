@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { Dropdown, Input, Menu, Table, Skeleton } from "antd";
+import { Dropdown, Input, Menu, Table } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
