@@ -1,20 +1,10 @@
-import { loginUser as apiLoginUser, getMemberInfo } from "apis/usersApi";
-import { LOGIN, LOGOUT, SET_USER_INFO } from "../types";
+import { loginUser as apiLoginUser } from "apis/usersApi";
+import { LOGIN, LOGOUT } from "../types";
 
 export const login = (tokens, user) => ({
   type: LOGIN,
   payload: { tokens, user },
 });
-
-export const setUserInfo = userInfo => (dispatch, getState) => {
-  const currentState = getState().auth.user;
-  const updatedUserInfo = { ...currentState, ...userInfo };
-
-  dispatch({
-    type: SET_USER_INFO,
-    payload: updatedUserInfo,
-  });
-};
 
 export const logout = () => ({
   type: LOGOUT,
@@ -24,18 +14,9 @@ export const logout = () => ({
 export const loginUser = (values, userType) => async dispatch => {
   try {
     const response = await apiLoginUser(values, userType);
-    const { accessToken, refreshToken, accessTokenExpiredAt, refreshTokenExpiredAt, ...user } = response.data.payload;
-    const tokens = {
-      accessToken,
-      refreshToken,
-      accessTokenExpiredAt,
-      refreshTokenExpiredAt,
-    };
+    const { token: tokens, user } = response.data.payload;
 
     dispatch(login(tokens, user));
-
-    const memberInfoResponse = await getMemberInfo(userType);
-    dispatch(setUserInfo(memberInfoResponse.data.payload));
 
     return { success: true }; // 성공 시 객체 반환
   } catch (error) {
