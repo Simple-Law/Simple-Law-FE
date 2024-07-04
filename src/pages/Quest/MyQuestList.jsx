@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { Dropdown, Input, Menu, Table } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Dropdown, Input, Menu, Table, Skeleton } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { setTableData, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
+import { toggleImportant, setMails, setTableData } from "../../redux/actions/mailActions";
+import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 
 const { Search } = Input;
 
@@ -16,43 +17,45 @@ const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
-  const [pageTitle, setPageTitle] = useState("전체 의뢰함");
 
   const navigate = useNavigate();
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const statusKey = queryParams.get("status");
-
   const dispatch = useDispatch();
 
   const { data, tableData } = useSelector(state => state.mail);
+  const user = useSelector(state => state.auth.user) || {};
+  const userType = user.type || "guest";
+  const mailLoading = useSelector(state => state.loading.mailLoading);
 
   useEffect(() => {
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+    const params = new URLSearchParams(location.search);
+    const statusKey = params.get("status") || "All_request";
+    let filteredMails;
 
-  useEffect(() => {
-    let filteredMails = data;
-    if (statusKey === "important") {
-      filteredMails = data.filter(mail => mail.isImportant);
-    } else if (statusKey === "trash") {
-      filteredMails = data.filter(mail => mail.status === "휴지통");
-    } else if (statusKey !== "All_request") {
-      filteredMails = data.filter(mail => mail.status === statusKey);
+    switch (statusKey) {
+      case "important":
+        filteredMails = data.filter(mail => mail.isImportant);
+        break;
+      case "trash":
+        filteredMails = data.filter(mail => mail.status === "휴지통");
+        break;
+      case "All_request":
+        filteredMails = data;
+        break;
+      default:
+        filteredMails = data.filter(mail => mail.status === statusKey);
     }
-    dispatch(setTableData(filteredMails));
 
-    const titles = {
-      All_request: "전체 의뢰함",
-      important: "전체 의뢰함(중요 의뢰함)",
-      preparing: "전체 의뢰함(컨택 요청 중)",
-      pending: "전체 의뢰함(해결 진행 중)",
-      completed: "전체 의뢰함(해결 완료)",
-      refuse: "신청거절",
-      trash: "휴지통",
-    };
-    setPageTitle(titles[statusKey] || "전체 의뢰함");
-  }, [statusKey, data, dispatch]);
+    dispatch(setMails(filteredMails));
+    dispatch(setTableData({ mails: filteredMails, statusKey }));
+
+    const userSpecificStatus = statusLabels[userType] || {};
+    if (userSpecificStatus[statusKey]) {
+      setHeaderTitle(`전체 의뢰함 (${userSpecificStatus[statusKey]})`);
+    } else {
+      setHeaderTitle(commonStatusLabels[statusKey] || "전체 의뢰함");
+    }
+  }, [location, data, dispatch, userType]);
 
   const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
@@ -64,6 +67,7 @@ const QuestPage = () => {
     event.stopPropagation();
     dispatch(toggleImportant(id));
   };
+
   const menu = (
     <Menu
       items={[
@@ -82,8 +86,6 @@ const QuestPage = () => {
       onCell: record => ({
         onClick: e => {
           handleToggleImportant(record.id, e);
-          // e.stopPropagation();
-          // dispatch(toggleImportant(record.id));
         },
       }),
       render: (_, record) => (
@@ -104,7 +106,7 @@ const QuestPage = () => {
       key: "status",
       dataIndex: "status",
       render: status => <StatusTag status={status} />,
-      width: 150, // 상태 컬럼 고정 너비
+      width: 150,
       className: "status-column",
     },
     {
@@ -117,7 +119,7 @@ const QuestPage = () => {
       ),
       key: "category",
       dataIndex: "category",
-      width: 260, // 분야|세부 분야 컬럼 고정 너비
+      width: 260,
       className: "category-column",
       render: (_, record) => (
         <>
@@ -132,7 +134,7 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
-      // '제목' 컬럼은 flex로 남은 공간을 채웁니다.
+
       render: (_, record) =>
         record.parentTitle ? (
           <div>
@@ -166,35 +168,50 @@ const QuestPage = () => {
       key: "time",
       dataIndex: timeColumn,
       render: text => <span>{text}</span>,
-      width: 150, // 의뢰 요청시간 컬럼 고정 너비
+      width: 150,
       className: "time-column",
     },
   ];
 
   const paginationConfig = {
-    pageSize: 10, // Set the number of items per page
+    pageSize: 10,
     position: ["bottomCenter"],
   };
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
   const getEmptyText = () => {
-    const emptyTexts = {
-      All_request: "전체 의뢰함에 의뢰가 없습니다.",
+    const defaultText = "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
+    const statusKey = tableData.statusKey || "All_request";
+    const commonLabels = {
       important: "중요 의뢰함에 의뢰가 없습니다.",
-      preparing: "컨택 요청 중 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.",
-      pending: "해결 진행 중 의뢰가 없습니다.",
-      completed: "해결 완료된 의뢰가 없습니다.",
-      refuse: "신청거절된 의뢰가 없습니다.",
       trash: "휴지통에 의뢰가 없습니다.",
     };
-    return emptyTexts[statusKey] || "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
+    if (commonLabels[statusKey]) {
+      return commonLabels[statusKey];
+    }
+    if (statusLabels[userType] && statusLabels[userType][statusKey]) {
+      return `${statusLabels[userType][statusKey]} 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.`;
+    }
+    return defaultText;
   };
+
+  if (mailLoading) {
+    return (
+      <div>
+        {[...Array(10)].map((_, index) => (
+          <div key={index} className='mb-2'>
+            <Skeleton active />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
-        <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
+        <h2 className=' font-bold text-[20px]'>{headerTitle}</h2>
         <PageSearch
           placeholder='Placeholder'
           onSearch={onSearch}
@@ -205,7 +222,7 @@ const QuestPage = () => {
         />
       </div>
       <Table
-        dataSource={tableData}
+        dataSource={Array.isArray(tableData.mails) ? tableData.mails : []}
         columns={columns}
         pagination={paginationConfig}
         locale={{
@@ -298,7 +315,6 @@ const PageSearch = styled(Search)`
     }
     .ant-input-wrapper {
       background: #ffffff;
-      border: 1px solid rgb(228, 233, 241);
       border-radius: 4px;
     }
   }

@@ -72,18 +72,6 @@ const DetailPage = () => {
     }
   }, [id, mail, dispatch]);
 
-  // const handleToggleImportant = async (id, event) => {
-  //   event.stopPropagation();
-  //   try {
-  //     await updateMail(id, { isImportant: !mail.isImportant });
-  //     setMail({ ...mail, isImportant: !mail.isImportant });
-  //     const { data: mailData } = await fetchMails();
-  //     dispatch(setData(mailData));
-  //     dispatch(updateCounts(mailData));
-  //   } catch (error) {
-  //     console.error("Error updating important status:", error);
-  //   }
-  // };
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
     dispatch(toggleImportant(id));

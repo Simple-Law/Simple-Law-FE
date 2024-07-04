@@ -2,7 +2,7 @@ export const validateRequired = (inputLabel, whitespace = true) => {
   return {
     required: true,
     whitespace: whitespace,
-    message: `${inputLabel} 을/를 입력해주세요`,
+    message: `${inputLabel} 입력해주세요`,
   };
 };
 

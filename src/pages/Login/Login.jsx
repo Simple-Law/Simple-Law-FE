@@ -37,7 +37,7 @@ const Login = () => {
   const handleLogin = async values => {
     try {
       const { success, message } = await dispatch(loginUser(values, type));
-      const successUrl = type === "admin" ? "/admin/manage-admin" : "/board";
+      const successUrl = type === "admin" ? "/admin/manage-admin" : "/board?status=All_request";
 
       if (success) {
         messageApi.success("로그인 성공!");

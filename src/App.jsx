@@ -54,7 +54,7 @@ const LayoutWithHeader = () => {
 
 const LayoutWithSidebar = () => {
   const dispatch = useDispatch();
-  const { data, counts } = useSelector(state => state.mail); // Redux state에서 가져옵니다.
+  const { data, counts } = useSelector(state => state.mail);
   const userType = useSelector(state => state?.auth?.user?.type);
 
   const handleMenuClick = filteredMails => {

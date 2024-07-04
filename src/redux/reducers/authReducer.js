@@ -16,11 +16,6 @@ const authReducer = (state = initialState, action) => {
         tokens: action.payload.tokens,
         user: action.payload.user,
       };
-    case "SET_USER_INFO":
-      return {
-        ...state,
-        user: action.payload,
-      };
     case "LOGOUT":
       return initialState;
     default:
