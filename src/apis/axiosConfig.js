@@ -1,6 +1,5 @@
 import axios from "axios";
 import { store } from "../redux/store";
-import { showLoading, hideLoading } from "../redux/actions/loadingAction";
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
@@ -17,26 +16,17 @@ axiosInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    store.dispatch(showLoading()); // 요청 전 로딩 표시
-
     return config;
   },
   error => {
-    store.dispatch(hideLoading()); // 요청 오류 발생 시 로딩 숨김
     return Promise.reject(error);
   },
 );
 
-// Axios 응답 인터셉터를 사용하여 로딩 상태를 제어
+// Axios 응답 인터셉터를 사용하여 응답을 처리
 axiosInstance.interceptors.response.use(
-  response => {
-    store.dispatch(hideLoading()); // 응답 성공 시 로딩 숨김
-    return response;
-  },
-  error => {
-    store.dispatch(hideLoading()); // 응답 오류 발생 시 로딩 숨김
-    return Promise.reject(error);
-  },
+  response => response,
+  error => Promise.reject(error),
 );
 
 export default axiosInstance;

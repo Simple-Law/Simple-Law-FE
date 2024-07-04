@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { Dropdown, Input, Menu, Table } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Dropdown, Input, Menu, Table, Skeleton } from "antd";
+import { useNavigate, useLocation } from "react-router-dom";
 import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
+import { toggleImportant, setMails, setTableData } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 
 const { Search } = Input;
@@ -19,24 +19,43 @@ const QuestPage = () => {
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
 
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
-  const { tableData } = useSelector(state => state.mail);
+
+  const { data, tableData } = useSelector(state => state.mail);
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
-  useEffect(() => {
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+  const mailLoading = useSelector(state => state.loading.mailLoading);
 
   useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const statusKey = params.get("status") || "All_request";
+    let filteredMails;
+
+    switch (statusKey) {
+      case "important":
+        filteredMails = data.filter(mail => mail.isImportant);
+        break;
+      case "trash":
+        filteredMails = data.filter(mail => mail.status === "휴지통");
+        break;
+      case "All_request":
+        filteredMails = data;
+        break;
+      default:
+        filteredMails = data.filter(mail => mail.status === statusKey);
+    }
+
+    dispatch(setMails(filteredMails));
+    dispatch(setTableData({ mails: filteredMails, statusKey }));
+
     const userSpecificStatus = statusLabels[userType] || {};
-    const statusKey = tableData.statusKey;
-
     if (userSpecificStatus[statusKey]) {
       setHeaderTitle(`전체 의뢰함 (${userSpecificStatus[statusKey]})`);
     } else {
       setHeaderTitle(commonStatusLabels[statusKey] || "전체 의뢰함");
     }
-  }, [tableData.statusKey, userType]);
+  }, [location, data, dispatch, userType]);
 
   const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
@@ -176,6 +195,19 @@ const QuestPage = () => {
     }
     return defaultText;
   };
+
+  if (mailLoading) {
+    return (
+      <div>
+        {[...Array(10)].map((_, index) => (
+          <div key={index} className='mb-2'>
+            <Skeleton active />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
@@ -283,7 +315,6 @@ const PageSearch = styled(Search)`
     }
     .ant-input-wrapper {
       background: #ffffff;
-      border: 1px solid rgb(228, 233, 241);
       border-radius: 4px;
     }
   }

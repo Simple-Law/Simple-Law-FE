@@ -1,26 +1,17 @@
-import { HIDE_LOADING, SHOW_LOADING } from "../types";
+import { SHOW_USER_LOADING, HIDE_USER_LOADING, SHOW_MAIL_LOADING, HIDE_MAIL_LOADING } from "../types";
 
-export const showLoading = () => ({
-  type: SHOW_LOADING,
+export const showUserLoading = () => ({
+  type: SHOW_USER_LOADING,
 });
 
-export const hideLoading = () => ({
-  type: HIDE_LOADING,
+export const hideUserLoading = () => ({
+  type: HIDE_USER_LOADING,
 });
 
-export const delayedShowLoading = () => {
-  return dispatch => {
-    const timeoutId = setTimeout(() => {
-      dispatch(showLoading());
-    }, 1500); // 1.5초 후에 로딩 표시
+export const showMailLoading = () => ({
+  type: SHOW_MAIL_LOADING,
+});
 
-    return timeoutId;
-  };
-};
-
-export const clearLoadingTimeout = timeoutId => {
-  return dispatch => {
-    clearTimeout(timeoutId);
-    dispatch(hideLoading());
-  };
-};
+export const hideMailLoading = () => ({
+  type: HIDE_MAIL_LOADING,
+});
