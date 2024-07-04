@@ -25,7 +25,6 @@ const QuestPage = () => {
   const { data, tableData } = useSelector(state => state.mail);
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
-  const mailLoading = useSelector(state => state.loading.mailLoading);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -195,18 +194,6 @@ const QuestPage = () => {
     }
     return defaultText;
   };
-
-  if (mailLoading) {
-    return (
-      <div>
-        {[...Array(10)].map((_, index) => (
-          <div key={index} className='mb-2'>
-            <Skeleton active />
-          </div>
-        ))}
-      </div>
-    );
-  }
 
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
