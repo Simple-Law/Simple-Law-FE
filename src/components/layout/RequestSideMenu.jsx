@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { setMails, setTableData } from "../../redux/actions/mailActions";
+import { setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
@@ -26,7 +26,8 @@ const RequestSideMenu = () => {
     if (parentElement) {
       parentElement.classList.add("custom-arrow");
     }
-  }, []);
+    dispatch(fetchMailsAction());
+  }, [dispatch]);
 
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
@@ -93,9 +94,15 @@ const RequestSideMenu = () => {
       icon: <SvgMailStar />,
     },
     {
-      key: "sub4",
-      label: <span className='text-stone-950'>종료된 의뢰함</span>,
+      key: "endRequest",
+      label: (
+        <span className='text-stone-950'>
+          {commonStatusLabels.endRequest}
+          {/* <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span> */}
+        </span>
+      ),
       icon: <SvgMail />,
+      // onTitleClick: () => handleMenuClick("important"),
     },
 
     {
