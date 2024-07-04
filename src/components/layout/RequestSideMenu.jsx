@@ -31,7 +31,6 @@ const RequestSideMenu = () => {
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    console.log("메일데이터안나와?", data);
     let filteredMails;
     switch (statusKey) {
       case "important":
