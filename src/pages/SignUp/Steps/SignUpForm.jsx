@@ -1,10 +1,12 @@
 import { useState } from "react";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
-import { sendAuthCode, verifyAuthCode, checkDuplicate } from "apis/usersApi";
+import { verifyAuthCode, checkDuplicate } from "apis/usersApi";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import PropTypes from "prop-types";
 import moment from "moment";
+import { sendAuthCodeAction } from "../../../redux/actions/authActions";
+import { useDispatch } from "react-redux";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
@@ -18,7 +20,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [emailValidateStatus, setEmailValidateStatus] = useState("");
 
   const messageApi = useMessageApi();
-
+  const dispatch = useDispatch();
   // 회원가입 폼 제출
   const onFinish = async values => {
     try {
@@ -172,7 +174,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
 
     try {
-      await sendAuthCode(cleanedPhoneNumber, type);
+      await dispatch(sendAuthCodeAction(cleanedPhoneNumber, type));
       messageApi.success("인증번호가 발송되었습니다.");
       setShowAuthenticationCodeField(true);
       startTimer(180); // 기본값 180초 설정
