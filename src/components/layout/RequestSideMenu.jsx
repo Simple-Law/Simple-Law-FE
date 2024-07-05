@@ -13,6 +13,7 @@ import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
+import { filterMails } from "utils/mailUtils";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -31,21 +32,7 @@ const RequestSideMenu = () => {
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    let filteredMails;
-    switch (statusKey) {
-      case "important":
-        filteredMails = data.filter(mail => mail.isImportant);
-        break;
-      case "trash":
-        filteredMails = data.filter(mail => mail.status === "휴지통");
-        break;
-      case "All_request":
-        filteredMails = data;
-        break;
-      default:
-        filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-
+    const filteredMails = filterMails(data, statusKey);
     dispatch(setMails(filteredMails));
     dispatch(setTableData({ mails: filteredMails, statusKey }));
     navigate(`/board?status=${statusKey}`);

@@ -74,7 +74,6 @@ const StyledTag = styled(Tag)`
 `;
 
 const StatusTag = ({ status, userType }) => {
-  console.log("status", status);
   const getStatusText = (status, userType) => {
     if (statusLabels[userType]) {
       return statusLabels[userType][status] || "기타";

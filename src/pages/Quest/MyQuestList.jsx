@@ -11,6 +11,7 @@ import SvgArrowDown from "components/Icons/ArrowDown";
 import { toggleImportant, setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 import { useCommonContext } from "contexts/CommonContext";
+import { filterMails } from "utils/mailUtils";
 
 const { Search } = Input;
 
@@ -36,22 +37,7 @@ const QuestPage = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const statusKey = params.get("status") || "All_request";
-    let filteredMails;
-
-    switch (statusKey) {
-      case "important":
-        filteredMails = data.filter(mail => mail.isImportant);
-        break;
-      case "trash":
-        filteredMails = data.filter(mail => mail.status === "휴지통");
-        break;
-      case "All_request":
-        filteredMails = data;
-        break;
-      default:
-        filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-
+    const filteredMails = filterMails(data, statusKey);
     dispatch(setMails(filteredMails));
     dispatch(setTableData({ mails: filteredMails, statusKey }));
 
