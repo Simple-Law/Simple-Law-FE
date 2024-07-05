@@ -1,15 +1,26 @@
+import { commonStatusLabels } from "utils/statusLabels";
+
+const initialCountKeys = [
+  "total",
+  "contactRequest",
+  "approvalPending",
+  "resolving",
+  "resolved",
+  "requestInProgress",
+  "preparing",
+  "pending",
+  "completed",
+  "refuse",
+  "important",
+  "trash",
+];
+
+const initializeCounts = () => initialCountKeys.reduce((acc, key) => ({ ...acc, [key]: 0 }), {});
+
 const initialState = {
   mails: [],
   data: [],
-  counts: {
-    total: 0,
-    preparing: 0,
-    pending: 0,
-    completed: 0,
-    refuse: 0,
-    important: 0,
-    trash: 0,
-  },
+  counts: initializeCounts(),
   tableData: [],
 };
 
@@ -21,16 +32,16 @@ const mailReducer = (state = initialState, action) => {
       return { ...state, data: action.payload };
     case "UPDATE_COUNTS": {
       const mails = action.payload;
-      const nonTrashData = mails.filter(mail => mail.status !== "휴지통");
-      const counts = {
-        total: nonTrashData.length,
-        preparing: nonTrashData.filter(mail => mail.status === "preparing").length,
-        pending: nonTrashData.filter(mail => mail.status === "pending").length,
-        completed: nonTrashData.filter(mail => mail.status === "completed").length,
-        refuse: nonTrashData.filter(mail => mail.status === "refuse").length,
-        important: nonTrashData.filter(mail => mail.isImportant).length,
-        trash: mails.filter(mail => mail.status === "휴지통").length,
-      };
+      const counts = mails.reduce((acc, mail) => {
+        if (mail.status !== commonStatusLabels.trash) {
+          acc.total += 1;
+          acc[mail.status] = (acc[mail.status] || 0) + 1;
+          if (mail.isImportant) acc.important += 1;
+        } else {
+          acc.trash += 1;
+        }
+        return acc;
+      }, initializeCounts());
 
       return { ...state, counts };
     }
