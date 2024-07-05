@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Tag } from "antd";
+import { statusLabels } from "utils/statusLabels";
 
-// Styled component for the Tag
 const StyledTag = styled(Tag)`
   &.status-tag {
     font-size: 13px;
@@ -13,6 +13,9 @@ const StyledTag = styled(Tag)`
     display: inline-flex;
     align-items: center;
     margin-inline-end: 0;
+    border: none;
+    background: rgba(148, 163, 184, 0.1); /* 기본 배경색 */
+    color: #94a3b8; /* 기본 글자색 */
 
     &::before {
       content: "";
@@ -21,10 +24,13 @@ const StyledTag = styled(Tag)`
       display: block;
       border-radius: 50px;
       margin-right: 6px;
+      background-color: #94a3b8; /* 기본 원 색상 */
     }
   }
-  &.status-tag.preparing {
-    border: none;
+
+  &.status-tag.contactRequest,
+  &.status-tag.approvalPending,
+  &.status-tag.requestInProgress {
     color: #ff9200;
     background: rgba(255, 146, 0, 0.12);
     &::before {
@@ -32,17 +38,7 @@ const StyledTag = styled(Tag)`
     }
   }
 
-  &.status-tag.completed {
-    border: none;
-    background: rgba(0, 110, 37, 0.1);
-    color: #006e25;
-    &::before {
-      background-color: #006e25;
-    }
-  }
-
-  &.status-tag.pending {
-    border: none;
+  &.status-tag.resolving {
     background: rgba(255, 66, 66, 0.12);
     color: #ff4242;
     &::before {
@@ -50,12 +46,11 @@ const StyledTag = styled(Tag)`
     }
   }
 
-  &.status-tag.refuse {
-    border: none;
-    background: rgba(148, 163, 184, 0.1);
-    color: #94a3b8;
+  &.status-tag.resolved {
+    background: rgba(0, 110, 37, 0.1);
+    color: #006e25;
     &::before {
-      background-color: #94a3b8;
+      background-color: #006e25;
     }
   }
 
@@ -78,37 +73,31 @@ const StyledTag = styled(Tag)`
   }
 `;
 
-const StatusTag = ({ status }) => {
-  const getStatusText = status => {
-    switch (status) {
-      case "pending":
-        return "재검토 요청";
-      case "completed":
-        return "해결 완료";
-      case "refuse":
-        return "의뢰 종료";
-      case "preparing":
-        return "요청 진행 중";
-      default:
-        return "기타";
+const StatusTag = ({ status, userType }) => {
+  console.log("status", status);
+  const getStatusText = (status, userType) => {
+    if (statusLabels[userType]) {
+      return statusLabels[userType][status] || "기타";
     }
+    return "기타";
   };
 
-  return <StyledTag className={`status-tag ${status}`}>{getStatusText(status)}</StyledTag>;
+  return <StyledTag className={`status-tag ${status}`}>{getStatusText(status, userType)}</StyledTag>;
 };
 
 StatusTag.propTypes = {
   status: PropTypes.string.isRequired,
+  userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
 };
 
 export const LoginStatusTag = ({ status }) => {
-  console.log(status);
   return status ? (
     <StyledTag className={"status-tag true"}>활성화</StyledTag>
   ) : (
     <StyledTag className={"status-tag false"}>비활성화</StyledTag>
   );
 };
+
 LoginStatusTag.propTypes = {
   status: PropTypes.bool.isRequired,
 };

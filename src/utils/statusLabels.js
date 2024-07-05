@@ -7,22 +7,20 @@ const commonStatusLabels = {
 
 const statusLabels = {
   LAWYER: {
-    preparing: "컨택 요청 중",
-    pending: "해결 진행 중",
-    completed: "해결 완료",
-    refuse: "신청거절",
+    contactRequest: "컨택 요청 중",
+    approvalPending: "승인 완료 중",
+    resolving: "해결 진행 중",
+    resolved: "해결 완료",
   },
   MEMBER: {
-    preparing: "의뢰 요청 중",
-    pending: "해결 진행 중",
-    completed: "해결 완료",
-    refuse: "신청거절",
+    requestInProgress: "요청 진행 중",
+    resolving: "해결 진행 중",
+    resolved: "해결 완료",
   },
   guest: {
-    preparing: "비로그인 요청 중",
-    pending: "비로그인 해결 진행 중",
-    completed: "비로그인 해결 완료",
-    refuse: "비로그인 신청거절",
+    requestInProgress: "비로그인 요청 중",
+    resolving: "비로그인 해결 진행 중",
+    resolved: "비로그인 해결 완료",
   },
 };
 
