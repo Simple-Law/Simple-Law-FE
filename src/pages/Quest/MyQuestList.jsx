@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { Dropdown, Input, Menu, Table } from "antd";
+import { Dropdown, Input, Menu, Table, Skeleton } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import StatusTag from "components/tags/StatusTag";
 import styled from "styled-components";
@@ -10,6 +10,7 @@ import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
 import { toggleImportant, setMails, setTableData } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
+import { useCommonContext } from "contexts/CommonContext";
 
 const { Search } = Input;
 
@@ -17,14 +18,15 @@ const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
-
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { paginationConfig } = useCommonContext();
 
   const { data, tableData } = useSelector(state => state.mail);
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
+  const mailLoading = useSelector(state => state.loading.mailLoading);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -172,11 +174,6 @@ const QuestPage = () => {
     },
   ];
 
-  const paginationConfig = {
-    pageSize: 10,
-    position: ["bottomCenter"],
-  };
-
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
   const getEmptyText = () => {
@@ -194,6 +191,18 @@ const QuestPage = () => {
     }
     return defaultText;
   };
+
+  if (mailLoading) {
+    return (
+      <div>
+        {[...Array(10)].map((_, index) => (
+          <div key={index} className='mb-2'>
+            <Skeleton active />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
