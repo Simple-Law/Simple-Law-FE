@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { setMails, setTableData } from "../../redux/actions/mailActions";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
@@ -26,8 +26,7 @@ const RequestSideMenu = () => {
     if (parentElement) {
       parentElement.classList.add("custom-arrow");
     }
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+  }, []);
 
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 

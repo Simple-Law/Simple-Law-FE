@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { toggleImportant, setMails, setTableData } from "../../redux/actions/mailActions";
+import { toggleImportant, setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 import { useCommonContext } from "contexts/CommonContext";
 
@@ -18,6 +18,7 @@ const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
+  const [timeHeaderTitle, setTimeHeaderTitle] = useState("의뢰 요청시간");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -27,6 +28,10 @@ const QuestPage = () => {
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
+
+  useEffect(() => {
+    dispatch(fetchMailsAction());
+  }, [dispatch]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -60,7 +65,7 @@ const QuestPage = () => {
 
   const handleTimeMenuClick = e => {
     setTimeColumn(e.key);
-    setHeaderTitle(e.item.props.children);
+    setTimeHeaderTitle(e.item.props.children);
     setDropdownOpen(false);
   };
 
@@ -106,7 +111,7 @@ const QuestPage = () => {
       title: "상태",
       key: "status",
       dataIndex: "status",
-      render: status => <StatusTag status={status} />,
+      render: status => <StatusTag status={status} userType={userType} />,
       width: 150,
       className: "status-column",
     },
@@ -162,7 +167,7 @@ const QuestPage = () => {
             }}
             onClick={e => e.preventDefault()}
           >
-            {headerTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
+            {timeHeaderTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
           </button>
         </Dropdown>
       ),
