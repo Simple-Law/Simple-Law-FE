@@ -18,7 +18,7 @@ const { Search } = Input;
 const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
+  const [headerTitle, setHeaderTitle] = useState("");
   const [timeHeaderTitle, setTimeHeaderTitle] = useState("의뢰 요청시간");
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,8 +50,9 @@ const QuestPage = () => {
   }, [location, data, dispatch, userType]);
 
   const handleTimeMenuClick = e => {
+    const selectedItem = menuItems.find(item => item.key === e.key);
     setTimeColumn(e.key);
-    setTimeHeaderTitle(e.item.props.children);
+    setTimeHeaderTitle(selectedItem.label);
     setDropdownOpen(false);
   };
 
@@ -60,15 +61,12 @@ const QuestPage = () => {
     dispatch(toggleImportant(id));
   };
 
-  const menu = (
-    <Menu
-      items={[
-        { key: "sentAt", label: "의뢰 요청시간" },
-        { key: "time", label: "의뢰 가능시간" },
-      ]}
-      onClick={handleTimeMenuClick}
-    />
-  );
+  const menuItems = [
+    { key: "sentAt", label: "의뢰 요청시간" },
+    { key: "time", label: "의뢰 가능시간" },
+  ];
+
+  const menu = <Menu items={menuItems} onClick={handleTimeMenuClick} />;
 
   const columns = [
     {
