@@ -38,10 +38,10 @@ const Header = () => {
         <Link to='/'>
           <div className='flex pl-[47px]'>
             <SvgLogo width='115px' height='auto' className='mx-auto' />
-            {isAdmin ? <UserTag className='ml-10' userType={"ADMIN"} /> : null}
+            {isAdmin ? <UserTag userType={"ADMIN"} className='mt-[5px] ml-[7px]' /> : null}
           </div>
         </Link>
-        <div className='flex items-center pr-[32px] gap-[10px]'>
+        <div className='flex items-center pr-[32px] gap-[10px] bg-black'>
           {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to={loginUrl}>로그인</Link>}{" "}
           {/* 로그인한 사용자의 이름 표시 */}
           <div onClick={showLogoutModal}>

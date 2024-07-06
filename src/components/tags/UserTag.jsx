@@ -29,7 +29,7 @@ const userTypeList = [
   {
     value: "ADMIN",
     label: "관리자",
-    color: "tag-gray",
+    color: "tag-gray-black",
   },
 ];
 
@@ -54,12 +54,13 @@ UserStatusTag.propTypes = {
   status: PropTypes.bool.isRequired,
 };
 
-const UserTag = ({ userType }) => {
+const UserTag = ({ userType, className = "max-w-[50px]" }) => {
   const tagAttr = userTypeList.find(item => item.value === userType);
-  return <StyledTag className={`user-tag ${tagAttr?.color} max-w-[50px]`}>{tagAttr?.label}</StyledTag>;
+  return <StyledTag className={`user-tag ${tagAttr?.color} ${className}`}>{tagAttr?.label}</StyledTag>;
 };
 UserTag.propTypes = {
   userType: PropTypes.string.isRequired,
+  className: PropTypes.string,
 };
 
 export const AdminTag = ({ adminType }) => {
@@ -94,27 +95,23 @@ export default UserTag;
 const StyledTag = styled(Tag)`
   &.user-tag {
     display: flex;
-    min-width: 60px;
+    gap: 10px;
+    width: 43px;
+    height: 22px;
     padding: 4px 6px;
     font-size: 13px;
     font-weight: 400;
     justify-content: center;
     align-items: center;
-    gap: 10px;
     border: none;
     border-radius: 4px;
     margin-inline-end: 0px; !important;
   }
-  &.dot{
-    &::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      display: block;
-      border-radius: 50px;
-      margin-right: 6px;
-    }
+
+  &.header-tag{
+    margin-top:5px;
   }
+
   &.user-tag.tag-blue {
     color: #287fff;
     background: rgba(40, 127, 255, 0.12);
@@ -123,6 +120,11 @@ const StyledTag = styled(Tag)`
   &.user-tag.tag-green {
     color: #00bf40;
     background: rgba(0, 191, 64, 0.12);
+  }
+
+    &.user-tag.tag-gray-black {
+    color: #4A5055;
+    background: rgba(110, 119, 128, 0.1)
   }
 
   &.user-tag.tag-gray {
