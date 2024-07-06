@@ -39,8 +39,8 @@ const Header = () => {
       <div className='flex justify-between items-center h-16 w-full'>
         <Link to='/'>
           <div className='flex pl-[47px]'>
-            <SvgLogo width='115px' height='auto' className='mx-auto' />
-            {isAdmin ? <UserTag userType={"ADMIN"} className='mt-[5px] ml-[7px]' /> : null}
+            <SvgLogo width='115px' className='mx-auto' />
+            {isAdmin ? <UserTag userType={"ADMIN"} className='mt-[8px] ml-[7px]' /> : null}
           </div>
         </Link>
         <div className='flex items-center pr-[32px] gap-[10px]'>
