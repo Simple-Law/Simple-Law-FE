@@ -96,7 +96,6 @@ const StyledTag = styled(Tag)`
   &.user-tag {
     display: flex;
     gap: 10px;
-    width: 43px;
     height: 22px;
     padding: 4px 6px;
     font-size: 13px;
