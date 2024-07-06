@@ -7,6 +7,7 @@ import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
+import { formatDate } from "utils/dateUtil";
 
 const ManageAdminList = () => {
   const columns = [
@@ -43,8 +44,8 @@ const ManageAdminList = () => {
     },
     {
       title: "최근 접속일",
-      key: "accessDate",
-      dataIndex: "accessDate",
+      key: "lastAccessDate",
+      render: (_, record) => <span>{formatDate(record?.lastAccessDate)}</span>,
     },
     {
       title: "삭제",
