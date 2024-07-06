@@ -10,12 +10,14 @@ import UserTag from "components/tags/UserTag";
 const Header = () => {
   const dispatch = useDispatch();
   const useMessage = useMessageApi();
+
   const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.type === "ADMIN";
+  const loginUrl = isAdmin ? "/admin/login" : "/login";
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/admin");
-  const loginUrl = isAdmin ? "/admin/login" : "/login";
 
   const showLogoutModal = () => {
     if (user) setIsModalVisible(true);
