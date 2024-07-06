@@ -65,7 +65,7 @@ UserTag.propTypes = {
 
 export const AdminTag = ({ adminType }) => {
   const tagAttr = adminTypeList.find(item => item.value === adminType);
-  return <StyledTag className={`user-tag ${tagAttr?.color} max-w-[100px]`}>{tagAttr?.label}</StyledTag>;
+  return <StyledTag className={`user-tag ${tagAttr?.color} max-w-[70px]`}>{tagAttr?.label}</StyledTag>;
 };
 AdminTag.propTypes = {
   adminType: PropTypes.string.isRequired,
