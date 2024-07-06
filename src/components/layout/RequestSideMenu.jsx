@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { setMails, setTableData } from "../../redux/actions/mailActions";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
@@ -12,7 +12,8 @@ import SvgTrash from "components/Icons/Trash";
 import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
-import { commonStatusLabels, statusLabels, adminStatusLabels } from "utils/statusLabels";
+import { commonStatusLabels, statusLabels } from "utils/statusLabels";
+import { filterMails } from "utils/mailUtils";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -26,27 +27,12 @@ const RequestSideMenu = () => {
     if (parentElement) {
       parentElement.classList.add("custom-arrow");
     }
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+  }, []);
 
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    let filteredMails;
-    switch (statusKey) {
-      case "important":
-        filteredMails = data.filter(mail => mail.isImportant);
-        break;
-      case "trash":
-        filteredMails = data.filter(mail => mail.status === "휴지통");
-        break;
-      case "All_request":
-        filteredMails = data;
-        break;
-      default:
-        filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-
+    const filteredMails = filterMails(data, statusKey);
     dispatch(setMails(filteredMails));
     dispatch(setTableData({ mails: filteredMails, statusKey }));
     navigate(`/board?status=${statusKey}`);
@@ -160,59 +146,63 @@ const RequestSideMenu = () => {
 };
 
 export const AdminSideMenu = () => {
-  const user = useSelector(state => state.auth.user) || {};
-  const userType = user.type;
-  const statusTypes = statusLabels[userType];
-
   const navigate = useNavigate();
-
   const questMenuItems = [
     {
       key: "allRequest",
       icon: <SvgMailAll />,
-      label: <Menulv2>{commonStatusLabels.All_request}</Menulv2>,
-      children: Object.keys(statusTypes).map(statusKey => ({
-        key: statusKey,
-        label: <span>{statusTypes[statusKey]}</span>,
-      })),
+      label: "전체 의뢰함",
+      children: [
+        {
+          key: "preparing",
+          label: "컨텍 예정",
+        },
+        {
+          key: "pending",
+          label: "컨텍 진행중",
+        },
+        {
+          key: "completed",
+          label: "컨텍 완료",
+        },
+      ],
     },
-
     {
       key: "important",
       icon: <SvgMailStar />,
-      label: <Menulv2>{commonStatusLabels.important}</Menulv2>,
+      label: "중요 의뢰함",
     },
     {
       key: "endRequest",
       icon: <SvgMail />,
-      label: <Menulv2>{commonStatusLabels.endRequest}</Menulv2>,
+      label: "종료된 의뢰함",
     },
   ];
   const accountMenuItems = [
     {
       key: "manage-admin",
       icon: <SvgManageAdmin />,
-      label: <Menulv2>{adminStatusLabels.manageAdmin}</Menulv2>,
+      label: "관리자 계정 관리",
     },
     {
-      key: "",
-      label: <Menulv2>{adminStatusLabels.manageUser}</Menulv2>,
+      key: "temp",
+      label: "회원 관리",
       icon: <SvgManageUser />,
       children: [
         {
           key: "manage-user",
-          label: <Menulv3>{adminStatusLabels.allUser}</Menulv3>,
+          label: "전체 사용자",
         },
         {
           key: "request-signup",
-          label: <Menulv3>{adminStatusLabels.requestSignup}</Menulv3>,
+          label: "회원가입 요청",
         },
       ],
     },
     {
-      key: "manage-event",
+      key: "event",
       icon: <SvgEvent />,
-      label: <Menulv2>{adminStatusLabels.manageEvent}</Menulv2>,
+      label: "이벤트 관리",
     },
   ];
 
@@ -231,7 +221,11 @@ export const AdminSideMenu = () => {
         items={[
           {
             key: "questMain",
-            label: <Menulv1>의뢰함</Menulv1>,
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
+                의뢰함
+              </span>
+            ),
             children: questMenuItems,
           },
           {
@@ -239,7 +233,11 @@ export const AdminSideMenu = () => {
           },
           {
             key: "AccountMain",
-            label: <Menulv1>계정</Menulv1>,
+            label: (
+              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
+                계정
+              </span>
+            ),
             children: accountMenuItems,
           },
         ]}
@@ -276,30 +274,4 @@ const Board = styled.div`
   .custom-arrow + .ant-menu-submenu-arrow {
     left: 65px;
   }
-`;
-
-const Menulv1 = styled.span`
-  color: #6e7780;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.26px;
-`;
-const Menulv2 = styled.span`
-  margin-left: 2px;
-
-  color: rgba(23, 23, 23, 1);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 20px;
-  letter-spacing: -0.28px;
-`;
-
-const Menulv3 = styled.span`
-  margin-left: 5px;
-
-  color: rgba(110, 119, 128, 1);
-  font-size: 14px;
-  font-weight: 500;
-  e-height: 18px;
-  letter-spacing: -0.28px;
 `;
