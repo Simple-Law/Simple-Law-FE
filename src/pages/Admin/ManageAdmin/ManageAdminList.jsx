@@ -4,6 +4,7 @@ import { Table, Button, Modal } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
+import { TableColumnId } from "components/styled/StyledComponents";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
@@ -21,8 +22,8 @@ const ManageAdminList = () => {
         <div style={{ display: "flex", alignItems: "center" }}>
           <SvgProfile className='mr-2' width='32' height='32' />
           <div>
-            <div>{record.name}</div>
-            <IdDiv>{record.id}</IdDiv>
+            <div>{record?.name}</div>
+            <TableColumnId>{record?.id}</TableColumnId>
           </div>
         </div>
       ),
@@ -202,12 +203,4 @@ const BoardDiv = styled.div`
   .ant-table-thead {
     border: 1px solid red;
   }
-`;
-
-export const IdDiv = styled.div`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: -0.02em;
-  color: #94a3b8;
 `;

@@ -1,11 +1,11 @@
-import { Table } from "antd";
-import SvgProfile from "components/Icons/Profile";
-import { LoginStatusTag } from "components/tags/StatusTag";
-import UserTag from "components/tags/UserTag";
-import { useCommonContext } from "contexts/CommonContext";
 import { useLayoutEffect, useState } from "react";
+import { Table } from "antd";
+import UserTag from "components/tags/UserTag";
+import { LoginStatusTag } from "components/tags/StatusTag";
+import { TableColumnId } from "components/styled/StyledComponents";
+import { useCommonContext } from "contexts/CommonContext";
+import SvgProfile from "components/Icons/Profile";
 import styled from "styled-components";
-import { IdDiv } from "../ManageAdmin/ManageAdminList";
 
 const ManageUserList = () => {
   const columns = [
@@ -19,7 +19,7 @@ const ManageUserList = () => {
           <SvgProfile className='w-8 h-8 mr-2' />
           <div>
             <div>{record.name}</div>
-            <IdDiv>{record.id}</IdDiv>
+            <TableColumnId>{record.id}</TableColumnId>
           </div>
         </div>
       ),
