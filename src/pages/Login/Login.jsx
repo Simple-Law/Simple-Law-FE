@@ -7,7 +7,7 @@ import SvgEyeclose from "components/Icons/Eyeclose";
 import SvgKakao from "components/Icons/Kakao";
 import SvgNaver from "components/Icons/Naver";
 import SvgGoogle from "components/Icons/Google";
-import { loginUser } from "../../redux/actions/authActions";
+import { loginUserAction } from "../../redux/actions/authActions";
 import { useMessageApi } from "components/messaging/MessageProvider";
 
 const Login = () => {
@@ -36,7 +36,7 @@ const Login = () => {
 
   const handleLogin = async values => {
     try {
-      const { success, message } = await dispatch(loginUser(values, type));
+      const { success, message } = await dispatch(loginUserAction(values, type));
       const successUrl = type === "admin" ? "/admin/manage-admin" : "/board?status=All_request";
 
       if (success) {

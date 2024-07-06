@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { setMails, setTableData } from "../../redux/actions/mailActions";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
@@ -13,6 +13,7 @@ import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
+import { filterMails } from "utils/mailUtils";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -26,27 +27,12 @@ const RequestSideMenu = () => {
     if (parentElement) {
       parentElement.classList.add("custom-arrow");
     }
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+  }, []);
 
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    let filteredMails;
-    switch (statusKey) {
-      case "important":
-        filteredMails = data.filter(mail => mail.isImportant);
-        break;
-      case "trash":
-        filteredMails = data.filter(mail => mail.status === "휴지통");
-        break;
-      case "All_request":
-        filteredMails = data;
-        break;
-      default:
-        filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-
+    const filteredMails = filterMails(data, statusKey);
     dispatch(setMails(filteredMails));
     dispatch(setTableData({ mails: filteredMails, statusKey }));
     navigate(`/board?status=${statusKey}`);
