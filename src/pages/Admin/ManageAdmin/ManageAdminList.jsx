@@ -6,6 +6,7 @@ import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
+import { getAdminsApi } from "apis/manageAdminAPI";
 
 const ManageAdminList = () => {
   const columns = [
@@ -15,7 +16,6 @@ const ManageAdminList = () => {
     {
       title: "이름",
       key: "id",
-      dataIndex: "id",
       render: (_, record) => (
         <div style={{ display: "flex", alignItems: "center" }}>
           <SvgProfile className='mr-2' width='32' height='32' />
@@ -34,7 +34,7 @@ const ManageAdminList = () => {
     {
       title: "권한",
       key: "userType",
-      render: (_, record) => <AdminTag adminType={record.userType} />,
+      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]?.role} />,
     },
     {
       title: "가입일",
@@ -54,7 +54,7 @@ const ManageAdminList = () => {
           danger
           size='small'
           onClick={() => {
-            deleteAdmin(record.key, record.id);
+            deleteAdmin(record?.adminKey, record?.id);
           }}
         >
           삭제
@@ -63,59 +63,31 @@ const ManageAdminList = () => {
     },
   ];
 
-  const mockData = [
-    {
-      key: 1,
-      id: "admin2",
-      name: "김최고",
-      userType: "SUPER_ADMIN",
-      email: "admin22@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-    },
-    {
-      key: 2,
-      id: "admin3",
-      name: "김일반",
-      userType: "NORMAL_ADMIN",
-      email: "admin33@simplelaw.com",
-      joinDate: "2024.09.01",
-      accessDate: "2024.06.16",
-    },
-    {
-      key: 3,
-      id: "admin4",
-      name: "김노말",
-      userType: "NORMAL_ADMIN",
-      email: "admin44@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-    },
-  ];
+  const { paginationConfig } = useCommonContext();
+  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
 
+  const pageTitle = "관리자 계정 관리";
   const [data, setData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchParams, setSearchParams] = useState(initialSearchParams);
+
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { confirm } = Modal;
 
   //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
-  const pageTitle = "관리자 계정 관리";
-  const { paginationConfig } = useCommonContext();
 
   useLayoutEffect(() => {
     getAdminList();
-    console.log("mockData", mockData);
-    console.log("paginationConfig", paginationConfig);
-  }, []);
+  }, [data]);
 
   const getAdminList = async () => {
-    const response = await mockData;
+    const response = await getAdminsApi(searchParams);
     try {
-      //TODO: kmee - API status 체크
-      response.forEach(item => (item.key = item.id));
-      setData(response);
-    } catch (e) {
-      console.log(e);
+      if (response.status === 200 && response.data.status === "success") {
+        setData(response.data.data.payload);
+      }
+    } catch (error) {
+      console.error("Error fetching getAdminsApi:", error);
     }
   };
 
