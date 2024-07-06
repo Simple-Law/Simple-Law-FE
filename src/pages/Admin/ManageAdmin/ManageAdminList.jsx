@@ -10,16 +10,18 @@ import { useCommonContext } from "contexts/CommonContext";
 const ManageAdminList = () => {
   const columns = [
     {
+      width: 48,
+    },
+    {
       title: "이름",
       key: "id",
-      dataIndex: "name",
-      className: "name-column",
+      dataIndex: "id",
       render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <SvgProfile className='mr-2' width='32' height='32' />
           <div>
             <div>{record.name}</div>
-            <div>{record.id}</div>
+            <IdDiv>{record.id}</IdDiv>
           </div>
         </div>
       ),
@@ -28,30 +30,25 @@ const ManageAdminList = () => {
       title: "이메일",
       key: "email",
       dataIndex: "email",
-      className: "email-column",
     },
     {
       title: "권한",
       key: "userType",
-      className: "user-type-column",
       render: (_, record) => <AdminTag adminType={record.userType} />,
     },
     {
       title: "가입일",
       key: "joinDate",
       dataIndex: "joinDate",
-      className: "join-date-column",
     },
     {
       title: "최근 접속일",
       key: "accessDate",
       dataIndex: "accessDate",
-      className: "access-date-column",
     },
     {
       title: "삭제",
       key: "adminId",
-      className: "deleteBtn-column",
       render: (_, record) => (
         <Button
           danger
@@ -183,9 +180,6 @@ const ManageAdminList = () => {
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
         <Table
-          // onmouseover="this.style.color='red'"
-          // onmouseout="this.style.color='blue';"
-          // style={{ hover: true }}
           dataSource={data}
           columns={columns}
           pagination={paginationConfig}
@@ -232,29 +226,15 @@ const BoardDiv = styled.div`
   .ant-pagination .ant-pagination-item-active {
     border-color: transparent;
   }
+  .ant-table-thead {
+    border: 1px solid red;
+  }
+`;
 
-  .name-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .email-column {
-    max-width: 300px;
-    flex-basis: 300px;
-  }
-  .user-type-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .join-date-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .access-date-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .delete-column {
-    max-width: 100px;
-    flex-basis: 100px;
-  }
+export const IdDiv = styled.div`
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: -0.02em;
+  color: #94a3b8;
 `;

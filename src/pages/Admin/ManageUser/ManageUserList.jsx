@@ -5,6 +5,7 @@ import UserTag from "components/tags/UserTag";
 import { useCommonContext } from "contexts/CommonContext";
 import { useLayoutEffect, useState } from "react";
 import styled from "styled-components";
+import { IdDiv } from "../ManageAdmin/ManageAdminList";
 
 const ManageUserList = () => {
   const columns = [
@@ -17,12 +18,8 @@ const ManageUserList = () => {
         <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
           <SvgProfile className='w-8 h-8 mr-2' />
           <div>
-            <div>
-              <span>{record.name}</span>
-            </div>
-            <div>
-              <span className='id'>{record.id}</span>
-            </div>
+            <div>{record.name}</div>
+            <IdDiv>{record.id}</IdDiv>
           </div>
         </div>
       ),
