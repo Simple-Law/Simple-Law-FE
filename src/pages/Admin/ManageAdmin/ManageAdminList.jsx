@@ -80,7 +80,7 @@ const ManageAdminList = () => {
 
   useLayoutEffect(() => {
     getAdminList();
-  }, [data]);
+  }, [searchParams]);
 
   const getAdminList = async () => {
     const response = await getAdminsApi(searchParams);
