@@ -3,10 +3,13 @@ import PropTypes from "prop-types";
 import { Button } from "antd";
 import { useSelector } from "react-redux";
 
+/**
+ * 권한에 따라 보이는 버튼
+ */
 const AuthButton = React.memo(({ text, clickHandler, adminRoleList, colorType = "primary", size = "default" }) => {
   const loginUserRole = useSelector(
     state => state?.auth?.user?.roleList?.[0],
-    (prevRole, nextRole) => prevRole === nextRole, // 동등성 비교 함수
+    (prevRole, nextRole) => prevRole === nextRole,
   );
 
   if (adminRoleList?.includes(loginUserRole)) {
