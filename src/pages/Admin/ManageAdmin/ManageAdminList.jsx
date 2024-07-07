@@ -154,6 +154,7 @@ const ManageAdminList = () => {
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
         <Table
+          rowKey='id'
           dataSource={data}
           columns={columns}
           pagination={paginationConfig}
