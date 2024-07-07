@@ -168,7 +168,7 @@ const ManageAdminList = () => {
       </BoardDiv>
       <StyledModal
         style={{
-          top: 85,
+          top: 75,
         }}
         open={isModalOpen}
         onCancel={closeModal}
