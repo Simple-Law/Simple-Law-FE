@@ -76,8 +76,6 @@ const ManageAdminList = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { confirm } = Modal;
 
-  //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
-
   useLayoutEffect(() => {
     getAdminList();
   }, [searchParams]);
@@ -168,15 +166,17 @@ const ManageAdminList = () => {
           }}
         />
       </BoardDiv>
-      <StyledModal open={isModalOpen} onCancel={closeModal} footer={null}>
-        <h5 className='text-center font-bold text-[20px] mb-4'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
-        <UserInfoEditorForm
-          className='flex justify-center'
-          userData={selectedUser}
-          onSubmit={onSubmit}
-          closeModal={closeModal}
-          isAdmin={true}
-        />
+      <StyledModal
+        style={{
+          top: 85,
+        }}
+        open={isModalOpen}
+        onCancel={closeModal}
+        footer={null}
+        width={448}
+      >
+        <h5 className='text-center font-bold text-[20px]'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
+        <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
       </StyledModal>
     </>
   );
@@ -185,10 +185,7 @@ const ManageAdminList = () => {
 export default ManageAdminList;
 
 const StyledModal = styled(Modal)`
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.04);
-  }
+  border-radius: 16px;
 `;
 
 const BoardDiv = styled.div`

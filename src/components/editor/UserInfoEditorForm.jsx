@@ -25,30 +25,24 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
   };
 
   return (
-    <Form
+    <StyledForm
       className=''
       layout='vertical'
       form={formData}
-      labelCol={{
-        span: 8,
-      }}
-      wrapperCol={{
-        span: 16,
-      }}
       initialValues={{
         remember: true,
       }}
       onFinish={onSubmit}
     >
       <StyledFormItem label='아이디' name='id' rules={[validateRequired("아이디를")]}>
-        <Input disabled={!isEmpty(userData)} />
+        <Input className='h-[40px]' disabled={!isEmpty(userData)} />
       </StyledFormItem>
       <StyledFormItem label='이름' name='name' rules={[validateRequired("이름을")]}>
-        <Input />
+        <Input className='h-[40px]' />
       </StyledFormItem>
 
       <StyledFormItem label='이메일' name='email' rules={[validateEmailType, validateRequired("이메일을")]}>
-        <Input />
+        <Input className='h-[40px]' />
       </StyledFormItem>
 
       <StyledFormItem
@@ -61,7 +55,7 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
           }),
         ]}
       >
-        <Input.Password />
+        <Input.Password className='h-[40px]' />
       </StyledFormItem>
 
       {isAdmin ? (
@@ -74,15 +68,15 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
         </StyledFormItem>
       ) : null}
 
-      <Form.Item>
-        <Button className='w-1/2' onClick={onCancle}>
+      <Form.Item className='pt-[20px] pb-[5px]'>
+        <Button className='w-[196px] h-[48px] mr-[8px]' onClick={onCancle}>
           취소
         </Button>
-        <Button className='w-1/2' type='primary' htmlType='submit'>
+        <Button className='w-[196px] h-[48px]' type='primary' htmlType='submit'>
           {userData ? "수정" : "등록"}하기
         </Button>
       </Form.Item>
-    </Form>
+    </StyledForm>
   );
 };
 UserInfoEditorForm.propTypes = {
@@ -92,7 +86,14 @@ UserInfoEditorForm.propTypes = {
   isAdmin: PropTypes.bool,
 };
 
-const StyledFormItem = styled(Form.Item)`
-  margin-bottom: 20px;
+const StyledForm = styled(Form)`
+  width: 400px;
+  padding-top: 20px;
 `;
+
+const StyledFormItem = styled(Form.Item)`
+  height: 68px;
+  margin-bottom: 15px;
+`;
+
 export default UserInfoEditorForm;
