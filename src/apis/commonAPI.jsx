@@ -2,12 +2,12 @@ import axiosInstance from "./axiosConfig";
 
 /**
  * 역할 목록 조회 API
- * @param {Array} userTypeList
+ * @param {Array} params
  * @returns response
  */
-export const getRoles = async userTypeList => {
+export const getRoles = async params => {
   try {
-    const response = await axiosInstance.get("/api/v1//roles", { userTypeList: userTypeList.join(",") });
+    const response = await axiosInstance.get("/api/v1/roles", { params });
     return response;
   } catch (error) {
     console.error("Error fetching getRoles:", error);
