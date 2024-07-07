@@ -2,12 +2,12 @@ import axiosInstance from "./axiosConfig";
 
 /**
  * 관리자 계정관리 목록 조회 API
- * @param {*} searchParams
+ * @param {Object} params
  * @returns
  */
-export const getAdminsApi = searchParams => {
+export const getAdminsApi = params => {
   try {
-    const response = axiosInstance.get("/api/v1/admins", searchParams);
+    const response = axiosInstance.get("/api/v1/admins", { params });
     return response;
   } catch (error) {
     console.error("Error fetching getAdminsApi:", error);
