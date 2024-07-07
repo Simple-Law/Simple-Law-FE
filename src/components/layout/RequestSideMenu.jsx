@@ -170,7 +170,7 @@ export const AdminSideMenu = () => {
     {
       key: "allRequest",
       icon: <SvgMailAll />,
-      label: <Menulv2>{commonStatusLabels.All_request}</Menulv2>,
+      label: <Menulv2 id='allRequest'>{commonStatusLabels.All_request}</Menulv2>,
       children: Object.keys(statusTypes).map(statusKey => ({
         key: statusKey,
         label: <span>{statusTypes[statusKey]}</span>,
@@ -192,11 +192,11 @@ export const AdminSideMenu = () => {
     {
       key: "manage-admin",
       icon: <SvgManageAdmin />,
-      label: <Menulv2>{adminStatusLabels.manageAdmin}</Menulv2>,
+      label: <Menulv2 className='menulv2'>{adminStatusLabels.manageAdmin}</Menulv2>,
     },
     {
       key: "",
-      label: <Menulv2>{adminStatusLabels.manageUser}</Menulv2>,
+      label: <Menulv2 id='manageUser'>{adminStatusLabels.manageUser}</Menulv2>,
       icon: <SvgManageUser />,
       children: [
         {
@@ -216,6 +216,18 @@ export const AdminSideMenu = () => {
     },
   ];
 
+  useEffect(() => {
+    const questMain = document.querySelector("#questMain").closest(".ant-menu-title-content");
+    const accountMain = document.querySelector("#accountMain").closest(".ant-menu-title-content");
+    const allRequest = document.querySelector("#allRequest").closest(".ant-menu-title-content");
+    const manageUser = document.querySelector("#manageUser").closest(".ant-menu-title-content");
+
+    questMain.classList.add("menulv1-arrow");
+    accountMain.classList.add("menulv1-arrow");
+    allRequest.classList.add("menulv2-arrow");
+    manageUser.classList.add("menulv2-arrow");
+  }, []);
+
   const onClickMenu = e => {
     navigate(`/admin/${e.key}`);
   };
@@ -224,22 +236,22 @@ export const AdminSideMenu = () => {
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultOpenKeys={["questMain", "AccountMain"]}
+        defaultOpenKeys={["questMain", "accountMain"]}
         defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
           {
             key: "questMain",
-            label: <Menulv1>의뢰함</Menulv1>,
+            label: <Menulv1 id='questMain'>의뢰함</Menulv1>,
             children: questMenuItems,
           },
           {
             type: "divider",
           },
           {
-            key: "AccountMain",
-            label: <Menulv1>계정</Menulv1>,
+            key: "accountMain",
+            label: <Menulv1 id='accountMain'>계정</Menulv1>,
             children: accountMenuItems,
           },
         ]}
@@ -275,6 +287,12 @@ const Board = styled.div`
   }
   .custom-arrow + .ant-menu-submenu-arrow {
     left: 65px;
+  }
+  .menulv1-arrow + .ant-menu-submenu-arrow {
+    left: 50px;
+  }
+  .menulv2-arrow + .ant-menu-submenu-arrow {
+    left: 197px;
   }
 `;
 
