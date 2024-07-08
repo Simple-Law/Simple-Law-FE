@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import moment from "moment";
 import { sendAuthCodeAction } from "../../../redux/actions/authActions";
 import { useDispatch } from "react-redux";
+import { formatDotDate } from "utils/dateUtil";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const [form] = Form.useForm();
@@ -325,7 +326,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                   if (!value) {
                     return Promise.resolve(); // 이미 required rule에서 메시지를 처리하므로 여기서는 resolve
                   }
-                  const birthDate = moment(value, "YYYY.MM.DD");
+                  const birthDate = formatDotDate(value);
                   if (!birthDate.isValid() || moment().diff(birthDate, "years") >= 200) {
                     return Promise.reject(new Error("올바른 날짜 형식이 아닙니다."));
                   }
