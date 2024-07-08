@@ -64,7 +64,7 @@ const DetailPage = () => {
     }
   };
   const handleReplyClick = () => {
-    navigate(`/mail/quest/${id}`);
+    navigate(`/mail/quest/${id}/reply`);
   };
   if (!mail) {
     return <div>Loading...</div>;
