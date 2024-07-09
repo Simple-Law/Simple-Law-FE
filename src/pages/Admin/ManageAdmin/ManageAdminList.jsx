@@ -4,7 +4,7 @@ import { Table, Button, Modal } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { TableColumnId } from "components/styled/StyledComponents";
+import { TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
@@ -159,8 +159,15 @@ const ManageAdminList = () => {
         </div>
         <Table
           rowKey='id'
-          dataSource={data}
           columns={columns}
+          dataSource={data}
+          locale={{
+            emptyText: (
+              <TableEmptyDiv>
+                <p dangerouslySetInnerHTML={{ __html: "관리자 계정이 없습니다." }} />
+              </TableEmptyDiv>
+            ),
+          }}
           pagination={paginationConfig}
           onRow={record => {
             return {

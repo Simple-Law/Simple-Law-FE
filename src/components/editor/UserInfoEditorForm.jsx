@@ -24,7 +24,7 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
         name: userData?.name,
         email: userData?.email,
         password: "",
-        userType: isAdmin ? userData?.userType : "SUPER_ADMIN",
+        userType: isAdmin ? userData?.userType : "NORMAL_ADMIN",
       }}
       onFinish={onSubmit}
     >
