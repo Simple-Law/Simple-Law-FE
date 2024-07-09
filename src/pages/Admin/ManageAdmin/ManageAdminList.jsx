@@ -9,6 +9,7 @@ import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
 import { formatDate } from "utils/dateUtil";
+import { useMessageApi } from "components/messaging/MessageProvider";
 
 const ManageAdminList = () => {
   const columns = [
@@ -65,6 +66,7 @@ const ManageAdminList = () => {
     },
   ];
 
+  const messageApi = useMessageApi();
   const { paginationConfig } = useCommonContext();
   const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
 
@@ -80,6 +82,9 @@ const ManageAdminList = () => {
     getAdminList();
   }, [searchParams]);
 
+  /**
+   * 관리자 계정관리 목록 조회
+   */
   const getAdminList = async () => {
     const response = await getAdminsApi(searchParams);
     try {
@@ -87,6 +92,7 @@ const ManageAdminList = () => {
         setData(response.data.data.payload);
       }
     } catch (error) {
+      messageApi.error("목록 조회 중 오류가 발생했습니다.");
       console.error("Error fetching getAdminsApi:", error);
     }
   };
