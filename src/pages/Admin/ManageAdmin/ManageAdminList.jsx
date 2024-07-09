@@ -10,6 +10,9 @@ import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
 import { formatDate } from "utils/dateUtil";
 import { useMessageApi } from "components/messaging/MessageProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions/loadingAction";
+import { SkeletonLoading } from "components/layout/LoadingSpinner";
 
 const ManageAdminList = () => {
   const columns = [
@@ -67,6 +70,8 @@ const ManageAdminList = () => {
   ];
 
   const messageApi = useMessageApi();
+  const dispatch = useDispatch();
+  const loading = useSelector(state => state.loading.SkeletonLoading);
   const { paginationConfig } = useCommonContext();
   const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
 
@@ -86,14 +91,17 @@ const ManageAdminList = () => {
    * 관리자 계정관리 목록 조회
    */
   const getAdminList = async () => {
-    const response = await getAdminsApi(searchParams);
+    dispatch(showSkeletonLoading());
     try {
+      const response = await getAdminsApi(searchParams);
       if (response.status === 200 && response.data.status === "success") {
         setData(response.data.data.payload);
       }
     } catch (error) {
       messageApi.error("목록 조회 중 오류가 발생했습니다.");
-      console.error("Error fetching getAdminsApi:", error);
+      console.error("getAdminList error : ", error);
+    } finally {
+      dispatch(hideSkeletonLoading());
     }
   };
 
@@ -157,37 +165,34 @@ const ManageAdminList = () => {
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
-        <Table
-          rowKey='id'
-          columns={columns}
-          dataSource={data}
-          locale={{
-            emptyText: (
-              <TableEmptyDiv>
-                <p dangerouslySetInnerHTML={{ __html: "관리자 계정이 없습니다." }} />
-              </TableEmptyDiv>
-            ),
-          }}
-          pagination={paginationConfig}
-          onRow={record => {
-            return {
-              onDoubleClick: () => {
-                setSelectedUser(record);
-                showModal();
-              },
-            };
-          }}
-        />
+        {loading ? (
+          <SkeletonLoading type='input' />
+        ) : (
+          <Table
+            rowKey='id'
+            columns={columns}
+            dataSource={data}
+            pagination={paginationConfig}
+            locale={{
+              emptyText: (
+                <TableEmptyDiv>
+                  <p dangerouslySetInnerHTML={{ __html: "관리자 계정이 없습니다." }} />
+                </TableEmptyDiv>
+              ),
+            }}
+            onRow={record => {
+              return {
+                onDoubleClick: () => {
+                  setSelectedUser(record);
+                  showModal();
+                },
+              };
+            }}
+          />
+        )}
       </BoardDiv>
-      <StyledModal
-        style={{
-          top: 75,
-        }}
-        open={isModalOpen}
-        onCancel={closeModal}
-        footer={null}
-        width={448}
-      >
+
+      <StyledModal open={isModalOpen} onCancel={closeModal} footer={null} width={448}>
         <h5 className='text-center font-bold text-[20px]'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
         <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
       </StyledModal>
@@ -199,6 +204,7 @@ export default ManageAdminList;
 
 const StyledModal = styled(Modal)`
   border-radius: 16px;
+  top: 75px;
 `;
 
 const BoardDiv = styled.div`
