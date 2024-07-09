@@ -12,7 +12,7 @@ import SvgTrash from "components/Icons/Trash";
 import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
-import { commonStatusLabels, statusLabels } from "utils/statusLabels";
+import { commonStatusLabels, statusLabels, adminStatusLabels } from "utils/statusLabels";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -160,65 +160,73 @@ const RequestSideMenu = () => {
 };
 
 export const AdminSideMenu = () => {
+  const user = useSelector(state => state.auth.user) || {};
+  const userType = user.type;
+  const statusTypes = statusLabels[userType];
+
   const navigate = useNavigate();
+
   const questMenuItems = [
     {
       key: "allRequest",
       icon: <SvgMailAll />,
-      label: "전체 의뢰함",
-      children: [
-        {
-          key: "preparing",
-          label: "컨텍 예정",
-        },
-        {
-          key: "pending",
-          label: "컨텍 진행중",
-        },
-        {
-          key: "completed",
-          label: "컨텍 완료",
-        },
-      ],
+      label: <Menulv2 id='allRequest'>{commonStatusLabels.All_request}</Menulv2>,
+      children: Object.keys(statusTypes).map(statusKey => ({
+        key: statusKey,
+        label: <span>{statusTypes[statusKey]}</span>,
+      })),
     },
+
     {
       key: "important",
       icon: <SvgMailStar />,
-      label: "중요 의뢰함",
+      label: <Menulv2>{commonStatusLabels.important}</Menulv2>,
     },
     {
       key: "endRequest",
       icon: <SvgMail />,
-      label: "종료된 의뢰함",
+      label: <Menulv2>{commonStatusLabels.endRequest}</Menulv2>,
     },
   ];
   const accountMenuItems = [
     {
       key: "manage-admin",
       icon: <SvgManageAdmin />,
-      label: "관리자 계정 관리",
+      label: <Menulv2 className='menulv2'>{adminStatusLabels.manageAdmin}</Menulv2>,
     },
     {
-      key: "temp",
-      label: "회원 관리",
+      key: "",
+      label: <Menulv2 id='manageUser'>{adminStatusLabels.manageUser}</Menulv2>,
       icon: <SvgManageUser />,
       children: [
         {
           key: "manage-user",
-          label: "전체 사용자",
+          label: <Menulv3>{adminStatusLabels.allUser}</Menulv3>,
         },
         {
           key: "request-signup",
-          label: "회원가입 요청",
+          label: <Menulv3>{adminStatusLabels.requestSignup}</Menulv3>,
         },
       ],
     },
     {
-      key: "event",
+      key: "manage-event",
       icon: <SvgEvent />,
-      label: "이벤트 관리",
+      label: <Menulv2>{adminStatusLabels.manageEvent}</Menulv2>,
     },
   ];
+
+  useEffect(() => {
+    const questMain = document.querySelector("#questMain").closest(".ant-menu-title-content");
+    const accountMain = document.querySelector("#accountMain").closest(".ant-menu-title-content");
+    const allRequest = document.querySelector("#allRequest").closest(".ant-menu-title-content");
+    const manageUser = document.querySelector("#manageUser").closest(".ant-menu-title-content");
+
+    questMain.classList.add("menulv1-arrow");
+    accountMain.classList.add("menulv1-arrow");
+    allRequest.classList.add("menulv2-arrow");
+    manageUser.classList.add("menulv2-arrow");
+  }, []);
 
   const onClickMenu = e => {
     navigate(`/admin/${e.key}`);
@@ -228,30 +236,22 @@ export const AdminSideMenu = () => {
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultOpenKeys={["questMain", "AccountMain"]}
+        defaultOpenKeys={["questMain", "accountMain"]}
         defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
           {
             key: "questMain",
-            label: (
-              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
-                의뢰함
-              </span>
-            ),
+            label: <Menulv1 id='questMain'>의뢰함</Menulv1>,
             children: questMenuItems,
           },
           {
             type: "divider",
           },
           {
-            key: "AccountMain",
-            label: (
-              <span style={{ fontSize: "12px", fontWeight: "600" }} className='my-column'>
-                계정
-              </span>
-            ),
+            key: "accountMain",
+            label: <Menulv1 id='accountMain'>계정</Menulv1>,
             children: accountMenuItems,
           },
         ]}
@@ -269,6 +269,7 @@ const Board = styled.div`
 
   .ant-menu {
     background: linear-gradient(0deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.6) 100%), #f1f5f9;
+    font-size: 14px;
   }
   .ant-menu-item-divider {
     background: #e3e9ee;
@@ -287,4 +288,36 @@ const Board = styled.div`
   .custom-arrow + .ant-menu-submenu-arrow {
     left: 65px;
   }
+  .menulv1-arrow + .ant-menu-submenu-arrow {
+    left: 50px;
+  }
+  .menulv2-arrow + .ant-menu-submenu-arrow {
+    left: 197px;
+  }
+`;
+
+const Menulv1 = styled.span`
+  color: #6e7780;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.26px;
+`;
+const Menulv2 = styled.span`
+  margin-left: 2px;
+
+  color: rgba(23, 23, 23, 1);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.28px;
+`;
+
+const Menulv3 = styled.span`
+  margin-left: 5px;
+
+  color: rgba(110, 119, 128, 1);
+  font-size: 14px;
+  font-weight: 500;
+  e-height: 18px;
+  letter-spacing: -0.28px;
 `;

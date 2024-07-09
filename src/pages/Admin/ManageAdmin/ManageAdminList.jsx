@@ -4,22 +4,26 @@ import { Table, Button, Modal } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
+import { TableColumnId } from "components/styled/StyledComponents";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
+import { getAdminsApi } from "apis/manageAdminAPI";
+import { formatDate } from "utils/dateUtil";
 
 const ManageAdminList = () => {
   const columns = [
     {
+      width: 48,
+    },
+    {
       title: "이름",
       key: "id",
-      dataIndex: "name",
-      className: "name-column",
       render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <SvgProfile className='mr-2' width='32' height='32' />
           <div>
-            <div>{record.name}</div>
-            <div>{record.id}</div>
+            <div>{record?.name}</div>
+            <TableColumnId>{record?.id}</TableColumnId>
           </div>
         </div>
       ),
@@ -28,36 +32,31 @@ const ManageAdminList = () => {
       title: "이메일",
       key: "email",
       dataIndex: "email",
-      className: "email-column",
     },
     {
       title: "권한",
       key: "userType",
-      className: "user-type-column",
-      render: (_, record) => <AdminTag adminType={record.userType} />,
+      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]?.role} />,
     },
     {
       title: "가입일",
       key: "joinDate",
       dataIndex: "joinDate",
-      className: "join-date-column",
     },
     {
       title: "최근 접속일",
-      key: "accessDate",
-      dataIndex: "accessDate",
-      className: "access-date-column",
+      key: "lastAccessDate",
+      render: (_, record) => <span>{formatDate(record?.lastAccessDate)}</span>,
     },
     {
       title: "삭제",
       key: "adminId",
-      className: "deleteBtn-column",
       render: (_, record) => (
         <Button
           danger
           size='small'
           onClick={() => {
-            deleteAdmin(record.key, record.id);
+            deleteAdmin(record?.adminKey, record?.id);
           }}
         >
           삭제
@@ -66,59 +65,29 @@ const ManageAdminList = () => {
     },
   ];
 
-  const mockData = [
-    {
-      key: 1,
-      id: "admin2",
-      name: "김최고",
-      userType: "SUPER_ADMIN",
-      email: "admin22@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-    },
-    {
-      key: 2,
-      id: "admin3",
-      name: "김일반",
-      userType: "NORMAL_ADMIN",
-      email: "admin33@simplelaw.com",
-      joinDate: "2024.09.01",
-      accessDate: "2024.06.16",
-    },
-    {
-      key: 3,
-      id: "admin4",
-      name: "김노말",
-      userType: "NORMAL_ADMIN",
-      email: "admin44@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-    },
-  ];
-
-  const [data, setData] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const { confirm } = Modal;
-
-  //TODO: kmee- 로그인한 관리자 권한에 따라 등록,수정,삭제 처리
-  const pageTitle = "관리자 계정 관리";
   const { paginationConfig } = useCommonContext();
+  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
+
+  const pageTitle = "관리자 계정 관리";
+  const [data, setData] = useState([]);
+  const [searchParams, setSearchParams] = useState(initialSearchParams);
+
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { confirm } = Modal;
 
   useLayoutEffect(() => {
     getAdminList();
-    console.log("mockData", mockData);
-    console.log("paginationConfig", paginationConfig);
-  }, []);
+  }, [searchParams]);
 
   const getAdminList = async () => {
-    const response = await mockData;
+    const response = await getAdminsApi(searchParams);
     try {
-      //TODO: kmee - API status 체크
-      response.forEach(item => (item.key = item.id));
-      setData(response);
-    } catch (e) {
-      console.log(e);
+      if (response.status === 200 && response.data.status === "success") {
+        setData(response.data.data.payload);
+      }
+    } catch (error) {
+      console.error("Error fetching getAdminsApi:", error);
     }
   };
 
@@ -183,9 +152,7 @@ const ManageAdminList = () => {
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
         <Table
-          // onmouseover="this.style.color='red'"
-          // onmouseout="this.style.color='blue';"
-          // style={{ hover: true }}
+          rowKey='id'
           dataSource={data}
           columns={columns}
           pagination={paginationConfig}
@@ -199,15 +166,17 @@ const ManageAdminList = () => {
           }}
         />
       </BoardDiv>
-      <StyledModal open={isModalOpen} onCancel={closeModal} footer={null}>
-        <h5 className='text-center font-bold text-[20px] mb-4'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
-        <UserInfoEditorForm
-          className='flex justify-center'
-          userData={selectedUser}
-          onSubmit={onSubmit}
-          closeModal={closeModal}
-          isAdmin={true}
-        />
+      <StyledModal
+        style={{
+          top: 75,
+        }}
+        open={isModalOpen}
+        onCancel={closeModal}
+        footer={null}
+        width={448}
+      >
+        <h5 className='text-center font-bold text-[20px]'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
+        <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
       </StyledModal>
     </>
   );
@@ -216,10 +185,7 @@ const ManageAdminList = () => {
 export default ManageAdminList;
 
 const StyledModal = styled(Modal)`
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.04);
-  }
+  border-radius: 16px;
 `;
 
 const BoardDiv = styled.div`
@@ -232,29 +198,7 @@ const BoardDiv = styled.div`
   .ant-pagination .ant-pagination-item-active {
     border-color: transparent;
   }
-
-  .name-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .email-column {
-    max-width: 300px;
-    flex-basis: 300px;
-  }
-  .user-type-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .join-date-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .access-date-column {
-    max-width: 150px;
-    flex-basis: 150px;
-  }
-  .delete-column {
-    max-width: 100px;
-    flex-basis: 100px;
+  .ant-table-thead {
+    border: 1px solid red;
   }
 `;

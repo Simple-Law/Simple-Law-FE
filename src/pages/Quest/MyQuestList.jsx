@@ -8,19 +8,22 @@ import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { toggleImportant, setMails, setTableData } from "../../redux/actions/mailActions";
+import { toggleImportant, setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
+import { useCommonContext } from "contexts/CommonContext";
+import { filterMails } from "utils/mailUtils";
 
 const { Search } = Input;
 
 const QuestPage = () => {
   const [timeColumn, setTimeColumn] = useState("sentAt");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [headerTitle, setHeaderTitle] = useState("의뢰 요청시간");
-
+  const [headerTitle, setHeaderTitle] = useState("");
+  const [timeHeaderTitle, setTimeHeaderTitle] = useState("의뢰 요청시간");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
+  const { paginationConfig } = useCommonContext();
 
   const { data, tableData } = useSelector(state => state.mail);
   const user = useSelector(state => state.auth.user) || {};
@@ -28,24 +31,13 @@ const QuestPage = () => {
   const mailLoading = useSelector(state => state.loading.mailLoading);
 
   useEffect(() => {
+    dispatch(fetchMailsAction());
+  }, [dispatch]);
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const statusKey = params.get("status") || "All_request";
-    let filteredMails;
-
-    switch (statusKey) {
-      case "important":
-        filteredMails = data.filter(mail => mail.isImportant);
-        break;
-      case "trash":
-        filteredMails = data.filter(mail => mail.status === "휴지통");
-        break;
-      case "All_request":
-        filteredMails = data;
-        break;
-      default:
-        filteredMails = data.filter(mail => mail.status === statusKey);
-    }
-
+    const filteredMails = filterMails(data, statusKey);
     dispatch(setMails(filteredMails));
     dispatch(setTableData({ mails: filteredMails, statusKey }));
 
@@ -58,8 +50,9 @@ const QuestPage = () => {
   }, [location, data, dispatch, userType]);
 
   const handleTimeMenuClick = e => {
+    const selectedItem = menuItems.find(item => item.key === e.key);
     setTimeColumn(e.key);
-    setHeaderTitle(e.item.props.children);
+    setTimeHeaderTitle(selectedItem.label);
     setDropdownOpen(false);
   };
 
@@ -68,15 +61,12 @@ const QuestPage = () => {
     dispatch(toggleImportant(id));
   };
 
-  const menu = (
-    <Menu
-      items={[
-        { key: "sentAt", label: "의뢰 요청시간" },
-        { key: "time", label: "의뢰 가능시간" },
-      ]}
-      onClick={handleTimeMenuClick}
-    />
-  );
+  const menuItems = [
+    { key: "sentAt", label: "의뢰 요청시간" },
+    { key: "time", label: "의뢰 가능시간" },
+  ];
+
+  const menu = <Menu items={menuItems} onClick={handleTimeMenuClick} />;
 
   const columns = [
     {
@@ -105,7 +95,7 @@ const QuestPage = () => {
       title: "상태",
       key: "status",
       dataIndex: "status",
-      render: status => <StatusTag status={status} />,
+      render: status => <StatusTag status={status} userType={userType} />,
       width: 150,
       className: "status-column",
     },
@@ -161,7 +151,7 @@ const QuestPage = () => {
             }}
             onClick={e => e.preventDefault()}
           >
-            {headerTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
+            {timeHeaderTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
           </button>
         </Dropdown>
       ),
@@ -172,11 +162,6 @@ const QuestPage = () => {
       className: "time-column",
     },
   ];
-
-  const paginationConfig = {
-    pageSize: 10,
-    position: ["bottomCenter"],
-  };
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 

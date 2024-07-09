@@ -1,9 +1,10 @@
-import { Table } from "antd";
-import SvgProfile from "components/Icons/Profile";
-import { LoginStatusTag } from "components/tags/StatusTag";
-import UserTag from "components/tags/UserTag";
-import { useCommonContext } from "contexts/CommonContext";
 import { useLayoutEffect, useState } from "react";
+import { Table } from "antd";
+import UserTag from "components/tags/UserTag";
+import { LoginStatusTag } from "components/tags/StatusTag";
+import { TableColumnId } from "components/styled/StyledComponents";
+import { useCommonContext } from "contexts/CommonContext";
+import SvgProfile from "components/Icons/Profile";
 import styled from "styled-components";
 
 const ManageUserList = () => {
@@ -17,12 +18,8 @@ const ManageUserList = () => {
         <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
           <SvgProfile className='w-8 h-8 mr-2' />
           <div>
-            <div>
-              <span>{record.name}</span>
-            </div>
-            <div>
-              <span className='id'>{record.id}</span>
-            </div>
+            <div>{record.name}</div>
+            <TableColumnId>{record.id}</TableColumnId>
           </div>
         </div>
       ),

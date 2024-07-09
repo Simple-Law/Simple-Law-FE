@@ -10,12 +10,14 @@ import UserTag from "components/tags/UserTag";
 const Header = () => {
   const dispatch = useDispatch();
   const useMessage = useMessageApi();
+
   const user = useSelector(state => state.auth.user);
+  const isAdmin = user?.type === "ADMIN";
+  const loginUrl = isAdmin ? "/admin/login" : "/login";
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const isAdmin = location.pathname.startsWith("/admin");
-  const loginUrl = isAdmin ? "/admin/login" : "/login";
 
   const showLogoutModal = () => {
     if (user) setIsModalVisible(true);
@@ -37,8 +39,8 @@ const Header = () => {
       <div className='flex justify-between items-center h-16 w-full'>
         <Link to='/'>
           <div className='flex pl-[47px]'>
-            <SvgLogo width='115px' height='auto' className='mx-auto' />
-            {isAdmin ? <UserTag className='ml-10' userType={"ADMIN"} /> : null}
+            <SvgLogo width='118px' height='30px' className='mx-auto' />
+            {isAdmin ? <UserTag userType={"ADMIN"} className='mt-[5px] ml-[7px]' /> : null}
           </div>
         </Link>
         <div className='flex items-center pr-[32px] gap-[10px]'>
