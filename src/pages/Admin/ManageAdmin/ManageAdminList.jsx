@@ -173,6 +173,7 @@ const ManageAdminList = () => {
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}
+            style={{ cursor: "pointer" }}
             locale={{
               emptyText: (
                 <TableEmptyDiv>
