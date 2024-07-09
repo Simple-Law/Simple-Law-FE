@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import PropTypes from "prop-types";
 import { Spin, Skeleton } from "antd";
 
 const LoadingSpinner = () => {
@@ -34,6 +35,37 @@ const LoadingSpinner = () => {
   }
 
   return null;
+};
+
+export const SkeletonLoading = ({ type = "", size = "default", length = 10 }) => {
+  const getType = () => {
+    switch (type) {
+      case "input":
+        return <Skeleton.Input active block size={size} />;
+      case "avatar":
+        return <Skeleton.Avatar active size={size} />;
+      case "image":
+        return <Skeleton.Image active size={size} />;
+      default:
+        return <Skeleton active size={size} />;
+    }
+  };
+
+  return (
+    <div>
+      {[...Array(length)].map((_, index) => (
+        <div key={index} className='mb-2'>
+          {getType()}
+        </div>
+      ))}
+    </div>
+  );
+};
+
+SkeletonLoading.propTypes = {
+  type: PropTypes.oneOf(["input", "avatar", "image"]),
+  size: PropTypes.oneOf(["large", "small", "default"]),
+  length: PropTypes.number,
 };
 
 export default LoadingSpinner;
