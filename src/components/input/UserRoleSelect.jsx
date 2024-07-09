@@ -5,12 +5,15 @@ import { useEffect, useState } from "react";
 
 const UserRoleSelect = ({ userTypeList = "ADMIN" }) => {
   const [roleOptions, setRoleOptions] = useState([]);
-  const defaultValue = userTypeList === "ADMIN" ? "SUPER_ADMIN" : "";
+  const defaultValue = userTypeList === "ADMIN" ? "NORMAL_ADMIN" : "";
 
   useEffect(() => {
     getRoleOptions();
   }, []);
 
+  /**
+   * 사용자 유형에 따른 권한 리스트 조회
+   */
   const getRoleOptions = async () => {
     const response = await getRoles({ userTypeList });
     try {
