@@ -29,14 +29,14 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
       onFinish={onSubmit}
     >
       <StyledFormItem label='아이디' name='id' rules={[validateRequired("아이디를")]}>
-        <Input className='h-[35px]' disabled={!isEmpty(userData)} />
+        <Input className='h-[35px]' disabled={!isEmpty(userData)} autoComplete='off' />
       </StyledFormItem>
       <StyledFormItem label='이름' name='name' rules={[validateRequired("이름을")]}>
         <Input className='h-[35px]' />
       </StyledFormItem>
 
       <StyledFormItem label='이메일' name='email' rules={[validateEmailType, validateRequired("이메일을")]}>
-        <Input className='h-[35px]' />
+        <Input className='h-[35px]' autoComplete='off' />
       </StyledFormItem>
 
       <StyledFormItem
@@ -49,7 +49,7 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
           }),
         ]}
       >
-        <Input.Password className='h-[35px]' />
+        <Input.Password className='h-[35px]' autoComplete='new-password' />
       </StyledFormItem>
 
       {isAdmin ? (
@@ -58,13 +58,15 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
         </StyledFormItem>
       ) : null}
 
-      <Form.Item className='pt-[20px] pb-[5px]'>
-        <Button className='w-[196px] h-[48px] mr-[8px]' onClick={onCancle}>
-          취소
-        </Button>
-        <Button className='w-[196px] h-[48px]' type='primary' htmlType='submit'>
-          {userData ? "수정" : "등록"}하기
-        </Button>
+      <Form.Item>
+        <div className='flex gap-[10px] justify-center my-[20px]'>
+          <Button className='w-1/2 h-[48px]' onClick={clickCancle}>
+            취소
+          </Button>
+          <Button className='w-1/2 h-[48px]' type='primary' htmlType='submit'>
+            {userData ? "수정" : "등록"}하기
+          </Button>
+        </div>
       </Form.Item>
     </StyledForm>
   );
