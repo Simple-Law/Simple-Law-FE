@@ -2,31 +2,45 @@ import PropTypes from "prop-types";
 import { Select } from "antd";
 import { getRoles } from "apis/commonAPI";
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { hideSkeletonLoading, showSkeletonLoading } from "../../redux/actions/loadingAction";
+import { SkeletonLoading } from "components/layout/LoadingSpinner";
+import { useMessageApi } from "components/messaging/MessageProvider";
+/**
+ * 유저 권한 Select input 컴포넌트
+ */
+const UserRoleSelect = ({ value, userTypeList = "ADMIN" }) => {
+  const messageApi = useMessageApi();
+  const loading = useSelector(state => state.loading.SkeletonLoading);
+  const dispatch = useDispatch();
 
-const UserRoleSelect = ({ userTypeList = "ADMIN" }) => {
   const [roleOptions, setRoleOptions] = useState([]);
-  const defaultValue = userTypeList === "ADMIN" ? "NORMAL_ADMIN" : "";
 
   useEffect(() => {
     getRoleOptions();
   }, []);
 
   /**
-   * 사용자 유형에 따른 권한 리스트 조회
+   * 사용자 유형에 따른 권한 API 호출
    */
   const getRoleOptions = async () => {
+    dispatch(showSkeletonLoading);
     const response = await getRoles({ userTypeList });
     try {
       if (response.status === 200 && response.data.status === "success") {
         setRoleOptions(response?.data?.data?.payload);
       }
     } catch (error) {
-      console.error("Error fetching getRoleOptions:", error);
+      messageApi.error(response.message);
+    } finally {
+      dispatch(hideSkeletonLoading());
     }
   };
 
-  return (
-    <Select defaultValue={defaultValue}>
+  return loading ? (
+    <SkeletonLoading type='short' />
+  ) : (
+    <Select defaultValue={value} value={value}>
       {roleOptions.length > 0 ? (
         roleOptions.map(option => (
           <Select.Option className='h-[30px]' key={option.role} value={option.role}>
@@ -44,6 +58,7 @@ const UserRoleSelect = ({ userTypeList = "ADMIN" }) => {
 
 UserRoleSelect.propTypes = {
   // userTypeList: PropTypes.arrayOf(String),
+  value: PropTypes.string,
   userTypeList: PropTypes.string,
 };
 
