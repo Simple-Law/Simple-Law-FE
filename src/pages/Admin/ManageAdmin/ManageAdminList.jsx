@@ -159,7 +159,7 @@ const ManageAdminList = () => {
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
         </div>
         {loading ? (
-          <SkeletonLoading type='input' />
+          <SkeletonLoading type='default' length={5} />
         ) : (
           <Table
             rowKey='id'
