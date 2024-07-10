@@ -162,18 +162,18 @@ const QuestPost = () => {
         <div className='flex justify-between items-center w-[1300px] mx-auto h-[100px]'>
           <div>
             <Link to='/'>
-              <SvgLogo width='140px' height='auto' className='mx-auto' />
+              <SvgLogo width='140px' height='36px' className='mx-auto' />
             </Link>
           </div>
         </div>
       </div>
-      <FormDiv className='w-[1300px] mx-auto mt-[100px]'>
-        <Form onFinish={handleSubmit} className='flex'>
+      <FormDiv className='w-[1300px] mx-auto mt-[100px] relative'>
+        <h2 className='text-2xl font-bold mb-6 absolute top-[40px] left-0'>의뢰 요청서</h2>
+        <Form onFinish={handleSubmit} className='flex pt-24'>
           <div className='left-side'>
-            <div className='w-[400px] pt-[40px]'>
+            <div className='w-[400px]'>
               {existingMail ? (
                 <>
-                  <h2 className='text-2xl font-bold mb-6'>기존 글</h2>
                   <div className='text-gray-700 mb-4'>
                     <div className='mb-2'>
                       <strong>제목:</strong> {existingMail.title}
@@ -189,7 +189,6 @@ const QuestPost = () => {
                 </>
               ) : (
                 <>
-                  <h2 className='text-2xl font-bold mb-6'>의뢰 요청서</h2>
                   <div className='flex flex-col gap-8'>
                     <Form.Item>
                       <p>분야 선택</p>

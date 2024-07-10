@@ -1,7 +1,7 @@
 import { useRef, useMemo, useState, useCallback } from "react";
 import { Input, Form, Button, Upload } from "antd";
+import { PaperClipOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
-import { UploadOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
@@ -132,27 +132,32 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages }) =
         </StyledQuillContainer>
       </Form.Item>
       <Form.Item>
-        <p>의뢰 문서 업로드</p>
-        <Upload
-          fileList={fileList}
-          accept='.pdf,.doc,.docx,.hwp'
-          beforeUpload={file => {
-            const isSizeValid = file.size / 1024 / 1024 < 1024;
-            if (!isSizeValid) {
-              messageApi.error("파일 크기는 1GB 이하이어야 합니다.");
-              return Upload.LIST_IGNORE;
-            }
-            return false;
-          }}
-          onChange={handleFileChange}
-          customRequest={({ file, onSuccess }) => {
-            setTimeout(() => {
-              onSuccess("ok");
-            }, 0);
-          }}
-        >
-          <Button icon={<UploadOutlined />}>파일 선택</Button>
-        </Upload>
+        <StyledUploadContainer>
+          <p>의뢰 문서 업로드</p>
+          <StyledUploadContent>
+            <Upload
+              fileList={fileList}
+              accept='.pdf,.doc,.docx,.hwp'
+              beforeUpload={file => {
+                const isSizeValid = file.size / 1024 / 1024 < 1024;
+                if (!isSizeValid) {
+                  messageApi.error("파일 크기는 1GB 이하이어야 합니다.");
+                  return Upload.LIST_IGNORE;
+                }
+                return false;
+              }}
+              onChange={handleFileChange}
+              customRequest={({ file, onSuccess }) => {
+                setTimeout(() => {
+                  onSuccess("ok");
+                }, 0);
+              }}
+            >
+              <StyledButton icon={<PaperClipOutlined />}>파일 선택</StyledButton>
+            </Upload>
+            <p>1GB 이하 (hwp, word, pdf)</p>
+          </StyledUploadContent>
+        </StyledUploadContainer>
       </Form.Item>
       <Form.Item>
         <Button className='mt-[40px] w-[150px]' type='primary' htmlType='submit'>
@@ -164,8 +169,8 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages }) =
 };
 
 const StyledFormContainer = styled.div`
-  margin-left: 10px;
-
+  margin-left: 45px;
+  width: calc(100% - 510px);
   .ant-form-item {
     margin-bottom: 16px;
   }
@@ -181,6 +186,42 @@ const StyledQuillContainer = styled.div`
       max-width: 100%;
       height: auto;
     }
+  }
+`;
+
+const StyledUploadContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+  p {
+    margin-bottom: 0 !important;
+  }
+`;
+
+const StyledUploadContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  p {
+    color: #94a3b8;
+
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+
+    letter-spacing: -0.28px;
+  }
+`;
+
+const StyledButton = styled(Button)`
+  border-radius: 4px;
+  border: 1px solid #e3e9ee;
+  padding: 6px 12px 6px 8px;
+  color: #171717;
+  &:hover {
+    color: #40a9ff;
   }
 `;
 
