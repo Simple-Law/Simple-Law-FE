@@ -23,12 +23,12 @@ const QuestPost = () => {
   const [pendingImages, setPendingImages] = useState([]); // 첨부된 이미지 파일 임시 저장
   const [deletedImages, setDeletedImages] = useState([]); // 삭제된 이미지 파일 URL 임시 저장
   const [existingMail, setExistingMail] = useState(null); // 기존 메일 데이터 저장 상태
+  console.log("mode", mode);
   useEffect(() => {
     document.body.style.overflow = "hidden";
     // 기존 메일 데이터를 가져오는 함수
-    const loadMail = async () => {
+    const loadMail = async id => {
       if (id) {
-        console.log("id도 안나와?", id);
         try {
           const mailData = await getMailById(id);
           setExistingMail(mailData);
@@ -38,13 +38,13 @@ const QuestPost = () => {
       }
     };
     if (mode === "reply") {
-      loadMail();
+      loadMail(id);
     }
     return () => {
       document.body.style.overflow = "auto";
     };
   }, [id, mode]);
-  console.log(existingMail);
+
   const uploadImagesToServer = async () => {
     const imageUrls = [];
     const currentDate = new Date().toISOString().split("T")[0];
