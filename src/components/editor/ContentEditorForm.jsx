@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, useState } from "react";
+import { useRef, useMemo, useState, useCallback } from "react";
 import { Input, Form, Button, Upload } from "antd";
 import ReactQuill from "react-quill";
 import { UploadOutlined } from "@ant-design/icons";
@@ -7,7 +7,7 @@ import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
 // eslint-disable-next-line react/prop-types
-const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, setDeletedImages }) => {
+const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const messageApi = useMessageApi();
@@ -37,7 +37,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
     setDeletedImages(prevImages => [...prevImages, ...deletedImages]);
   };
 
-  const imageHandler = () => {
+  const imageHandler = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
@@ -56,7 +56,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
       };
       reader.readAsDataURL(file);
     });
-  };
+  }, [setPendingImages]);
 
   const modules = useMemo(
     () => ({
@@ -77,7 +77,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
         userOnly: true,
       },
     }),
-    [],
+    [imageHandler],
   );
 
   const formats = [
@@ -155,7 +155,7 @@ const CommonForm = ({ formik, editorRef, isCheckboxChecked, setPendingImages, se
         </Upload>
       </Form.Item>
       <Form.Item>
-        <Button className='mt-[40px] w-[150px]' type='primary' htmlType='submit' disabled={!isCheckboxChecked}>
+        <Button className='mt-[40px] w-[150px]' type='primary' htmlType='submit'>
           의뢰 요청하기
         </Button>
       </Form.Item>

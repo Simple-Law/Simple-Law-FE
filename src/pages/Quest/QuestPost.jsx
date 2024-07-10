@@ -11,6 +11,8 @@ import { useMessageApi } from "components/messaging/MessageProvider";
 import { deleteFile, uploadFile } from "apis/commonAPI";
 import { getMailById } from "apis/mailsApi";
 import ConfirmModal from "components/modal/ConfirmModal";
+import { anytimeLabels, categoryLabels } from "utils/statusLabels";
+
 const QuestPost = () => {
   const { id, mode } = useParams();
   const editorRef = useRef();
@@ -18,12 +20,59 @@ const QuestPost = () => {
   const dispatch = useDispatch();
   const messageApi = useMessageApi();
   const user = useSelector(state => state.auth.user);
-  const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [pendingImages, setPendingImages] = useState([]); // 첨부된 이미지 파일 임시 저장
   const [deletedImages, setDeletedImages] = useState([]); // 삭제된 이미지 파일 URL 임시 저장
   const [existingMail, setExistingMail] = useState(null); // 기존 메일 데이터 저장 상태
-  console.log("mode", mode);
+
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      content: "",
+      category: "",
+      time: "",
+      status: "preparing",
+      isCheckboxChecked: false,
+    },
+    onSubmit: async values => {
+      await deleteImagesFromServer();
+      const imageUrls = await uploadImagesToServer();
+      const contentWithImages = editorRef.current
+        .getEditor()
+        .root.innerHTML.replace(/<img src="data:([^"]*)">/g, (match, p1, offset, string) => {
+          const url = imageUrls.shift();
+          return `<img src="${url}">`;
+        });
+
+      const currentTime = new Date().toISOString();
+      const dataToSend = {
+        ...values,
+        content: contentWithImages,
+        status: values.status || "preparing",
+        sentAt: currentTime,
+        userId: user.id,
+        userName: user.name,
+        userType: user.type,
+      };
+
+      try {
+        if (mode === "reply") {
+          console.log("dataToSend", dataToSend);
+          // await dispatch(addReply(id, dataToSend));
+          // messageApi.success("답변이 등록되었습니다!");
+        } else {
+          await dispatch(createMail(dataToSend));
+          messageApi.success("게시글이 등록되었습니다!");
+        }
+        // formik.resetForm();
+        // navigate("/board");
+      } catch (error) {
+        messageApi.error("작업에 실패했습니다!");
+        console.error("Error sending mail:", error);
+      }
+    },
+  });
+
   useEffect(() => {
     document.body.style.overflow = "hidden";
     // 기존 메일 데이터를 가져오는 함수
@@ -32,6 +81,13 @@ const QuestPost = () => {
         try {
           const mailData = await getMailById(id);
           setExistingMail(mailData);
+          formik.setValues({
+            ...formik.values,
+            category: mailData.category || "",
+            time: mailData.time || "",
+            status: mailData.status || "preparing",
+            isCheckboxChecked: mailData.isCheckboxChecked || false,
+          });
         } catch (error) {
           console.error("Error fetching mail:", error);
         }
@@ -84,52 +140,6 @@ const QuestPost = () => {
     }
   };
 
-  const formik = useFormik({
-    initialValues: {
-      title: "",
-      content: "",
-      category: "",
-      time: "",
-      status: "preparing",
-    },
-    onSubmit: async values => {
-      await deleteImagesFromServer();
-      const imageUrls = await uploadImagesToServer();
-      const contentWithImages = editorRef.current
-        .getEditor()
-        .root.innerHTML.replace(/<img src="data:([^"]*)">/g, (match, p1, offset, string) => {
-          const url = imageUrls.shift();
-          return `<img src="${url}">`;
-        });
-
-      const currentTime = new Date().toISOString();
-      const dataToSend = {
-        ...values,
-        content: contentWithImages,
-        status: values.status || "preparing",
-        sentAt: currentTime,
-        userId: user.id,
-        userName: user.name,
-        userType: user.type,
-      };
-
-      try {
-        if (mode === "reply") {
-          await dispatch(addReply(id, dataToSend));
-          messageApi.success("답변이 등록되었습니다!");
-        } else {
-          await dispatch(createMail(dataToSend));
-          messageApi.success("게시글이 등록되었습니다!");
-        }
-        formik.resetForm();
-        navigate("/board");
-      } catch (error) {
-        messageApi.error("작업에 실패했습니다!");
-        console.error("Error sending mail:", error);
-      }
-    },
-  });
-
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -145,10 +155,6 @@ const QuestPost = () => {
 
   const handleSubmit = () => {
     showModal();
-  };
-
-  const handleCheckboxChange = e => {
-    setIsCheckboxChecked(e.target.checked);
   };
   return (
     <div>
@@ -191,15 +197,7 @@ const QuestPost = () => {
                         name='anytime'
                         placeholder='분야 선택'
                         onChange={value => formik.setFieldValue("anytime", value)}
-                        options={[
-                          { value: "계약서 검토/작성", label: "계약서 검토/작성" },
-                          { value: "약관 검토/작성", label: "약관 검토/작성" },
-                          { value: "개인정보 처리방침 검토/작성", label: "개인정보 처리방침 검토/작성" },
-                          { value: "법률검토 의견서 작성", label: "법률검토 의견서 작성" },
-                          { value: "내용 증명 작성", label: "내용 증명 작성" },
-                          { value: "분쟁 해결 자문", label: "분쟁 해결 자문" },
-                          { value: "등기", label: "등기" },
-                        ]}
+                        options={anytimeLabels}
                       />
                     </Form.Item>
                     <Form.Item>
@@ -208,41 +206,8 @@ const QuestPost = () => {
                         name='category'
                         placeholder='세부 분야 선택'
                         onChange={value => formik.setFieldValue("category", value)}
-                      >
-                        <Select.Option className='text-gray-500' value='주주간 계약서'>
-                          주주간 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='동업 계약서'>
-                          동업 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='용역(개발, 디자인 등) 계약서'>
-                          용역(개발, 디자인 등) 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='근로 계약서'>
-                          근로 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='거래 계약서'>
-                          거래 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='투자 계약서'>
-                          투자 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='스톡옵션 계약서'>
-                          스톡옵션 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='비밀유지(보안) 계약서'>
-                          비밀유지(보안) 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='이익 분배 계약서'>
-                          이익 분배 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='저작권 이용허락(양도 등) 계약서'>
-                          저작권 이용허락(양도 등) 계약서
-                        </Select.Option>
-                        <Select.Option className='text-gray-500' value='기타 계약서'>
-                          기타 계약서
-                        </Select.Option>
-                      </Select>
+                        options={categoryLabels}
+                      />
                     </Form.Item>
                     <Form.Item>
                       <p>의뢰 작업 기한</p>
@@ -279,9 +244,16 @@ const QuestPost = () => {
                           </ul>
                         </li>
                       </StyledList>
-                      <Checkbox onChange={handleCheckboxChange} style={{ color: "#999" }}>
-                        안내 사항을 모두 확인했으며, 동의합니다.
-                      </Checkbox>
+                      <Form.Item>
+                        <Checkbox
+                          name='isCheckboxChecked'
+                          onChange={formik.handleChange}
+                          checked={formik.values.isCheckboxChecked}
+                          style={{ color: "#999" }}
+                        >
+                          안내 사항을 모두 확인했으며, 동의합니다.
+                        </Checkbox>
+                      </Form.Item>
                     </div>
                   </div>
                   <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
@@ -303,7 +275,6 @@ const QuestPost = () => {
           <CommonForm
             formik={formik}
             editorRef={editorRef}
-            isCheckboxChecked={isCheckboxChecked}
             setPendingImages={setPendingImages}
             setDeletedImages={setDeletedImages}
           />
