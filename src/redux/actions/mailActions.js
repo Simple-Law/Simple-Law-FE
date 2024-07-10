@@ -1,5 +1,10 @@
-import { createMail as apiCreateMail, fetchMails as apiFetchMails, updateMail as apiUpdateMail } from "apis/mailsApi";
-import { SET_MAILS, SET_DATA, UPDATE_COUNTS, SET_TABLE_DATA } from "../types";
+import {
+  createMail as apiCreateMail,
+  fetchMails as apiFetchMails,
+  updateMail as apiUpdateMail,
+  addReply as apiAddReply,
+} from "apis/mailsApi";
+import { SET_MAILS, SET_DATA, UPDATE_COUNTS, SET_TABLE_DATA, ADD_REPLY } from "../types";
 import { showUserLoading, hideUserLoading } from "../../redux/actions/loadingAction";
 
 export const setMails = mails => ({
@@ -45,6 +50,18 @@ export const createMail = mailData => async dispatch => {
   dispatch(updateCounts(fetchedMails));
   dispatch(setTableData(fetchedMails));
   return response;
+};
+
+export const addReply = (id, reply) => async dispatch => {
+  try {
+    const updatedMail = await apiAddReply(id, reply);
+    dispatch({
+      type: ADD_REPLY,
+      payload: { id, reply: updatedMail.replies },
+    });
+  } catch (error) {
+    console.error("Error adding reply:", error);
+  }
 };
 
 export const toggleImportant = id => async (dispatch, getState) => {

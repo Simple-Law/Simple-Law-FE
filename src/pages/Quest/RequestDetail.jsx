@@ -4,66 +4,26 @@ import { fetchMails, updateMail } from "apis/mailsApi";
 import moment from "moment";
 import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
-import { Button, Modal, Input } from "antd";
+import { Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setData, setMails, updateCounts, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import StatusTag from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowDown from "components/Icons/ArrowDown";
+import ConfirmModal from "components/modal/ConfirmModal";
 
 const { Search } = Input;
-const PageSearch = styled(Search)`
-  width: 268px;
-  & .ant-input {
-    height: 40px;
-    border-radius: 4px 0 0 4px;
-    &:hover {
-      border-color: rgb(228, 233, 241);
-    }
-    &:focus {
-      border-color: rgb(228, 233, 241);
-    }
-  }
-  &:hover {
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
-  }
-  & .ant-btn-primary {
-    height: 40px;
-    border-radius: 0 4px 4px 0;
-    border-width: 1px;
-    border-style: solid;
-    border-color: rgb(228, 233, 241);
-    border-left: none;
-    background: #fff;
-    &:hover {
-      background: #fff !important;
-    }
-    & svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-  &.ant-input-search {
-    .ant-input-group-addon {
-      background: none;
-      border: none;
-    }
-    .ant-input-wrapper {
-      background: #ffffff;
-      border: 1px solid rgb(228, 233, 241);
-      border-radius: 4px;
-    }
-  }
-`;
 
 const DetailPage = () => {
   const { id } = useParams();
-  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalInfo, setModalInfo] = useState({ isVisible: false, title: "", onOk: () => {} });
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { mails } = useSelector(state => state.mail);
   const mail = mails.find(m => m.id === id);
+  const user = useSelector(state => state.auth.user) || {};
+  const userType = user.type || "guest";
 
   useEffect(() => {
     moment.locale("ko");
@@ -76,12 +36,9 @@ const DetailPage = () => {
     event.stopPropagation();
     dispatch(toggleImportant(id));
   };
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
 
-  const handleOk = async () => {
-    setIsModalVisible(false);
+  const handleReject = async () => {
+    setModalInfo({ ...modalInfo, isVisible: false });
     try {
       await updateMail(id, { status: "휴지통" });
       const { data: mailData } = await fetchMails();
@@ -94,10 +51,21 @@ const DetailPage = () => {
     }
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const handleApprove = async () => {
+    setModalInfo({ ...modalInfo, isVisible: false });
+    try {
+      await updateMail(id, { status: "승인 완료 중" });
+      const { data: mailData } = await fetchMails();
+      dispatch(setData(mailData));
+      dispatch(setMails(mailData));
+      dispatch(updateCounts(mailData));
+    } catch (error) {
+      console.error("Error updating mail status:", error);
+    }
   };
-
+  const handleReplyClick = () => {
+    navigate(`/mail/quest/${id}/reply`);
+  };
   if (!mail) {
     return <div>Loading...</div>;
   }
@@ -113,7 +81,7 @@ const DetailPage = () => {
             className='cursor-pointer flex items-center text-zinc-800 text-lg font-bold  leading-[1.875rem]'
           >
             <SvgArrowDown className='rotate-90' />
-            <span>해결 진행 중 의뢰</span>
+            <span></span>
           </div>
           <PageSearch
             placeholder='Placeholder'
@@ -130,7 +98,7 @@ const DetailPage = () => {
               {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
             <div className='text-zinc-800 text-base font-medium  leading-normal'>{mail.title}</div>
-            <StatusTag status={mail.status} />
+            <StatusTag status={mail.status} userType={userType} />
           </div>
 
           <div className='justify-start items-center gap-2 flex pl-[20px] mb-[18px] mt-2'>
@@ -142,7 +110,29 @@ const DetailPage = () => {
               <div className='text-gray-500 text-sm font-normal '>의뢰자 :</div>
               <div className='text-gray-500 text-sm font-semibold '>홍길동</div>
             </div>
-            <p onClick={showModal}>삭제</p>
+            {userType === "LAWYER" && mail.status === "contactRequest" && (
+              <div className='flex gap-2'>
+                <p
+                  className='cursor-pointer text-red-500'
+                  onClick={() => setModalInfo({ isVisible: true, title: "거절 확인", onOk: handleReject })}
+                >
+                  거절
+                </p>
+                <p
+                  className='cursor-pointer text-green-500'
+                  onClick={() => setModalInfo({ isVisible: true, title: "승인 확인", onOk: handleApprove })}
+                >
+                  승인
+                </p>
+              </div>
+            )}
+            {userType === "LAWYER" && mail.status === "approvalPending" && (
+              <div>
+                <Button type='primary' onClick={handleReplyClick}>
+                  답변
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className='border-b'>
@@ -218,11 +208,59 @@ const DetailPage = () => {
           </div>
         </div>
       </div>
-      <Modal title='삭제 확인' open={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
-        <p>진짜로 삭제하시겠습니까?</p>
-      </Modal>
+      <ConfirmModal
+        title={modalInfo.title}
+        visible={modalInfo.isVisible}
+        onOk={modalInfo.onOk}
+        onCancel={() => setModalInfo({ ...modalInfo, isVisible: false })}
+      >
+        <p>{modalInfo.title}하시겠습니까?</p>
+      </ConfirmModal>
     </>
   );
 };
+const PageSearch = styled(Search)`
+  width: 268px;
+  & .ant-input {
+    height: 40px;
+    border-radius: 4px 0 0 4px;
+    &:hover {
+      border-color: rgb(228, 233, 241);
+    }
+    &:focus {
+      border-color: rgb(228, 233, 241);
+    }
+  }
+  &:hover {
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  }
+  & .ant-btn-primary {
+    height: 40px;
+    border-radius: 0 4px 4px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(228, 233, 241);
+    border-left: none;
+    background: #fff;
+    &:hover {
+      background: #fff !important;
+    }
+    & svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+  &.ant-input-search {
+    .ant-input-group-addon {
+      background: none;
+      border: none;
+    }
+    .ant-input-wrapper {
+      background: #ffffff;
+      border: 1px solid rgb(228, 233, 241);
+      border-radius: 4px;
+    }
+  }
+`;
 
 export default DetailPage;

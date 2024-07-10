@@ -27,6 +27,7 @@ const App = () => {
             <Route path='find-id' element={<FindUserIdPage />} />
             <Route path='sign-up/:type' element={<SignUpPage />} />
             <Route path='mail/quest' element={<QuestPostPage />} />
+            <Route path='mail/quest/:id/:mode' element={<QuestPostPage />} />
 
             <Route element={<LayoutWithHeader />}>
               <Route element={<LayoutWithSidebar />}>
