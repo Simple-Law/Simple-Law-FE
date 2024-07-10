@@ -2,7 +2,10 @@ import { Button, Modal } from "antd";
 import styled from "styled-components";
 import PropTypes from "prop-types";
 
-const GlobalModal = ({
+/**
+ * 공통 모달 컴포넌트
+ */
+const GlobalPopup = ({
   type,
   title,
   openState,
@@ -50,7 +53,7 @@ const GlobalModal = ({
   );
 };
 
-GlobalModal.propTypes = {
+GlobalPopup.propTypes = {
   type: PropTypes.oneOf(["alert", "confirm", "custom"]),
   title: PropTypes.string.isRequired,
   openState: PropTypes.bool.isRequired,
@@ -63,7 +66,7 @@ GlobalModal.propTypes = {
   children: PropTypes.node,
 };
 
-export { GlobalModal };
+export default GlobalPopup;
 
 const StyledModal = styled(Modal)`
   border-radius: 16px;
