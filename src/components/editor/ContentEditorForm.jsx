@@ -112,10 +112,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages }) =
         </p>
         <StyledQuillContainer>
           <ReactQuill
-            ref={el => {
-              editorRef.current = el;
-              quillRef.current = el;
-            }}
+            ref={quillRef}
             theme='snow'
             value={formik.values.content}
             onChange={(content, delta, source, editor) => {
