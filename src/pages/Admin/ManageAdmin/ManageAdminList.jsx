@@ -94,14 +94,13 @@ const ManageAdminList = () => {
    */
   const getAdminList = async () => {
     dispatch(showSkeletonLoading());
+    const response = await getAdminsApi(searchParams);
     try {
-      const response = await getAdminsApi(searchParams);
       if (response.status === 200 && response.data.status === "success") {
         setData(response.data.data.payload);
       }
     } catch (error) {
-      messageApi.error("목록 조회 중 오류가 발생했습니다.");
-      console.error("getAdminList error : ", error);
+      messageApi.error(response.message);
     } finally {
       dispatch(hideSkeletonLoading());
     }
