@@ -2,22 +2,11 @@ import PropTypes from "prop-types";
 import { Button, Form, Input } from "antd";
 import { validateEmailType, validateRequired, validatePassword } from "utils/validateUtil";
 import { isEmpty } from "lodash";
-import { useEffect } from "react";
 import styled from "styled-components";
 import UserRoleSelect from "components/input/UserRoleSelect";
 
 const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = false }) => {
   const [formData] = Form.useForm();
-
-  // useEffect(() => {
-  //   formData.setFieldsValue({
-  //     id: userData?.id,
-  //     name: userData?.name,
-  //     email: userData?.email,
-  //     password: "",
-  //     userType: isAdmin ? userData?.userType : "",
-  //   });
-  // }, [userData]);
 
   const onCancle = () => {
     formData.resetFields();
@@ -35,7 +24,7 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
         name: userData?.name,
         email: userData?.email,
         password: "",
-        userType: isAdmin ? userData?.userType : "SUPER_ADMIN",
+        userType: isAdmin ? userData?.userType : "NORMAL_ADMIN",
       }}
       onFinish={onSubmit}
     >
@@ -64,7 +53,7 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = null, isAdmin = f
       </StyledFormItem>
 
       {isAdmin ? (
-        <StyledFormItem label='권한' name='userType' rules={[validateRequired("권한을")]}>
+        <StyledFormItem label='권한' name='userType'>
           <UserRoleSelect className='h-[35px]' />
         </StyledFormItem>
       ) : null}
