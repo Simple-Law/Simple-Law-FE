@@ -37,6 +37,9 @@ const LoadingSpinner = () => {
   return null;
 };
 
+/**
+ * 공통 skeleton loading 컴포넌트
+ */
 export const SkeletonLoading = ({ type = "", size = "default", length = 10 }) => {
   const getType = () => {
     switch (type) {
