@@ -60,7 +60,8 @@ const ManageAdminList = () => {
           danger
           size='small'
           onClick={() => {
-            deleteAdmin(record?.adminKey, record?.id);
+            setSelectedUser(record);
+            setIsConfirmOpen(true);
           }}
         >
           삭제
@@ -81,7 +82,7 @@ const ManageAdminList = () => {
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { confirm } = Modal;
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useLayoutEffect(() => {
     getAdminList();
@@ -113,25 +114,17 @@ const ManageAdminList = () => {
     console.log("updateAdmin", id);
   }, []);
 
+  const deleteAdmin = () => {
+    console.log("deleteAdmin API");
+    setIsConfirmOpen(false);
+  };
+
   /**
-   * 관리자 계정 삭제
-   * @param {String} targetKey 유저 식별키
-   * @param {String} targetId 유저 아이디
+   * 관리자 삭제 confirm 취소
    */
-  const deleteAdmin = (targetKey, targetId) => {
-    confirm({
-      title: `${targetId} 계정을 삭제하시겠습니까?`,
-      bodyStyle: { textAlign: "center" },
-      okText: "삭제",
-      okType: "primary",
-      onOk() {
-        console.log("OK : ", targetKey + "로 api 호출");
-      },
-      cancelText: "취소",
-      onCancel() {
-        console.log("Cancel");
-      },
-    });
+  const cancleDelete = () => {
+    setSelectedUser(null);
+    setIsConfirmOpen(false);
   };
 
   /**
@@ -144,8 +137,8 @@ const ManageAdminList = () => {
    * 관리자 계정 등록/수정 modal 닫기
    */
   const closeModal = () => {
-    setIsModalOpen(false);
     setSelectedUser(null);
+    setIsModalOpen(false);
   };
 
   /**
@@ -197,6 +190,20 @@ const ManageAdminList = () => {
         <h5 className='text-center font-bold text-[20px]'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
         <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
       </StyledModal>
+
+      <Modal open={isConfirmOpen} footer={null} width={400} closeIcon={false}>
+        <div className='p-[15px]'>
+          <p className='text-center font-bold text-[20px]'>{selectedUser?.id} 계정을 삭제하시겠습니까?</p>
+          <div className='flex gap-[30px] justify-center mt-[30px]'>
+            <Button className='w-[80px] h-[40px] p-0' onClick={cancleDelete}>
+              취소
+            </Button>
+            <Button className='w-[80px] h-[40px] p-0' type='primary' onClick={deleteAdmin}>
+              삭제
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };
