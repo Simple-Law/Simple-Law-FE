@@ -1,6 +1,6 @@
 import { useCallback, useLayoutEffect, useState } from "react";
 import styled from "styled-components";
-import { Table, Button, Modal } from "antd";
+import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
@@ -13,6 +13,7 @@ import { useMessageApi } from "components/messaging/MessageProvider";
 import { useDispatch, useSelector } from "react-redux";
 import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions/loadingAction";
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
+import GlobalPopup from "components/layout/GlobalPopup";
 
 const ManageAdminList = () => {
   const columns = [
@@ -80,7 +81,7 @@ const ManageAdminList = () => {
   const [data, setData] = useState([]);
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -123,7 +124,7 @@ const ManageAdminList = () => {
    * 관리자 삭제 confirm 취소
    */
   const cancleDelete = () => {
-    setSelectedUser(null);
+    setSelectedUser({});
     setIsConfirmOpen(false);
   };
 
@@ -137,7 +138,7 @@ const ManageAdminList = () => {
    * 관리자 계정 등록/수정 modal 닫기
    */
   const closeModal = () => {
-    setSelectedUser(null);
+    setSelectedUser({});
     setIsModalOpen(false);
   };
 
@@ -186,34 +187,31 @@ const ManageAdminList = () => {
         )}
       </BoardDiv>
 
-      <StyledModal open={isModalOpen} onCancel={closeModal} footer={null} width={448}>
-        <h5 className='text-center font-bold text-[20px]'>{selectedUser ? "계정 수정" : "계정 등록"}</h5>
+      <GlobalPopup
+        type='custom'
+        openState={isModalOpen}
+        title={selectedUser ? "계정 수정" : "계정 등록"}
+        cancelHandler={closeModal}
+        width={448}
+        top={75}
+      >
         <UserInfoEditorForm userData={selectedUser} onSubmit={onSubmit} closeModal={closeModal} isAdmin={true} />
-      </StyledModal>
+      </GlobalPopup>
 
-      <Modal open={isConfirmOpen} footer={null} width={400} closeIcon={false}>
-        <div className='p-[15px]'>
-          <p className='text-center font-bold text-[20px]'>{selectedUser?.id} 계정을 삭제하시겠습니까?</p>
-          <div className='flex gap-[30px] justify-center mt-[30px]'>
-            <Button className='w-[80px] h-[40px] p-0' onClick={cancleDelete}>
-              취소
-            </Button>
-            <Button className='w-[80px] h-[40px] p-0' type='primary' onClick={deleteAdmin}>
-              삭제
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      <GlobalPopup
+        type='confirm'
+        openState={isConfirmOpen}
+        title={selectedUser?.id + " 계정을 삭제하시겠습니까?"}
+        okText='삭제'
+        okHandler={deleteAdmin}
+        cancelText='취소'
+        cancelHandler={cancleDelete}
+      />
     </>
   );
 };
 
 export default ManageAdminList;
-
-const StyledModal = styled(Modal)`
-  border-radius: 16px;
-  top: 75px;
-`;
 
 const BoardDiv = styled.div`
   .ant-spin-container {
