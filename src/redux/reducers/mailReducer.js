@@ -30,6 +30,13 @@ const mailReducer = (state = initialState, action) => {
       return { ...state, mails: action.payload };
     case "SET_DATA":
       return { ...state, data: action.payload };
+    case "ADD_REPLY":
+      return {
+        ...state,
+        data: state.data.map(mail =>
+          mail.id === action.payload.id ? { ...mail, replies: action.payload.reply } : mail,
+        ),
+      };
     case "UPDATE_COUNTS": {
       const mails = action.payload;
       const counts = mails.reduce((acc, mail) => {

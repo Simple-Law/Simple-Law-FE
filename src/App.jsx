@@ -6,13 +6,14 @@ import HomePage from "pages/Home/Home";
 import LoginPage from "pages/Login/Login";
 import Header from "components/layout/Header";
 import AppLayout from "components/messaging/MessageProvider";
-import MyQuestListPage from "pages/Quest/MyQuestList";
-import QuestPostPage from "pages/Quest/QuestPost";
+import MyQuestListPage from "pages/Request/MyRequestList";
+// import QuestPostPage from "pages/Quest/QuestPost";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
-import RequestDetailPage from "pages/Quest/RequestDetail";
-import RequestSideMenu, { AdminSideMenu } from "components/layout/RequestSideMenu";
+import RequestDetailPage from "pages/Request/RequestDetail";
+import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
 import ManageAdminList from "pages/Admin/ManageAdmin/ManageAdminList";
 import ManageUserList from "pages/Admin/ManageUser/ManageUserList";
+import PostEditor from "components/postEditor/PostEditor";
 
 const App = () => {
   return (
@@ -26,8 +27,8 @@ const App = () => {
             <Route path='login/:type' element={<LoginPage />} />
             <Route path='find-id' element={<FindUserIdPage />} />
             <Route path='sign-up/:type' element={<SignUpPage />} />
-            <Route path='mail/quest' element={<QuestPostPage />} />
-
+            <Route path='mail/quest' element={<PostEditor />} />
+            <Route path='mail/quest/:id/:mode' element={<PostEditor />} />
             <Route element={<LayoutWithHeader />}>
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
