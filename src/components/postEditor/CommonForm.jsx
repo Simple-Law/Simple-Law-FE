@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useRef, useMemo, useState, useCallback } from "react";
 import { Input, Form, Button, Upload } from "antd";
 import { PaperClipOutlined } from "@ant-design/icons";
@@ -6,7 +7,6 @@ import "react-quill/dist/quill.snow.css";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
-// eslint-disable-next-line react/prop-types
 const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mode }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
@@ -171,6 +171,26 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
   );
 };
 
+CommonForm.propTypes = {
+  formik: PropTypes.shape({
+    setFieldValue: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    values: PropTypes.shape({
+      title: PropTypes.string,
+      content: PropTypes.string,
+      isCheckboxChecked: PropTypes.bool,
+    }).isRequired,
+  }).isRequired,
+  editorRef: PropTypes.shape({
+    current: PropTypes.instanceOf(Element),
+  }).isRequired,
+  setPendingImages: PropTypes.func.isRequired,
+  setDeletedImages: PropTypes.func.isRequired,
+  mode: PropTypes.string.isRequired,
+};
+
+export default CommonForm;
+
 const StyledFormContainer = styled.div`
   margin-left: 45px;
   width: calc(100% - 510px);
@@ -223,5 +243,3 @@ const StyledButton = styled(Button)`
     color: #40a9ff;
   }
 `;
-
-export default CommonForm;
