@@ -5,6 +5,7 @@ import { deleteFile, uploadFile } from "apis/commonAPI";
 import { getMailById } from "apis/mailsApi";
 import { addReply, createMail } from "../redux/actions/mailActions";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 export const useMail = (id, mode, user, editorRef) => {
   const [pendingImages, setPendingImages] = useState([]);
   const [deletedImages, setDeletedImages] = useState([]);
@@ -12,6 +13,7 @@ export const useMail = (id, mode, user, editorRef) => {
   const [loading, setLoading] = useState(true);
   const messageApi = useMessageApi();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -46,12 +48,14 @@ export const useMail = (id, mode, user, editorRef) => {
       try {
         if (mode === "reply") {
           console.log("dataToSend", dataToSend);
-          // await dispatch(addReply(id, dataToSend));
-          // messageApi.success('답변이 등록되었습니다!');
+          await dispatch(addReply(id, dataToSend));
+          messageApi.success("답변이 등록되었습니다!");
         } else {
           await dispatch(createMail(dataToSend));
           messageApi.success("게시글이 등록되었습니다!");
         }
+        formik.resetForm();
+        navigate("/board");
       } catch (error) {
         messageApi.error("작업에 실패했습니다!");
         console.error("Error sending mail:", error);
@@ -68,6 +72,7 @@ export const useMail = (id, mode, user, editorRef) => {
           setExistingMail(mailData);
           formik.setValues({
             ...formik.values,
+            title: mailData.title || "",
             category: mailData.category || "",
             time: mailData.time || "",
             status: mailData.status || "preparing",
