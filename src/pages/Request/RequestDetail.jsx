@@ -24,7 +24,7 @@ const DetailPage = () => {
   const mail = mails.find(m => m.id === id);
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
-
+  console.log("메일데이터", mail);
   useEffect(() => {
     moment.locale("ko");
     if (!mail) {

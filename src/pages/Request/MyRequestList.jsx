@@ -124,18 +124,23 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
-
-      render: (_, record) =>
-        record.parentTitle ? (
-          <div>
-            {record.parentTitle}
-            <div style={{ marginLeft: 20 }}>
-              <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
+      render: (_, record) => (
+        <div>
+          {/* {record.parentTitle ? (
+            <div>
+              {record.parentTitle}
+              <div style={{ marginLeft: 20 }}>
+                <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
+              </div>
             </div>
-          </div>
-        ) : (
-          record.title
-        ),
+          ) : (
+            record.title
+          )} */}
+          {record.replies && record.replies.length > 0 && (
+            <div style={{ color: "#1890ff", marginTop: 5 }}>(답변 {record.replies.length})</div>
+          )}
+        </div>
+      ),
     },
     {
       title: (

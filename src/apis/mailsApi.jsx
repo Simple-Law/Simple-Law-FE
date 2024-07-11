@@ -79,7 +79,17 @@ export const getMailById = async id => {
  */
 export const addReply = async (id, reply) => {
   try {
-    const response = await glitchURL.patch(`/mails/${id}/reply`, { reply });
+    // 기존 메일 데이터를 가져옴
+    const mail = await getMailById(id);
+
+    // replies 배열이 없는 경우 초기화
+    const updatedReplies = mail.replies ? [...mail.replies, reply] : [reply];
+
+    // 메일 업데이트
+    const response = await glitchURL.patch(`/mails/${id}`, {
+      replies: updatedReplies,
+    });
+
     return response.data;
   } catch (error) {
     console.error("Error adding reply:", error);

@@ -14,7 +14,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
 
   const handleFileChange = info => {
     let newFileList = [...info.fileList];
-    newFileList = newFileList.slice(-1); // Only keep the latest file
+    newFileList = newFileList.slice(-1);
     setFileList(newFileList);
     setPendingImages(newFileList.map(file => file.originFileObj));
   };
@@ -97,22 +97,28 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
 
   return (
     <StyledFormContainer>
-      <Form.Item className='mb-8'>
-        <p>의뢰 제목</p>
-        <Input
-          name='title'
-          onChange={formik.handleChange}
-          value={formik.values.title}
-          placeholder='제목을 입력하세요'
-        />
-      </Form.Item>
+      {mode !== "reply" && (
+        <Form.Item className='mb-8'>
+          <p>의뢰 제목</p>
+          <Input
+            name='title'
+            onChange={formik.handleChange}
+            value={formik.values.title}
+            placeholder='제목을 입력하세요'
+          />
+        </Form.Item>
+      )}
       <Form.Item>
         <p>
-          의뢰 내용<span>(100자 이상)</span>
+          {mode === "reply" ? "답변 달기" : "의뢰 내용"}
+          <span>(100자 이상)</span>
         </p>
         <StyledQuillContainer>
           <ReactQuill
-            ref={quillRef}
+            ref={el => {
+              editorRef.current = el; // 외부에서 전달된 ref에 할당
+              quillRef.current = el;
+            }}
             theme='snow'
             value={formik.values.content}
             onChange={(content, delta, source, editor) => {
@@ -189,7 +195,6 @@ const StyledQuillContainer = styled.div`
 const StyledUploadContainer = styled.div`
   display: flex;
   align-items: center;
-
   gap: 12px;
   p {
     margin-bottom: 0 !important;
@@ -200,14 +205,11 @@ const StyledUploadContent = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-
   p {
     color: #94a3b8;
-
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
-
     letter-spacing: -0.28px;
   }
 `;

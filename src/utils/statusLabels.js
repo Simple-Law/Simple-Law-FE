@@ -36,5 +36,27 @@ const adminStatusLabels = {
   requestSignup: "회원가입 요청",
   manageEvent: "이벤트 관리",
 };
+const categoryLabels = [
+  { value: "주주간 계약서", label: "주주간 계약서" },
+  { value: "동업 계약서", label: "동업 계약서" },
+  { value: "용역(개발, 디자인 등) 계약서", label: "용역(개발, 디자인 등) 계약서" },
+  { value: "근로 계약서", label: "근로 계약서" },
+  { value: "거래 계약서", label: "거래 계약서" },
+  { value: "투자 계약서", label: "투자 계약서" },
+  { value: "스톡옵션 계약서", label: "스톡옵션 계약서" },
+  { value: "비밀유지(보안) 계약서", label: "비밀유지(보안) 계약서" },
+  { value: "이익 분배 계약서", label: "이익 분배 계약서" },
+  { value: "저작권 이용허락(양도 등) 계약서", label: "저작권 이용허락(양도 등) 계약서" },
+  { value: "기타 계약서", label: "기타 계약서" },
+];
 
-export { commonStatusLabels, statusLabels, adminStatusLabels };
+const anytimeLabels = [
+  { value: "계약서 검토/작성", label: "계약서 검토/작성" },
+  { value: "약관 검토/작성", label: "약관 검토/작성" },
+  { value: "개인정보 처리방침 검토/작성", label: "개인정보 처리방침 검토/작성" },
+  { value: "법률검토 의견서 작성", label: "법률검토 의견서 작성" },
+  { value: "내용 증명 작성", label: "내용 증명 작성" },
+  { value: "분쟁 해결 자문", label: "분쟁 해결 자문" },
+  { value: "등기", label: "등기" },
+];
+export { categoryLabels, anytimeLabels, commonStatusLabels, statusLabels, adminStatusLabels };
