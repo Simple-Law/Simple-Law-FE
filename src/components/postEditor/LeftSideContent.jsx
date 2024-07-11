@@ -1,6 +1,7 @@
 import { Form, Select, Checkbox } from "antd";
 import { StyledList } from "./styles";
 import { anytimeLabels, categoryLabels } from "utils/statusLabels";
+import PropTypes from "prop-types";
 
 const LeftSideContent = ({ existingMail, formik }) => (
   <div className='w-[400px]'>
@@ -92,5 +93,20 @@ const LeftSideContent = ({ existingMail, formik }) => (
     )}
   </div>
 );
+
+LeftSideContent.propTypes = {
+  existingMail: PropTypes.shape({
+    title: PropTypes.string,
+    category: PropTypes.string,
+    content: PropTypes.string,
+  }),
+  formik: PropTypes.shape({
+    setFieldValue: PropTypes.func.isRequired,
+    handleChange: PropTypes.func.isRequired,
+    values: PropTypes.shape({
+      isCheckboxChecked: PropTypes.bool.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default LeftSideContent;
