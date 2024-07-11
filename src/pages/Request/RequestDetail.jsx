@@ -111,6 +111,7 @@ const DetailPage = () => {
               <div className='text-gray-500 text-sm font-semibold '>홍길동</div>
             </div>
             {userType === "LAWYER" && mail.status === "contactRequest" && (
+              // TODO: DY - 답변 달리면 승인상태, 답변 버튼 표시 수정되도록
               <div className='flex gap-2'>
                 <p
                   className='cursor-pointer text-red-500'
@@ -192,7 +193,7 @@ const DetailPage = () => {
               mail.replies.map((reply, index) => (
                 <div key={index} className='w-full h-[12.5rem] relative  mt-4'>
                   <div className='mt-2 p-2 bg-gray-100 rounded-md'>
-                    <div className='text-gray-700'>{reply.content}</div>
+                    <div className='text-gray-700' dangerouslySetInnerHTML={{ __html: reply.content }} />
                     <div className='text-gray-500 text-sm'>
                       {moment(reply.createdAt).format("YYYY년 MM월 DD일 A h:mm")}
                     </div>
