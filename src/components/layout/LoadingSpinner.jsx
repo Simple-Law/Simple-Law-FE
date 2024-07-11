@@ -37,10 +37,15 @@ const LoadingSpinner = () => {
   return null;
 };
 
+/**
+ * 공통 skeleton loading 컴포넌트
+ */
 export const SkeletonLoading = ({ type = "", size = "default", length = 10 }) => {
   const getType = () => {
     switch (type) {
-      case "input":
+      case "short":
+        return <Skeleton.Input active size={size} />;
+      case "long":
         return <Skeleton.Input active block size={size} />;
       case "avatar":
         return <Skeleton.Avatar active size={size} />;
@@ -63,7 +68,7 @@ export const SkeletonLoading = ({ type = "", size = "default", length = 10 }) =>
 };
 
 SkeletonLoading.propTypes = {
-  type: PropTypes.oneOf(["input", "avatar", "image"]),
+  type: PropTypes.oneOf(["default", "short", "long", "avatar", "image"]),
   size: PropTypes.oneOf(["large", "small", "default"]),
   length: PropTypes.number,
 };
