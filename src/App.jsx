@@ -10,7 +10,7 @@ import MyQuestListPage from "pages/Request/MyRequestList";
 // import QuestPostPage from "pages/Quest/QuestPost";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import RequestDetailPage from "pages/Request/RequestDetail";
-import RequestSideMenu, { AdminSideMenu } from "components/layout/RequestSideMenu";
+import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
 import ManageAdminList from "pages/Admin/ManageAdmin/ManageAdminList";
 import ManageUserList from "pages/Admin/ManageUser/ManageUserList";
 import PostEditor from "components/postEditor/PostEditor";
