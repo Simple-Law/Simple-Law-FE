@@ -7,7 +7,7 @@ import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
 // eslint-disable-next-line react/prop-types
-const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages }) => {
+const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mode }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const messageApi = useMessageApi();
@@ -158,7 +158,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages }) =
       </Form.Item>
       <Form.Item>
         <Button className='mt-[40px] w-[150px]' type='primary' htmlType='submit'>
-          의뢰 요청하기
+          {mode === "reply" ? "답변하기" : "의뢰 요청하기"}
         </Button>
       </Form.Item>
     </StyledFormContainer>

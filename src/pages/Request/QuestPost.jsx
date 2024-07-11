@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import SvgLogo from "components/Icons/Logo";
-import { Form, Select, Checkbox } from "antd";
+import { Form, Select, Checkbox, Spin } from "antd";
 import { useFormik } from "formik";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
@@ -24,6 +24,7 @@ const QuestPost = () => {
   const [pendingImages, setPendingImages] = useState([]); // 첨부된 이미지 파일 임시 저장
   const [deletedImages, setDeletedImages] = useState([]); // 삭제된 이미지 파일 URL 임시 저장
   const [existingMail, setExistingMail] = useState(null); // 기존 메일 데이터 저장 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const formik = useFormik({
     initialValues: {
@@ -90,11 +91,17 @@ const QuestPost = () => {
           });
         } catch (error) {
           console.error("Error fetching mail:", error);
+        } finally {
+          setLoading(false); // 로딩 상태 해제
         }
+      } else {
+        setLoading(false); // ID가 없을 경우에도 로딩 상태 해제
       }
     };
     if (mode === "reply") {
       loadMail(id);
+    } else {
+      setLoading(false); // "reply" 모드가 아니면 로딩 상태 해제
     }
     return () => {
       document.body.style.overflow = "auto";
@@ -156,6 +163,7 @@ const QuestPost = () => {
   const handleSubmit = () => {
     showModal();
   };
+
   return (
     <div>
       <div className='border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]'>
@@ -171,111 +179,14 @@ const QuestPost = () => {
         <h2 className='text-2xl font-bold mb-6 absolute top-[40px] left-0'>의뢰 요청서</h2>
         <Form onFinish={handleSubmit} className='flex pt-24'>
           <div className='left-side'>
-            <div className='w-[400px]'>
-              {existingMail ? (
-                <>
-                  <div className='text-gray-700 mb-4'>
-                    <div className='mb-2'>
-                      <strong>제목:</strong> {existingMail.title}
-                    </div>
-                    <div className='mb-2'>
-                      <strong>카테고리:</strong> {existingMail.category}
-                    </div>
-                    <div className='mb-2'>
-                      <strong>내용:</strong>
-                      <div dangerouslySetInnerHTML={{ __html: existingMail.content }} />
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className='flex flex-col gap-8'>
-                    <Form.Item>
-                      <p>분야 선택</p>
-                      <Select
-                        name='anytime'
-                        placeholder='분야 선택'
-                        onChange={value => formik.setFieldValue("anytime", value)}
-                        options={anytimeLabels}
-                      />
-                    </Form.Item>
-                    <Form.Item>
-                      <p>세부 분야 선택</p>
-                      <Select
-                        name='category'
-                        placeholder='세부 분야 선택'
-                        onChange={value => formik.setFieldValue("category", value)}
-                        options={categoryLabels}
-                      />
-                    </Form.Item>
-                    <Form.Item>
-                      <p>의뢰 작업 기한</p>
-                      <Select
-                        name='time'
-                        placeholder='의뢰 작업 기한'
-                        onChange={value => formik.setFieldValue("time", value)}
-                      >
-                        <Select.Option value='12'>12시간</Select.Option>
-                        <Select.Option value='24'>24시간</Select.Option>
-                      </Select>
-                    </Form.Item>
-                    <div>
-                      <p>의뢰 등록 전 안내사항</p>
-                      <StyledList className=' rounded-md bg-slate-100 px-5 py-5 mb-[10px]'>
-                        <li>
-                          요청이 완료된 의뢰는 수정이 불가합니다. 수정을 원하실 경우 기존 의뢰를 종료하신 후 새로운
-                          의뢰서를 작성해주세요.
-                        </li>
-                        <li>
-                          변호사의 배정 전 의뢰 취소를 진행할 경우 전액 환불이 가능하며, 변호사의 배정 이후 의뢰 취소는
-                          불가능 합니다.
-                        </li>
-                        <li>변호사 배정이 완료된 의뢰는 의뢰가 종료될 때 까지 글 삭제가 불가능 합니다.</li>
-                        <li>작성된 내용은 배정된 변호사 이외에 누구에게도 공개되지 않습니다.</li>
-                        <li>
-                          아래 사항에 해당할 경우, 서비스 이용이 제한될 수 있습니다.
-                          <ul>
-                            <li>변호사 선임 및 변호사 선임 비용 관련 질문, 사적 질문</li>
-                            <li>법률 문제 해결을 목적으로 하는 의뢰 사항이 아닌 경우</li>
-                            <li>동일/유사한 내용의 의뢰 요청을 지속적으로 반복할 경우</li>
-                            <li>동일/유사한 내용의 게시물을 지속적으로 반복 게재</li>
-                            <li>의미없는 문자의 나열 포함</li>
-                          </ul>
-                        </li>
-                      </StyledList>
-                      <Form.Item>
-                        <Checkbox
-                          name='isCheckboxChecked'
-                          onChange={formik.handleChange}
-                          checked={formik.values.isCheckboxChecked}
-                          style={{ color: "#999" }}
-                        >
-                          안내 사항을 모두 확인했으며, 동의합니다.
-                        </Checkbox>
-                      </Form.Item>
-                    </div>
-                  </div>
-                  <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
-                    <div className="text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
-                      총 결제 금액
-                    </div>
-                    <div className='justify-start items-center gap-0.5 flex'>
-                      <div className="text-right text-blue-500 text-[22px] font-bold font-['Pretendard']">120,000</div>
-                      <div className="text-right text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
-                        원
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
+            {loading ? <Spin /> : <LeftSideContent existingMail={existingMail} formik={formik} />}
           </div>
-
           <CommonForm
             formik={formik}
             editorRef={editorRef}
             setPendingImages={setPendingImages}
             setDeletedImages={setDeletedImages}
+            mode={mode}
           />
         </Form>
         <ConfirmModal title='제출 확인' visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
@@ -285,6 +196,97 @@ const QuestPost = () => {
     </div>
   );
 };
+
+const LeftSideContent = ({ existingMail, formik }) => (
+  <div className='w-[400px]'>
+    {existingMail ? (
+      <div className='text-gray-700 mb-4'>
+        <div className='mb-2'>
+          <strong>제목:</strong> {existingMail.title}
+        </div>
+        <div className='mb-2'>
+          <strong>카테고리:</strong> {existingMail.category}
+        </div>
+        <div className='mb-2'>
+          <strong>내용:</strong>
+          <div dangerouslySetInnerHTML={{ __html: existingMail.content }} />
+        </div>
+      </div>
+    ) : (
+      <>
+        <div className='flex flex-col gap-8'>
+          <Form.Item>
+            <p>분야 선택</p>
+            <Select
+              name='anytime'
+              placeholder='분야 선택'
+              onChange={value => formik.setFieldValue("anytime", value)}
+              options={anytimeLabels}
+            />
+          </Form.Item>
+          <Form.Item>
+            <p>세부 분야 선택</p>
+            <Select
+              name='category'
+              placeholder='세부 분야 선택'
+              onChange={value => formik.setFieldValue("category", value)}
+              options={categoryLabels}
+            />
+          </Form.Item>
+          <Form.Item>
+            <p>의뢰 작업 기한</p>
+            <Select name='time' placeholder='의뢰 작업 기한' onChange={value => formik.setFieldValue("time", value)}>
+              <Select.Option value='12'>12시간</Select.Option>
+              <Select.Option value='24'>24시간</Select.Option>
+            </Select>
+          </Form.Item>
+          <div>
+            <p>의뢰 등록 전 안내사항</p>
+            <StyledList className=' rounded-md bg-slate-100 px-5 py-5 mb-[10px]'>
+              <li>
+                요청이 완료된 의뢰는 수정이 불가합니다. 수정을 원하실 경우 기존 의뢰를 종료하신 후 새로운 의뢰서를
+                작성해주세요.
+              </li>
+              <li>
+                변호사의 배정 전 의뢰 취소를 진행할 경우 전액 환불이 가능하며, 변호사의 배정 이후 의뢰 취소는 불가능
+                합니다.
+              </li>
+              <li>변호사 배정이 완료된 의뢰는 의뢰가 종료될 때 까지 글 삭제가 불가능 합니다.</li>
+              <li>작성된 내용은 배정된 변호사 이외에 누구에게도 공개되지 않습니다.</li>
+              <li>
+                아래 사항에 해당할 경우, 서비스 이용이 제한될 수 있습니다.
+                <ul>
+                  <li>변호사 선임 및 변호사 선임 비용 관련 질문, 사적 질문</li>
+                  <li>법률 문제 해결을 목적으로 하는 의뢰 사항이 아닌 경우</li>
+                  <li>동일/유사한 내용의 의뢰 요청을 지속적으로 반복할 경우</li>
+                  <li>동일/유사한 내용의 게시물을 지속적으로 반복 게재</li>
+                  <li>의미없는 문자의 나열 포함</li>
+                </ul>
+              </li>
+            </StyledList>
+            <Form.Item>
+              <Checkbox
+                name='isCheckboxChecked'
+                onChange={formik.handleChange}
+                checked={formik.values.isCheckboxChecked}
+                style={{ color: "#999" }}
+              >
+                안내 사항을 모두 확인했으며, 동의합니다.
+              </Checkbox>
+            </Form.Item>
+          </div>
+        </div>
+        <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
+          <div className="text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">총 결제 금액</div>
+          <div className='justify-start items-center gap-0.5 flex'>
+            <div className="text-right text-blue-500 text-[22px] font-bold font-['Pretendard']">120,000</div>
+            <div className="text-right text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">원</div>
+          </div>
+        </div>
+      </>
+    )}
+  </div>
+);
 
 const FormDiv = styled.div`
   p:not(.toastui-editor-defaultUI p) {
