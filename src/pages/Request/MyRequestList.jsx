@@ -135,11 +135,11 @@ const QuestPage = () => {
               </div>
             </div>
           ) : (
-            record.title
+            record.title 
           )} */}
-          {record.replies && record.replies.length > 0 && (
+          {/* {record.replies && record.replies.length > 0 && (
             <div style={{ color: "#1890ff", marginTop: 5 }}>(답변 {record.replies.length})</div>
-          )}
+          )} */}
         </div>
       ),
     },

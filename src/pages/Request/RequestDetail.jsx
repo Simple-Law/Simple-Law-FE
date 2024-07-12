@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchMails, updateMail } from "apis/mailsApi";
 import moment from "moment";
@@ -63,9 +63,15 @@ const DetailPage = () => {
       console.error("Error updating mail status:", error);
     }
   };
+
   const handleReplyClick = () => {
     navigate(`/mail/quest/${id}/reply`);
   };
+
+  const sortedReplies = useMemo(() => {
+    return mail ? (mail.replies || []).slice().sort((a, b) => moment(b.sentAt).diff(moment(a.sentAt))) : [];
+  }, [mail]);
+
   if (!mail) {
     return <div>Loading...</div>;
   }
@@ -111,7 +117,7 @@ const DetailPage = () => {
               <div className='text-gray-500 text-sm font-semibold '>홍길동</div>
             </div>
             {userType === "LAWYER" && mail.status === "contactRequest" && (
-              // TODO: DY - 답변 달리면 승인상태, 답변 버튼 표시 수정되도록
+              // TODO: DY - 답변 달리면 해결 완료로 이동 -> 추가질문 버튼 생성 :: 의뢰자가 의뢰에대한 종료 처리해야만 종료된 의뢰
               <div className='flex gap-2'>
                 <p
                   className='cursor-pointer text-red-500'
@@ -127,7 +133,7 @@ const DetailPage = () => {
                 </p>
               </div>
             )}
-            {userType === "LAWYER" && mail.status === "approvalPending" && (
+            {userType === "LAWYER" && mail.status === "resolving" && (
               <div>
                 <Button type='primary' onClick={handleReplyClick}>
                   답변
@@ -189,13 +195,13 @@ const DetailPage = () => {
           </div>
 
           <div>
-            {mail.replies && mail.replies.length > 0 ? (
-              mail.replies.map((reply, index) => (
-                <div key={index} className='w-full h-[12.5rem] relative  mt-4'>
+            {sortedReplies.length > 0 ? (
+              sortedReplies.map((reply, index) => (
+                <div key={index} className='w-full h-[12.5rem] relative mt-4'>
                   <div className='mt-2 p-2 bg-gray-100 rounded-md'>
                     <div className='text-gray-700' dangerouslySetInnerHTML={{ __html: reply.content }} />
                     <div className='text-gray-500 text-sm'>
-                      {moment(reply.createdAt).format("YYYY년 MM월 DD일 A h:mm")}
+                      {moment(reply.sentAt).format("YYYY년 MM월 DD일 A h:mm")}
                     </div>
                     <Link to={`/requestion/${mail.id}`}>
                       <Button type='link'>재질문하기</Button>
@@ -220,6 +226,7 @@ const DetailPage = () => {
     </>
   );
 };
+
 const PageSearch = styled(Search)`
   width: 268px;
   & .ant-input {

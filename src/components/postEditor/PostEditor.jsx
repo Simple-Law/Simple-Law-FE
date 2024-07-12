@@ -14,6 +14,8 @@ const PostEditor = () => {
   const editorRef = useRef();
   const user = useSelector(state => state.auth.user);
 
+  console.log("useParams:", { id, mode }); // useParams로 받은 값 확인
+
   const { formik, loading, existingMail, setPendingImages, setDeletedImages } = useMail(id, mode, user, editorRef);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -57,7 +59,7 @@ const PostEditor = () => {
             editorRef={editorRef}
             setPendingImages={setPendingImages}
             setDeletedImages={setDeletedImages}
-            mode={mode}
+            mode={mode || "default"} // mode가 없을 경우 기본 값을 설정
           />
         </Form>
         <ConfirmModal title='제출 확인' visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
