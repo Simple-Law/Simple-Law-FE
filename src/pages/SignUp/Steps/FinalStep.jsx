@@ -36,7 +36,7 @@ const FinalStep = ({ type }) => {
           </motion.svg>
         </div>
         <div>
-          <h1 className='text-center text-[32px] font-semibold'>회원 가입 신청이 완료되었습니다</h1>
+          <h1 className='text-center text-[32px] font-semibold'>회원가입 신청이 완료되었습니다.</h1>
           {type === "lawyer" && (
             <p className='text-center text-[16px] font-normal text-primary leading-[22px] tracking-[-0.32px] bg-gray-50 rounded-lg p-[20px] px-[27px] mt-[60px]'>
               관리자 승인 후, 등록하신 사용자 아이디로 로그인이 가능합니다.
@@ -47,7 +47,7 @@ const FinalStep = ({ type }) => {
           <Button block type='primary' className='mb-4' onClick={() => navigate(`/login/${type}`)}>
             로그인
           </Button>
-          <Button block onClick={() => navigate("/")}>
+          <Button block className='border-0' onClick={() => navigate("/")}>
             홈으로
           </Button>
         </div>

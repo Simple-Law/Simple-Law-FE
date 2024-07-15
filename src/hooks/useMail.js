@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { deleteFile, uploadFile } from "apis/commonAPI";
-import { getMailById } from "apis/mailsApi";
+import { getMailById, updateMail } from "apis/mailsApi";
 import { addReply, createMail } from "../redux/actions/mailActions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+
 export const useMail = (id, mode, user, editorRef) => {
   const [pendingImages, setPendingImages] = useState([]);
   const [deletedImages, setDeletedImages] = useState([]);
@@ -38,7 +39,7 @@ export const useMail = (id, mode, user, editorRef) => {
       const dataToSend = {
         ...values,
         content: contentWithImages,
-        status: values.status || "preparing",
+        status: mode === "reply" ? "resolved" : values.status || "preparing", // mode가 reply일 때만 resolved로 설정
         sentAt: currentTime,
         userId: user.id,
         userName: user.name,
@@ -49,6 +50,7 @@ export const useMail = (id, mode, user, editorRef) => {
         if (mode === "reply") {
           console.log("dataToSend", dataToSend);
           await dispatch(addReply(id, dataToSend));
+          await updateMail(id, { status: "resolved" });
           messageApi.success("답변이 등록되었습니다!");
         } else {
           await dispatch(createMail(dataToSend));
@@ -70,14 +72,6 @@ export const useMail = (id, mode, user, editorRef) => {
         try {
           const mailData = await getMailById(id);
           setExistingMail(mailData);
-          formik.setValues({
-            ...formik.values,
-            title: mailData.title || "",
-            category: mailData.category || "",
-            time: mailData.time || "",
-            status: mailData.status || "preparing",
-            isCheckboxChecked: mailData.isCheckboxChecked || false,
-          });
         } catch (error) {
           console.error("Error fetching mail:", error);
         } finally {
@@ -96,6 +90,18 @@ export const useMail = (id, mode, user, editorRef) => {
       document.body.style.overflow = "auto";
     };
   }, [id, mode]);
+
+  useEffect(() => {
+    if (existingMail) {
+      formik.setValues({
+        title: existingMail.title || "",
+        category: existingMail.category || "",
+        time: existingMail.time || "",
+        status: "preparing", // 초기 상태를 preparing으로 설정
+        isCheckboxChecked: existingMail.isCheckboxChecked || false,
+      });
+    }
+  }, [existingMail]);
 
   const uploadImagesToServer = async () => {
     const imageUrls = [];
