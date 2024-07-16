@@ -1,6 +1,14 @@
 import styled from "styled-components";
 
 /**
+ * 관리자 페이지 전체 Wrapper
+ */
+const AdminPageWrap = styled.div`
+  width: 100%;
+  background-color: #f1f5f9;
+`;
+
+/**
  * 테이블 컬럼 중 사용자 ID 표기용 DIv
  */
 const TableColumnId = styled.div`
@@ -24,4 +32,4 @@ const TableEmptyDiv = styled.div`
   height: 100px;
 `;
 
-export { TableColumnId, TableEmptyDiv };
+export { AdminPageWrap, TableColumnId, TableEmptyDiv };

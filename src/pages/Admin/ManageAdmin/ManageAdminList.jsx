@@ -4,7 +4,7 @@ import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
+import { AdminPageWrap, TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
@@ -152,7 +152,7 @@ const ManageAdminList = () => {
   };
 
   return (
-    <>
+    <AdminPageWrap>
       <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
@@ -162,11 +162,11 @@ const ManageAdminList = () => {
           <SkeletonLoading type='default' length={5} />
         ) : (
           <Table
+            className='border-t-2'
             rowKey='id'
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}
-            style={{ cursor: "pointer" }}
             locale={{
               emptyText: (
                 <TableEmptyDiv>
@@ -206,13 +206,21 @@ const ManageAdminList = () => {
         cancelText='취소'
         cancelHandler={cancleDelete}
       />
-    </>
+    </AdminPageWrap>
   );
 };
 
 export default ManageAdminList;
 
 const BoardDiv = styled.div`
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+
+  .ant-table-tbody {
+    cursor: pointer;
+  }
+
   .ant-spin-container {
     height: 80vh;
     display: flex;
