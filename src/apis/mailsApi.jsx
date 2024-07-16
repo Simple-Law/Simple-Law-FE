@@ -1,6 +1,6 @@
 import axios from "axios";
 import moment from "moment";
-import { formatDotDate } from "utils/dateUtil";
+import { formatDate } from "utils/dateUtil";
 
 const glitchURL = axios.create({
   baseURL: process.env.REACT_APP_GLITCH_URL,
@@ -18,7 +18,7 @@ export const fetchMails = async () => {
         key: item.id,
         category: "Text",
         rawSentAt: item.sentAt,
-        sentAt: formatDotDate(item.sentAt),
+        sentAt: formatDate(item.sentAt),
         time: item.time,
         replies: item.replies || [],
       }))
