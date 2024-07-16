@@ -2,7 +2,7 @@ import { useLayoutEffect, useState } from "react";
 import { Table } from "antd";
 import UserTag from "components/tags/UserTag";
 import { LoginStatusTag } from "components/tags/StatusTag";
-import { TableColumnId } from "components/styled/StyledComponents";
+import { AdminPageWrap, TableColumnId } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import SvgProfile from "components/Icons/Profile";
 import styled from "styled-components";
@@ -95,7 +95,7 @@ const ManageUserList = () => {
   };
 
   return (
-    <>
+    <AdminPageWrap>
       <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
@@ -120,11 +120,15 @@ const ManageUserList = () => {
           }}
         />
       </BoardDiv>
-    </>
+    </AdminPageWrap>
   );
 };
 
 const BoardDiv = styled.div`
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+
   .ant-spin-container {
     height: 80vh;
     display: flex;
