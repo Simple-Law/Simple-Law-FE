@@ -4,7 +4,7 @@ import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { AdminPageWrap, TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
+import { AdminBoard, AdminPageWrap, TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
@@ -153,7 +153,7 @@ const ManageAdminList = () => {
 
   return (
     <AdminPageWrap>
-      <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
+      <AdminBoard>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
@@ -184,7 +184,7 @@ const ManageAdminList = () => {
             }}
           />
         )}
-      </BoardDiv>
+      </AdminBoard>
 
       <GlobalPopup
         type='custom'
@@ -211,28 +211,3 @@ const ManageAdminList = () => {
 };
 
 export default ManageAdminList;
-
-//TODO - kmee: 페이지 마무리 후 스타일 컴포넌트 분리. 일반 사용자 페이지에 영향 없도록 검토 및 상의 필요
-const BoardDiv = styled.div`
-  padding: 24px;
-  background-color: #ffffff;
-  border-radius: 8px;
-
-  .ant-table-tbody {
-    cursor: pointer;
-  }
-
-  .ant-spin-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-    min-height: 76vh;
-  }
-  .ant-pagination .ant-pagination-item-active {
-    border-color: transparent;
-  }
-  .ant-table-thead {
-    border: 1px solid red;
-  }
-`;
