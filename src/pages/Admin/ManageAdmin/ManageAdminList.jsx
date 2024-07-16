@@ -212,20 +212,22 @@ const ManageAdminList = () => {
 
 export default ManageAdminList;
 
+//TODO - kmee: 페이지 마무리 후 스타일 컴포넌트 분리. 일반 사용자 페이지에 영향 없도록 검토 및 상의 필요
 const BoardDiv = styled.div`
+  padding: 24px;
   background-color: #ffffff;
   border-radius: 8px;
-  padding: 24px;
 
   .ant-table-tbody {
     cursor: pointer;
   }
 
   .ant-spin-container {
-    height: 80vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    height: 100%;
+    min-height: 76vh;
   }
   .ant-pagination .ant-pagination-item-active {
     border-color: transparent;
