@@ -233,11 +233,11 @@ export const AdminSideMenu = () => {
   };
 
   return (
-    <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
+    <AdminMenuWrap className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultOpenKeys={["questMain", "accountMain"]}
-        defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
+        defaultOpenKeys={["questMain", "allRequest", "accountMain"]}
+        // defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
@@ -256,7 +256,7 @@ export const AdminSideMenu = () => {
           },
         ]}
       />
-    </Board>
+    </AdminMenuWrap>
   );
 };
 
@@ -288,11 +288,22 @@ const Board = styled.div`
   .custom-arrow + .ant-menu-submenu-arrow {
     left: 65px;
   }
+`;
+
+const AdminMenuWrap = styled(Board)`
+  background: #ffffff;
+
+  .ant-menu {
+    background: #ffffff;
+  }
+  .ant-menu-item-selected {
+    background: #ffffff;
+  }
   .menulv1-arrow + .ant-menu-submenu-arrow {
     left: 50px;
   }
   .menulv2-arrow + .ant-menu-submenu-arrow {
-    left: 197px;
+    left: 190px;
   }
 `;
 
@@ -304,7 +315,6 @@ const Menulv1 = styled.span`
 `;
 const Menulv2 = styled.span`
   margin-left: 2px;
-
   color: rgba(23, 23, 23, 1);
   font-size: 14px;
   font-weight: 500;
