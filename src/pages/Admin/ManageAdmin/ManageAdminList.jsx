@@ -4,7 +4,7 @@ import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
+import { AdminBoard, AdminPageWrap, TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
 import SvgProfile from "components/Icons/Profile";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
@@ -152,8 +152,8 @@ const ManageAdminList = () => {
   };
 
   return (
-    <>
-      <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
+    <AdminPageWrap>
+      <AdminBoard>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
@@ -162,11 +162,11 @@ const ManageAdminList = () => {
           <SkeletonLoading type='default' length={5} />
         ) : (
           <Table
+            className='border-t-2'
             rowKey='id'
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}
-            style={{ cursor: "pointer" }}
             locale={{
               emptyText: (
                 <TableEmptyDiv>
@@ -184,7 +184,7 @@ const ManageAdminList = () => {
             }}
           />
         )}
-      </BoardDiv>
+      </AdminBoard>
 
       <GlobalPopup
         type='custom'
@@ -206,23 +206,8 @@ const ManageAdminList = () => {
         cancelText='취소'
         cancelHandler={cancleDelete}
       />
-    </>
+    </AdminPageWrap>
   );
 };
 
 export default ManageAdminList;
-
-const BoardDiv = styled.div`
-  .ant-spin-container {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .ant-pagination .ant-pagination-item-active {
-    border-color: transparent;
-  }
-  .ant-table-thead {
-    border: 1px solid red;
-  }
-`;
