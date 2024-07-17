@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useRef, useMemo, useState, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Input, Form, Button, Upload } from "antd";
 import { PaperClipOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
@@ -19,23 +19,39 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
     setPendingImages(newFileList.map(file => file.originFileObj));
   };
 
-  const handleImageDelete = delta => {
+  const handleImageDelete = useCallback(
+    mutationsList => {
+      const quill = quillRef.current?.getEditor();
+      if (!quill) return;
+      const deletedImages = [];
+      mutationsList.forEach(mutation => {
+        if (mutation.type === "childList" && mutation.removedNodes.length > 0) {
+          mutation.removedNodes.forEach(node => {
+            if (node.tagName === "IMG" && node.src.startsWith("http")) {
+              deletedImages.push(node.src);
+            }
+          });
+        }
+      });
+      setDeletedImages(prevImages => [...prevImages, ...deletedImages]);
+    },
+    [setDeletedImages],
+  );
+
+  useEffect(() => {
     const quill = quillRef.current?.getEditor();
-    if (!quill || !delta.ops) return;
-    const deletedImages = [];
-    delta.ops.forEach(op => {
-      if (op.delete) {
-        const images = quill.root.querySelectorAll("img");
-        images.forEach(img => {
-          const src = img.getAttribute("src");
-          if (src.startsWith("http")) {
-            deletedImages.push(src);
-          }
-        });
-      }
+    if (!quill) return;
+
+    const observer = new MutationObserver(handleImageDelete);
+    observer.observe(quill.root, {
+      childList: true,
+      subtree: true,
     });
-    setDeletedImages(prevImages => [...prevImages, ...deletedImages]);
-  };
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [handleImageDelete]);
 
   const imageHandler = useCallback(() => {
     const input = document.createElement("input");
@@ -58,27 +74,28 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
     });
   }, [setPendingImages]);
 
-  const modules = useMemo(
-    () => ({
-      toolbar: {
-        container: [
-          [{ header: "1" }, { header: "2" }],
-          [{ size: [] }],
-          ["bold", "italic", "underline", "strike", "blockquote"],
-          [{ list: "ordered" }, { list: "bullet" }, { align: [] }],
-          ["image"],
-        ],
-        handlers: { image: imageHandler },
-      },
-      clipboard: {
-        matchVisual: false,
-      },
-      history: {
-        userOnly: true,
-      },
-    }),
-    [imageHandler],
-  );
+  const handleChange = (content, delta, source, editor) => {
+    formik.setFieldValue("content", editor.getHTML());
+  };
+
+  const modules = {
+    toolbar: {
+      container: [
+        [{ header: "1" }, { header: "2" }],
+        [{ size: [] }],
+        ["bold", "italic", "underline", "strike", "blockquote"],
+        [{ list: "ordered" }, { list: "bullet" }, { align: [] }],
+        ["image"],
+      ],
+      handlers: { image: imageHandler },
+    },
+    clipboard: {
+      matchVisual: false,
+    },
+    history: {
+      userOnly: true,
+    },
+  };
 
   const formats = [
     "header",
@@ -116,17 +133,12 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
         <StyledQuillContainer>
           <ReactQuill
             ref={el => {
-              editorRef.current = el; // 외부에서 전달된 ref에 할당
+              editorRef.current = el;
               quillRef.current = el;
             }}
             theme='snow'
             value={formik.values.content}
-            onChange={(content, delta, source, editor) => {
-              formik.setFieldValue("content", editor.getHTML());
-              if (source === "user") {
-                handleImageDelete(delta);
-              }
-            }}
+            onChange={handleChange}
             modules={modules}
             formats={formats}
             className='custom-quill'
@@ -182,7 +194,7 @@ CommonForm.propTypes = {
     }).isRequired,
   }).isRequired,
   editorRef: PropTypes.shape({
-    current: PropTypes.instanceOf(Element),
+    current: PropTypes.object,
   }).isRequired,
   setPendingImages: PropTypes.func.isRequired,
   setDeletedImages: PropTypes.func.isRequired,
