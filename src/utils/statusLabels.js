@@ -16,17 +16,27 @@ const statusLabels = {
     approvalPending: "승인 완료 중",
     resolving: "해결 진행 중",
     resolved: "해결 완료",
+    reconsider: "재검토 요청",
   },
   MEMBER: {
     requestInProgress: "요청 진행 중",
     resolving: "해결 진행 중",
     resolved: "해결 완료",
+    reconsider: "재검토 요청",
   },
   guest: {
     requestInProgress: "비로그인 요청 중",
     resolving: "비로그인 해결 진행 중",
     resolved: "비로그인 해결 완료",
   },
+};
+const subStatusLabels = {
+  assignLawyer: "변호사 배정 중",
+  extReject: "연장 제안 거절",
+  extAccept: "연장 제안 승인",
+  extRequest: "연장 제안 요청",
+  approved: "승인 완료",
+  addQuestion: "추가 질문",
 };
 
 const adminStatusLabels = {
@@ -59,4 +69,4 @@ const anytimeLabels = [
   { value: "분쟁 해결 자문", label: "분쟁 해결 자문" },
   { value: "등기", label: "등기" },
 ];
-export { categoryLabels, anytimeLabels, commonStatusLabels, statusLabels, adminStatusLabels };
+export { categoryLabels, anytimeLabels, commonStatusLabels, statusLabels, adminStatusLabels, subStatusLabels };

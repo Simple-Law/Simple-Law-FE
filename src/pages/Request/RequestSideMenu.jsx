@@ -94,7 +94,7 @@ const RequestSideMenu = () => {
       icon: <SvgMailStar />,
     },
     {
-      key: "endRequest",
+      key: "endRequest", //TODO: 종료 의뢰함 보류중
       label: (
         <span className='text-stone-950'>
           {commonStatusLabels.endRequest}
