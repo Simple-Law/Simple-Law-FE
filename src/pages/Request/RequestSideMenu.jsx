@@ -204,7 +204,7 @@ export const AdminSideMenu = () => {
           label: <Menulv3>{adminStatusLabels.allUser}</Menulv3>,
         },
         {
-          key: "request-signup",
+          key: "join-request",
           label: <Menulv3>{adminStatusLabels.requestSignup}</Menulv3>,
         },
       ],

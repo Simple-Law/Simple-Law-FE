@@ -18,7 +18,10 @@ const Home = () => {
             관리자 계정 관리
           </Button>
           <Button block className='mt-1' onClick={() => navigate("/admin/manage-user")}>
-            회원 관리
+            회원 관리: 전체 사용자
+          </Button>
+          <Button block className='mt-1' onClick={() => navigate("admin/join-request")}>
+            회원 관리: 회원가입 요청
           </Button>
         </LoginForm>
       </>
