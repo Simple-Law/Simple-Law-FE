@@ -107,8 +107,31 @@ const ManageUserList = () => {
   return (
     <AdminPageWrap>
       <AdminBoard>
-        <div className='flex justify-between items-end mb-3'>
+        <div>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
+          <div className='my-3'>
+            <div className='w-full'>
+              <div className='flex'>
+                <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
+                <TdDiv className='w-5/12 border-y border-solid border-black'>체크박스1</TdDiv>
+                <ThDiv className='w-1/12 border-y border-l border-solid border-black'>상태</ThDiv>
+                <TdDiv className='w-5/12 border border-solid border-black'>체크박스2</TdDiv>
+              </div>
+              <div className='flex'>
+                <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
+                <TdDiv className='w-11/12 border-r border-solid border-black'>날짜</TdDiv>
+              </div>
+              <div className='flex'>
+                <ThDiv className='w-1/12 border border-solid border-black'>조건검색</ThDiv>
+                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>검색</TdDiv>
+              </div>
+            </div>
+
+            <div className='flex gap-[10px] justify-end py-[5px]'>
+              <Button>초기화</Button>
+              <Button>검색</Button>
+            </div>
+          </div>
         </div>
 
         {loading ? (
@@ -142,5 +165,16 @@ const ManageUserList = () => {
     </AdminPageWrap>
   );
 };
+
+const ThDiv = styled.div`
+  height: 40px;
+  background-color: #f1f5f9;
+
+  text-align: center;
+`;
+
+const TdDiv = styled.div`
+  height: 40px;
+`;
 
 export default ManageUserList;
