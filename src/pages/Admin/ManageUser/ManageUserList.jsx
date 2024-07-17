@@ -41,33 +41,28 @@ const ManageUserList = () => {
       title: "이름",
       key: "name",
       dataIndex: "name",
-      className: "name-column",
       render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
     },
     {
       title: "회원구분",
       key: "userType",
       dataIndex: "userType",
-      className: "user-type-column",
       render: (_, record) => <UserTag userType={record.userType} />,
     },
     {
       title: "가입일",
       key: "joinDate",
       dataIndex: "joinDate",
-      className: "join-date-column",
     },
     {
       title: "최근 접속일",
       key: "accessDate",
       dataIndex: "accessDate",
-      className: "access-date-column",
     },
     {
       title: "상태",
       key: "loginStatus",
       dataIndex: "loginStatus",
-      className: "login-status",
       render: (_, record) => <LoginStatusTag status={record.loginStatus} />,
     },
   ];
