@@ -72,25 +72,35 @@ const ManageUserList = () => {
     },
   ];
 
-
-  const [data, setData] = useState([]);
-  const [pageTitle, setPageTitle] = useState("회원관리");
+  const messageApi = useMessageApi();
+  const dispatch = useDispatch();
+  const loading = useSelector(state => state.loading.SkeletonLoading);
   const { paginationConfig } = useCommonContext();
+  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
+
+  const pageTitle = "회원관리";
+  const [data, setData] = useState([]);
+  const [searchParams, setSearchParams] = useState(initialSearchParams);
+
+  const [selectedUser, setSelectedUser] = useState({});
 
   useLayoutEffect(() => {
     getAdminList();
-    console.log("mockData", mockData);
-    console.log("paginationConfig", paginationConfig);
   }, []);
 
+  /**
+   * 회원관리 목록 조회
+   */
   const getAdminList = async () => {
+    dispatch(showSkeletonLoading());
     const response = await mockData;
     try {
-      //TODO: kmee - API status 체크
       response.forEach(item => (item.key = item.id));
       setData(response);
     } catch (e) {
       console.log(e);
+    } finally {
+      dispatch(hideSkeletonLoading());
     }
   };
 
@@ -100,25 +110,34 @@ const ManageUserList = () => {
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
         </div>
-        <Table
-          dataSource={data}
-          columns={columns}
-          pagination={paginationConfig}
-          onRow={(record, rowIndex) => {
-            return {
-              onClick: e => {
-                console.log(e.target.value);
-                console.log(record);
-                console.log(rowIndex);
-              }, // click row
-              onDoubleClick: e => {
-                console.log(e.target.value);
-                console.log(record);
-                console.log(rowIndex);
-              }, // double click row
-            };
-          }}
-        />
+
+        {loading ? (
+          <SkeletonLoading type='default' length={5} />
+        ) : (
+          <Table
+            className='border-t-2'
+            rowKey='id'
+            columns={columns}
+            dataSource={data}
+            pagination={paginationConfig}
+            locale={{
+              emptyText: (
+                <TableEmptyDiv>
+                  <p dangerouslySetInnerHTML={{ __html: "가입된 회원이 없습니다." }} />
+                </TableEmptyDiv>
+              ),
+            }}
+            onRow={(record, rowIndex) => {
+              return {
+                onDoubleClick: e => {
+                  console.log(e.target.value);
+                  console.log(record);
+                  console.log(rowIndex);
+                },
+              };
+            }}
+          />
+        )}
       </AdminBoard>
     </AdminPageWrap>
   );
