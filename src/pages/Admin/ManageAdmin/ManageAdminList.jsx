@@ -17,7 +17,7 @@ import UserNameColumn from "components/table/UserNameColumn";
 const ManageAdminList = () => {
   const columns = [
     {
-      width: 48,
+      width: 32,
     },
     {
       title: "이름",

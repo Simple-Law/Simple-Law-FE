@@ -35,7 +35,7 @@ const ManageUserList = () => {
 
   const columns = [
     {
-      width: 48,
+      width: 32,
     },
     {
       title: "이름",
