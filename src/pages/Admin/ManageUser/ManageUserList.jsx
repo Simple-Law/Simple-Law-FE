@@ -1,28 +1,48 @@
 import { useLayoutEffect, useState } from "react";
-import { Table } from "antd";
+import { Button, Table } from "antd";
 import UserTag from "components/tags/UserTag";
 import { LoginStatusTag } from "components/tags/StatusTag";
-import { AdminBoard, AdminPageWrap, TableColumnId } from "components/styled/StyledComponents";
+import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
-import SvgProfile from "components/Icons/Profile";
+import { useMessageApi } from "components/messaging/MessageProvider";
+import { useDispatch, useSelector } from "react-redux";
+import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions/loadingAction";
+import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
+import UserNameColumn from "components/table/UserNameColumn";
 
 const ManageUserList = () => {
+  const mockData = [
+    {
+      id: "law123",
+      name: "김변호",
+      userType: "LAWYER",
+      email: "law123@simplelaw.com",
+      joinDate: "2023.09.01",
+      accessDate: "2024.06.16",
+      loginStatus: false,
+    },
+    {
+      id: "mem123",
+      name: "김의뢰",
+      userType: "MEMBER",
+      email: "mem123@simplelaw.com",
+      joinDate: "2023.09.01",
+      accessDate: "2024.06.16",
+      loginStatus: true,
+    },
+  ];
+
   const columns = [
+    {
+      width: 48,
+    },
     {
       title: "이름",
       key: "name",
       dataIndex: "name",
       className: "name-column",
-      render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center", paddingLeft: "10px" }}>
-          <SvgProfile className='w-8 h-8 mr-2' />
-          <div>
-            <div>{record.name}</div>
-            <TableColumnId>{record.id}</TableColumnId>
-          </div>
-        </div>
-      ),
+      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
     },
     {
       title: "회원구분",
@@ -52,26 +72,6 @@ const ManageUserList = () => {
     },
   ];
 
-  const mockData = [
-    {
-      id: "law123",
-      name: "김변호",
-      userType: "LAWYER",
-      email: "law123@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-      loginStatus: false,
-    },
-    {
-      id: "mem123",
-      name: "김의뢰",
-      userType: "MEMBER",
-      email: "mem123@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-      loginStatus: true,
-    },
-  ];
 
   const [data, setData] = useState([]);
   const [pageTitle, setPageTitle] = useState("회원관리");

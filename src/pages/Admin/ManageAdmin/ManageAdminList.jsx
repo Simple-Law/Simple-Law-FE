@@ -1,11 +1,9 @@
 import { useCallback, useLayoutEffect, useState } from "react";
-import styled from "styled-components";
 import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { AdminBoard, AdminPageWrap, TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
-import SvgProfile from "components/Icons/Profile";
+import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
 import { formatDate } from "utils/dateUtil";
@@ -14,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions/loadingAction";
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import GlobalPopup from "components/layout/GlobalPopup";
+import UserNameColumn from "components/table/UserNameColumn";
 
 const ManageAdminList = () => {
   const columns = [
@@ -23,15 +22,7 @@ const ManageAdminList = () => {
     {
       title: "이름",
       key: "id",
-      render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <SvgProfile className='mr-2' width='32' height='32' />
-          <div>
-            <div>{record?.name}</div>
-            <TableColumnId>{record?.id}</TableColumnId>
-          </div>
-        </div>
-      ),
+      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
     },
     {
       title: "이메일",
