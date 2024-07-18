@@ -1,11 +1,9 @@
 import { useCallback, useLayoutEffect, useState } from "react";
-import styled from "styled-components";
 import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
-import SvgProfile from "components/Icons/Profile";
+import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
 import { formatDate } from "utils/dateUtil";
@@ -14,24 +12,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions/loadingAction";
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import GlobalPopup from "components/layout/GlobalPopup";
+import UserNameColumn from "components/table/UserNameColumn";
 
 const ManageAdminList = () => {
   const columns = [
     {
-      width: 48,
+      width: 32,
     },
     {
       title: "이름",
       key: "id",
-      render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <SvgProfile className='mr-2' width='32' height='32' />
-          <div>
-            <div>{record?.name}</div>
-            <TableColumnId>{record?.id}</TableColumnId>
-          </div>
-        </div>
-      ),
+      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
     },
     {
       title: "이메일",
@@ -152,8 +143,8 @@ const ManageAdminList = () => {
   };
 
   return (
-    <>
-      <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
+    <AdminPageWrap>
+      <AdminBoard>
         <div className='flex justify-between items-end mb-3'>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <AuthButton text='계정 추가' size='large' clickHandler={showModal} adminRoleList={["SUPER_ADMIN"]} />
@@ -162,11 +153,11 @@ const ManageAdminList = () => {
           <SkeletonLoading type='default' length={5} />
         ) : (
           <Table
+            className='border-t-2'
             rowKey='id'
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}
-            style={{ cursor: "pointer" }}
             locale={{
               emptyText: (
                 <TableEmptyDiv>
@@ -184,7 +175,7 @@ const ManageAdminList = () => {
             }}
           />
         )}
-      </BoardDiv>
+      </AdminBoard>
 
       <GlobalPopup
         type='custom'
@@ -206,23 +197,8 @@ const ManageAdminList = () => {
         cancelText='취소'
         cancelHandler={cancleDelete}
       />
-    </>
+    </AdminPageWrap>
   );
 };
 
 export default ManageAdminList;
-
-const BoardDiv = styled.div`
-  .ant-spin-container {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .ant-pagination .ant-pagination-item-active {
-    border-color: transparent;
-  }
-  .ant-table-thead {
-    border: 1px solid red;
-  }
-`;

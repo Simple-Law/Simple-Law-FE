@@ -10,10 +10,11 @@ import MyQuestListPage from "pages/Request/MyRequestList";
 // import QuestPostPage from "pages/Quest/QuestPost";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import RequestDetailPage from "pages/Request/RequestDetail";
+import PostEditor from "components/postEditor/PostEditor";
 import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
 import ManageAdminList from "pages/Admin/ManageAdmin/ManageAdminList";
 import ManageUserList from "pages/Admin/ManageUser/ManageUserList";
-import PostEditor from "components/postEditor/PostEditor";
+import JoinRequestList from "pages/Admin/JoinRequest/JoinRequestList";
 
 const App = () => {
   return (
@@ -35,6 +36,7 @@ const App = () => {
                 <Route path='board' element={<MyQuestListPage />} />
                 <Route path='admin/manage-admin' element={<ManageAdminList />} />
                 <Route path='admin/manage-user' element={<ManageUserList />} />
+                <Route path='admin/join-request' element={<JoinRequestList />} />
               </Route>
             </Route>
           </Route>
