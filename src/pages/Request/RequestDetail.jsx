@@ -8,7 +8,7 @@ import { Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { setData, setMails, updateCounts, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
-import StatusTag from "components/tags/StatusTag";
+import { DetailStatusTag } from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowDown from "components/Icons/ArrowDown";
 import ConfirmModal from "components/modal/ConfirmModal";
@@ -54,7 +54,7 @@ const DetailPage = () => {
   const handleApprove = async () => {
     setModalInfo({ ...modalInfo, isVisible: false });
     try {
-      await updateMail(id, { status: "승인 완료 중" });
+      await updateMail(id, { isApproved: true, detailStatus: "approved" });
       const { data: mailData } = await fetchMails();
       dispatch(setData(mailData));
       dispatch(setMails(mailData));
@@ -104,7 +104,7 @@ const DetailPage = () => {
               {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
             <div className='text-zinc-800 text-base font-medium  leading-normal'>{mail.title}</div>
-            <StatusTag status={mail.status} userType={userType} />
+            {mail.detailStatus && <DetailStatusTag status={mail.detailStatus} />}
           </div>
 
           <div className='justify-start items-center gap-2 flex pl-[20px] mb-[18px] mt-2'>
@@ -116,8 +116,9 @@ const DetailPage = () => {
               <div className='text-gray-500 text-sm font-normal '>의뢰자 :</div>
               <div className='text-gray-500 text-sm font-semibold '>홍길동</div>
             </div>
-            {userType === "LAWYER" && mail.status === "contactRequest" && (
+            {mail.status === "contactRequest" && !mail.isApproved && (
               // TODO: DY - 답변 달리면 해결 완료로 이동 -> 추가질문 버튼 생성 :: 의뢰자가 의뢰에대한 종료 처리해야만 종료된 의뢰
+              // TODO: DY - 변호사 승인하면 승인완료 뱃지 달리기 거절하면 휴지통으로
               <div className='flex gap-2'>
                 <p
                   className='cursor-pointer text-red-500'

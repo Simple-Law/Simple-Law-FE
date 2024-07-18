@@ -13,16 +13,16 @@ const statusLabels = {
   },
   LAWYER: {
     contactRequest: "컨택 요청 중",
-    approvalPending: "승인 완료 중",
+    // approvalPending: "승인 완료 중",
     resolving: "해결 진행 중",
     resolved: "해결 완료",
-    reconsider: "재검토 요청",
+    // reconsider: "재검토 요청",
   },
   MEMBER: {
     requestInProgress: "요청 진행 중",
     resolving: "해결 진행 중",
     resolved: "해결 완료",
-    reconsider: "재검토 요청",
+    // reconsider: "재검토 요청",
   },
   guest: {
     requestInProgress: "비로그인 요청 중",
@@ -39,6 +39,23 @@ const subStatusLabels = {
   addQuestion: "추가 질문",
 };
 
+const menuStatusTypes = {
+  LAWYER: {
+    contactRequest: ["contactRequest", "approvalPending"],
+    resolving: ["resolving"],
+    resolved: ["resolved"],
+  },
+  MEMBER: {
+    requestInProgress: ["requestInProgress"],
+    resolving: ["resolving"],
+    resolved: ["resolved"],
+  },
+  guest: {
+    requestInProgress: ["requestInProgress"],
+    resolving: ["resolving"],
+    resolved: ["resolved"],
+  },
+};
 const adminStatusLabels = {
   manageAdmin: "관리자 계정 관리",
   manageUser: "회원 관리",
@@ -69,4 +86,12 @@ const anytimeLabels = [
   { value: "분쟁 해결 자문", label: "분쟁 해결 자문" },
   { value: "등기", label: "등기" },
 ];
-export { categoryLabels, anytimeLabels, commonStatusLabels, statusLabels, adminStatusLabels, subStatusLabels };
+export {
+  categoryLabels,
+  anytimeLabels,
+  commonStatusLabels,
+  statusLabels,
+  adminStatusLabels,
+  subStatusLabels,
+  menuStatusTypes,
+};
