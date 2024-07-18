@@ -98,7 +98,6 @@ StatusTag.propTypes = {
 };
 
 const DetailStatusTag = ({ status }) => {
-  console.log(status);
   return <StyledTag className={`status-tag ${status}`}>{subStatusLabels[status]}</StyledTag>;
 };
 

@@ -40,10 +40,10 @@ const DetailPage = () => {
   const handleReject = async () => {
     setModalInfo({ ...modalInfo, isVisible: false });
     try {
-      await updateMail(id, { status: "휴지통" });
+      await updateMail(id, { status: "trash" });
       const { data: mailData } = await fetchMails();
       dispatch(setData(mailData));
-      dispatch(setMails(mailData.filter(mail => mail.status !== "휴지통")));
+      dispatch(setMails(mailData.filter(mail => mail.status !== "trash")));
       dispatch(updateCounts(mailData));
       navigate("/board");
     } catch (error) {

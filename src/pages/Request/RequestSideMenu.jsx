@@ -38,7 +38,7 @@ const RequestSideMenu = () => {
         filteredMails = data.filter(mail => mail.isImportant);
         break;
       case "trash":
-        filteredMails = data.filter(mail => mail.status === "휴지통");
+        filteredMails = data.filter(mail => mail.status === "trash");
         break;
       case "All_request":
         filteredMails = data;

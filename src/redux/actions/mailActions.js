@@ -32,9 +32,9 @@ export const fetchMailsAction = () => async dispatch => {
   try {
     const { data } = await apiFetchMails();
     dispatch(setData(data));
-    dispatch(setMails(data.filter(mail => mail.status !== "휴지통")));
+    dispatch(setMails(data.filter(mail => mail.status !== "trash")));
     dispatch(updateCounts(data));
-    dispatch(setTableData({ mails: data.filter(mail => mail.status !== "휴지통") }));
+    dispatch(setTableData({ mails: data.filter(mail => mail.status !== "trash") }));
     dispatch(hideUserLoading());
   } catch (error) {
     console.error("Error fetching mails:", error);
@@ -46,7 +46,7 @@ export const createMail = mailData => async dispatch => {
   const response = await apiCreateMail(mailData);
   const { data: fetchedMails } = await apiFetchMails();
   dispatch(setData(fetchedMails));
-  dispatch(setMails(fetchedMails.filter(mail => mail.status !== "휴지통")));
+  dispatch(setMails(fetchedMails.filter(mail => mail.status !== "trash")));
   dispatch(updateCounts(fetchedMails));
   dispatch(setTableData(fetchedMails));
   return response;
@@ -77,7 +77,7 @@ export const toggleImportant = id => async (dispatch, getState) => {
     return item;
   });
 
-  const filteredMails = updatedData.filter(mail => mail.status !== "휴지통");
+  const filteredMails = updatedData.filter(mail => mail.status !== "trash");
 
   dispatch(setData(updatedData));
   dispatch(setMails(filteredMails));
