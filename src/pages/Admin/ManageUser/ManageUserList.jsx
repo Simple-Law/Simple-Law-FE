@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, Table } from "antd";
 import UserTag from "components/tags/UserTag";
 import { LoginStatusTag } from "components/tags/StatusTag";
@@ -10,6 +10,7 @@ import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
+import SearchCheckbox from "components/input/SearchCheckbox";
 
 const ManageUserList = () => {
   const mockData = [
@@ -71,17 +72,27 @@ const ManageUserList = () => {
   const dispatch = useDispatch();
   const loading = useSelector(state => state.loading.SkeletonLoading);
   const { paginationConfig } = useCommonContext();
-  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
-
   const pageTitle = "회원관리";
-  const [data, setData] = useState([]);
+
+  const userOptions = [
+    { label: "의뢰인", value: "MEMBER" },
+    { label: "변호사", value: "LAWYER" },
+  ];
+  const [checkedUserType, setCheckedUserType] = useState([]);
+
+  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize, userType: checkedUserType };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
   const [selectedUser, setSelectedUser] = useState({});
+  const [data, setData] = useState([]);
 
   useLayoutEffect(() => {
     getAdminList();
   }, []);
+
+  useEffect(() => {
+    console.log("checkedOptions", checkedUserType);
+  }, [checkedUserType]);
 
   /**
    * 회원관리 목록 조회
@@ -108,9 +119,15 @@ const ManageUserList = () => {
             <div className='w-full'>
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
-                <TdDiv className='w-5/12 border-y border-solid border-black'>체크박스1</TdDiv>
+                <TdDiv className='w-5/12 border-y border-solid border-black'>
+                  <SearchCheckbox
+                    optionList={userOptions}
+                    checkedOptions={checkedUserType}
+                    setCheckedOptions={setCheckedUserType}
+                  />
+                </TdDiv>
                 <ThDiv className='w-1/12 border-y border-l border-solid border-black'>상태</ThDiv>
-                <TdDiv className='w-5/12 border border-solid border-black'>체크박스2</TdDiv>
+                <TdDiv className='w-5/12 border border-solid border-black'></TdDiv>
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
