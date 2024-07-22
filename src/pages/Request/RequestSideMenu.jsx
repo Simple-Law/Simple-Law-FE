@@ -13,6 +13,7 @@ import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
 import { commonStatusLabels, statusLabels, adminStatusLabels } from "utils/statusLabels";
+import { filterMails } from "utils/mailUtils";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -20,7 +21,6 @@ const RequestSideMenu = () => {
   const { data, counts } = useSelector(state => state.mail);
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
-
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
     if (parentElement) {
@@ -32,20 +32,7 @@ const RequestSideMenu = () => {
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    let filteredMails;
-    switch (statusKey) {
-      case "important":
-        filteredMails = data.filter(mail => mail.isImportant);
-        break;
-      case "trash":
-        filteredMails = data.filter(mail => mail.status === "trash");
-        break;
-      case "All_request":
-        filteredMails = data;
-        break;
-      default:
-        filteredMails = data.filter(mail => mail.status === statusKey);
-    }
+    const filteredMails = filterMails(data, statusKey);
 
     dispatch(setMails(filteredMails));
     dispatch(setTableData({ mails: filteredMails, statusKey }));
@@ -128,15 +115,17 @@ const RequestSideMenu = () => {
 
   return (
     <Board className='w-[245px] px-4 border-e-[1px] shrink-0 '>
-      <Button
-        type='primary'
-        block
-        className='my-6 flex items-center justify-center'
-        onClick={() => navigate("/mail/quest")}
-      >
-        <FaPlus className='mr-1' />
-        의뢰 요청하기
-      </Button>
+      {userType !== "LAWYER" && (
+        <Button
+          type='primary'
+          block
+          className='my-6 flex items-center justify-center'
+          onClick={() => navigate("/mail/quest")}
+        >
+          <FaPlus className='mr-1' />
+          의뢰 요청하기
+        </Button>
+      )}
       <Menu
         onClick={onClick}
         defaultSelectedKeys={["1"]}
