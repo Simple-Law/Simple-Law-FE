@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import { Button, Table } from "antd";
+import { Button, Input, Select, Table } from "antd";
 import UserTag from "components/tags/UserTag";
 import { LoginStatusTag } from "components/tags/StatusTag";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
@@ -82,10 +82,16 @@ const ManageUserList = () => {
     { label: "활성화", value: "ON" },
     { label: "비활성화", value: "OFF" },
   ];
+  const selectOptions = [
+    { label: "이름", value: "name" },
+    { label: "이메일", value: "email" },
+  ];
   const [typeList, setTypeList] = useState([]);
   const [statusList, setStatusList] = useState([]);
 
   const initialSearchParams = {
+    name: "",
+    email: "",
     typeList: typeList,
     statusList: statusList,
     pageNumber: 1,
@@ -93,8 +99,8 @@ const ManageUserList = () => {
   };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
-  const [selectedUser, setSelectedUser] = useState({});
   const [data, setData] = useState([]);
+  const [selectedUser, setSelectedUser] = useState({});
 
   useLayoutEffect(() => {
     getAdminList();
@@ -148,11 +154,20 @@ const ManageUserList = () => {
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>조건검색</ThDiv>
-                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>검색</TdDiv>
+                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>
+                  <div className='flex gap-[10px] h-[48px]'>
+                    <Select
+                      className='justify-center w-[150px] ml-[10px] '
+                      options={selectOptions}
+                      defaultValue={selectOptions[0]}
+                    />
+                    <Input className='justify-center min-w-[300px] h-full' />
+                  </div>
+                </TdDiv>
               </div>
             </div>
 
-            <div className='flex gap-[10px] justify-end py-[5px]'>
+            <div className='flex justify-end gap-[10px] '>
               <Button>초기화</Button>
               <Button onClick={getAdminList}>검색</Button>
             </div>
@@ -192,14 +207,21 @@ const ManageUserList = () => {
 };
 
 const ThDiv = styled.div`
-  height: 40px;
-  background-color: #f1f5f9;
-
+  display: flex;
+  justify-content: center;
   text-align: center;
+  align-items: center;
+
+  min-width: 100px;
+  height: 60px;
+  background-color: #f1f5f9;
 `;
 
 const TdDiv = styled.div`
-  height: 40px;
+  display: flex;
+  align-items: center;
+
+  height: 60px;
 `;
 
 export default ManageUserList;
