@@ -1,10 +1,16 @@
 import { useEffect } from "react";
 import PropTypes from "prop-types";
 
+/**
+ * 목록 검색용 체크박스 컴포넌트
+ */
 const SearchCheckbox = ({ optionList, checkedOptions, setCheckedOptions }) => {
-  const clickCheck = e => {
+  /**
+   * 개별 체크박스 변경 이벤트
+   * @param {*} e
+   */
+  const changeCheck = e => {
     const { value } = e.target;
-
     if (checkedOptions.includes(value)) {
       setCheckedOptions(checkedOptions.filter(option => option !== value));
     } else {
@@ -12,7 +18,11 @@ const SearchCheckbox = ({ optionList, checkedOptions, setCheckedOptions }) => {
     }
   };
 
-  const clickAllCheck = e => {
+  /**
+   * 전체 체크박스 변경 이벤트
+   * @param {*} e
+   */
+  const changeAllCheck = e => {
     if (e.target.checked) {
       setCheckedOptions(optionList.map(option => option.value));
     } else {
@@ -31,7 +41,7 @@ const SearchCheckbox = ({ optionList, checkedOptions, setCheckedOptions }) => {
           className='mr-[5px]'
           type='checkbox'
           value='all'
-          onChange={clickAllCheck}
+          onChange={changeAllCheck}
           checked={optionList.length === checkedOptions.length}
         />
         <label>전체</label>
@@ -43,7 +53,7 @@ const SearchCheckbox = ({ optionList, checkedOptions, setCheckedOptions }) => {
             type='checkbox'
             id={option.value}
             value={option.value}
-            onChange={clickCheck}
+            onChange={changeCheck}
             checked={checkedOptions.includes(option.value)}
           />
           <label htmlFor={option.id}>{option.label}</label>
