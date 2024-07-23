@@ -72,15 +72,25 @@ const ManageUserList = () => {
   const dispatch = useDispatch();
   const loading = useSelector(state => state.loading.SkeletonLoading);
   const { paginationConfig } = useCommonContext();
-  const pageTitle = "회원관리";
+  const pageTitle = "전체 사용자";
 
   const userOptions = [
     { label: "의뢰인", value: "MEMBER" },
     { label: "변호사", value: "LAWYER" },
   ];
-  const [checkedUserType, setCheckedUserType] = useState([]);
+  const statusOptions = [
+    { label: "활성화", value: "ON" },
+    { label: "비활성화", value: "OFF" },
+  ];
+  const [typeList, setTypeList] = useState([]);
+  const [statusList, setStatusList] = useState([]);
 
-  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize, userType: checkedUserType };
+  const initialSearchParams = {
+    typeList: typeList,
+    statusList: statusList,
+    pageNumber: 1,
+    pageSize: paginationConfig.pageSize,
+  };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
   const [selectedUser, setSelectedUser] = useState({});
@@ -91,13 +101,14 @@ const ManageUserList = () => {
   }, []);
 
   useEffect(() => {
-    console.log("checkedOptions", checkedUserType);
-  }, [checkedUserType]);
+    setSearchParams({ ...searchParams, typeList, statusList });
+  }, [typeList, statusList]);
 
   /**
    * 회원관리 목록 조회
    */
   const getAdminList = async () => {
+    console.log("getAdminList : ", searchParams);
     dispatch(showSkeletonLoading());
     const response = await mockData;
     try {
@@ -120,14 +131,16 @@ const ManageUserList = () => {
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
                 <TdDiv className='w-5/12 border-y border-solid border-black'>
-                  <SearchCheckbox
-                    optionList={userOptions}
-                    checkedOptions={checkedUserType}
-                    setCheckedOptions={setCheckedUserType}
-                  />
+                  <SearchCheckbox optionList={userOptions} checkedOptions={typeList} setCheckedOptions={setTypeList} />
                 </TdDiv>
                 <ThDiv className='w-1/12 border-y border-l border-solid border-black'>상태</ThDiv>
-                <TdDiv className='w-5/12 border border-solid border-black'></TdDiv>
+                <TdDiv className='w-5/12 border border-solid border-black'>
+                  <SearchCheckbox
+                    optionList={statusOptions}
+                    checkedOptions={statusList}
+                    setCheckedOptions={setStatusList}
+                  />
+                </TdDiv>
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
@@ -141,7 +154,7 @@ const ManageUserList = () => {
 
             <div className='flex gap-[10px] justify-end py-[5px]'>
               <Button>초기화</Button>
-              <Button>검색</Button>
+              <Button onClick={getAdminList}>검색</Button>
             </div>
           </div>
         </div>
