@@ -82,9 +82,13 @@ const ManageUserList = () => {
     { label: "활성화", value: "ON" },
     { label: "비활성화", value: "OFF" },
   ];
-  const selectOptions = [
+  const searchOptions = [
     { label: "이름", value: "name" },
     { label: "이메일", value: "email" },
+  ];
+  const dateOptions = [
+    { label: "가입일", value: "joinDate" },
+    { label: "최근접속일", value: "latestAccessDate" },
   ];
   const [typeList, setTypeList] = useState([]);
   const [statusList, setStatusList] = useState([]);
@@ -150,18 +154,24 @@ const ManageUserList = () => {
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
-                <TdDiv className='w-11/12 border-r border-solid border-black'>날짜</TdDiv>
+                <TdDiv className='w-11/12 border-r border-solid border-black'>
+                  <Select
+                    className='justify-center w-[150px] ml-[10px] '
+                    options={dateOptions}
+                    defaultValue={dateOptions[0]}
+                  />
+                </TdDiv>
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>조건검색</ThDiv>
                 <TdDiv className='w-11/12 border-y border-r border-solid border-black'>
                   <div className='flex gap-[10px] h-[48px]'>
                     <Select
-                      className='justify-center w-[150px] ml-[10px] '
-                      options={selectOptions}
-                      defaultValue={selectOptions[0]}
+                      className='justify-center w-[160px] ml-[10px]'
+                      options={searchOptions}
+                      defaultValue={searchOptions[0]}
                     />
-                    <Input className='justify-center min-w-[300px] h-full' />
+                    <Input className='justify-center' />
                   </div>
                 </TdDiv>
               </div>
