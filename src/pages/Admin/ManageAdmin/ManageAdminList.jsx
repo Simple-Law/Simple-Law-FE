@@ -97,8 +97,25 @@ const ManageAdminList = () => {
     }
   };
 
-  const insertAdmin = () => {
-    console.log("insertAdmin");
+  /**
+   * 관리자 계정 등록
+   * @param {Object} formatData
+   */
+  const insertAdmin = formatData => {
+    console.log("insertAdmin", formatData);
+    dispatch(showSkeletonLoading());
+    const response = insertAdmin(formatData);
+    try {
+      if (response.status === 200 && response.data.status === "success") {
+        messageApi.success("관리자 계정이 등록되었습니다.");
+        // getAdminList();
+        navigator(0);
+      }
+    } catch (error) {
+      messageApi.error(response.message);
+    } finally {
+      dispatch(hideSkeletonLoading());
+    }
   };
 
   const updateAdmin = useCallback(id => {
@@ -139,6 +156,7 @@ const ManageAdminList = () => {
   const onSubmit = formData => {
     console.log("formData");
     console.log(formData);
+    selectedUser ? updateAdmin(formData) : insertAdmin(formData);
     closeModal();
   };
 
