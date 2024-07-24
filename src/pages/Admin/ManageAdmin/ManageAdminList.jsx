@@ -72,7 +72,7 @@ const ManageAdminList = () => {
   const [data, setData] = useState([]);
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -114,7 +114,7 @@ const ManageAdminList = () => {
    * 관리자 삭제 confirm 취소
    */
   const cancleDelete = () => {
-    setSelectedUser({});
+    setSelectedUser(null);
     setIsConfirmOpen(false);
   };
 

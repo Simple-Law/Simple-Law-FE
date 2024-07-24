@@ -40,7 +40,7 @@ const UserRoleSelect = ({ value, userTypeList = "ADMIN" }) => {
   return loading ? (
     <SkeletonLoading type='short' />
   ) : (
-    <Select defaultValue={value} value={value}>
+    <Select defaultValue={value}>
       {roleOptions.length > 0 ? (
         roleOptions.map(option => (
           <Select.Option className='h-[30px]' key={option.role} value={option.role}>
