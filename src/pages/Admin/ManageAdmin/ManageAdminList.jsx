@@ -128,7 +128,7 @@ const ManageAdminList = () => {
    * 관리자 계정 등록/수정 modal 닫기
    */
   const closeModal = () => {
-    setSelectedUser({});
+    setSelectedUser(null);
     setIsModalOpen(false);
   };
 
