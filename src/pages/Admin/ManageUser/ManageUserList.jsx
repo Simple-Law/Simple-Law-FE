@@ -1,5 +1,5 @@
-import { useLayoutEffect, useState } from "react";
-import { Button, Table } from "antd";
+import { useEffect, useLayoutEffect, useState } from "react";
+import { Button, Input, Select, Table } from "antd";
 import UserTag from "components/tags/UserTag";
 import { LoginStatusTag } from "components/tags/StatusTag";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
@@ -10,6 +10,7 @@ import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
+import SearchCheckbox from "components/input/SearchCheckbox";
 
 const ManageUserList = () => {
   const mockData = [
@@ -71,22 +72,53 @@ const ManageUserList = () => {
   const dispatch = useDispatch();
   const loading = useSelector(state => state.loading.SkeletonLoading);
   const { paginationConfig } = useCommonContext();
-  const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
+  const pageTitle = "전체 사용자";
 
-  const pageTitle = "회원관리";
-  const [data, setData] = useState([]);
+  const userOptions = [
+    { label: "의뢰인", value: "MEMBER" },
+    { label: "변호사", value: "LAWYER" },
+  ];
+  const statusOptions = [
+    { label: "활성화", value: "ON" },
+    { label: "비활성화", value: "OFF" },
+  ];
+  const searchOptions = [
+    { label: "이름", value: "name" },
+    { label: "이메일", value: "email" },
+  ];
+  const dateOptions = [
+    { label: "가입일", value: "joinDate" },
+    { label: "최근접속일", value: "latestAccessDate" },
+  ];
+  const [typeList, setTypeList] = useState([]);
+  const [statusList, setStatusList] = useState([]);
+
+  const initialSearchParams = {
+    name: "",
+    email: "",
+    typeList: typeList,
+    statusList: statusList,
+    pageNumber: 1,
+    pageSize: paginationConfig.pageSize,
+  };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
+  const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState({});
 
   useLayoutEffect(() => {
     getAdminList();
   }, []);
 
+  useEffect(() => {
+    setSearchParams({ ...searchParams, typeList, statusList });
+  }, [typeList, statusList]);
+
   /**
    * 회원관리 목록 조회
    */
   const getAdminList = async () => {
+    console.log("getAdminList : ", searchParams);
     dispatch(showSkeletonLoading());
     const response = await mockData;
     try {
@@ -108,23 +140,46 @@ const ManageUserList = () => {
             <div className='w-full'>
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
-                <TdDiv className='w-5/12 border-y border-solid border-black'>체크박스1</TdDiv>
+                <TdDiv className='w-5/12 border-y border-solid border-black'>
+                  <SearchCheckbox optionList={userOptions} checkedOptions={typeList} setCheckedOptions={setTypeList} />
+                </TdDiv>
                 <ThDiv className='w-1/12 border-y border-l border-solid border-black'>상태</ThDiv>
-                <TdDiv className='w-5/12 border border-solid border-black'>체크박스2</TdDiv>
+                <TdDiv className='w-5/12 border border-solid border-black'>
+                  <SearchCheckbox
+                    optionList={statusOptions}
+                    checkedOptions={statusList}
+                    setCheckedOptions={setStatusList}
+                  />
+                </TdDiv>
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
-                <TdDiv className='w-11/12 border-r border-solid border-black'>날짜</TdDiv>
+                <TdDiv className='w-11/12 border-r border-solid border-black'>
+                  <Select
+                    className='justify-center w-[150px] ml-[10px] '
+                    options={dateOptions}
+                    defaultValue={dateOptions[0]}
+                  />
+                </TdDiv>
               </div>
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>조건검색</ThDiv>
-                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>검색</TdDiv>
+                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>
+                  <div className='flex gap-[10px] h-[48px]'>
+                    <Select
+                      className='justify-center w-[160px] ml-[10px]'
+                      options={searchOptions}
+                      defaultValue={searchOptions[0]}
+                    />
+                    <Input className='justify-center' />
+                  </div>
+                </TdDiv>
               </div>
             </div>
 
-            <div className='flex gap-[10px] justify-end py-[5px]'>
+            <div className='flex justify-end gap-[10px] '>
               <Button>초기화</Button>
-              <Button>검색</Button>
+              <Button onClick={getAdminList}>검색</Button>
             </div>
           </div>
         </div>
@@ -162,14 +217,21 @@ const ManageUserList = () => {
 };
 
 const ThDiv = styled.div`
-  height: 40px;
-  background-color: #f1f5f9;
-
+  display: flex;
+  justify-content: center;
   text-align: center;
+  align-items: center;
+
+  min-width: 100px;
+  height: 60px;
+  background-color: #f1f5f9;
 `;
 
 const TdDiv = styled.div`
-  height: 40px;
+  display: flex;
+  align-items: center;
+
+  height: 60px;
 `;
 
 export default ManageUserList;
