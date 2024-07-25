@@ -36,8 +36,8 @@ const ManageAdminList = () => {
     },
     {
       title: "가입일",
-      key: "joinDate",
-      dataIndex: "joinDate",
+      key: "createdAt",
+      render: (_, record) => <span>{formatDate(record?.createdAt)}</span>,
     },
     {
       title: "최근 접속일",
