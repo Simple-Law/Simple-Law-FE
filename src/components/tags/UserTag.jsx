@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
+import { getRoleList } from "utils/userTypes";
 import { Select, Tag } from "antd";
 import styled from "styled-components";
+import { get } from "lodash";
 
 const userStatusList = [
   {
@@ -15,36 +17,8 @@ const userStatusList = [
   },
 ];
 
-const userTypeList = [
-  {
-    value: "MEMBER",
-    label: "의뢰인",
-    color: "tag-blue",
-  },
-  {
-    value: "LAWYER",
-    label: "변호사",
-    color: "tag-orange",
-  },
-  {
-    value: "ADMIN",
-    label: "관리자",
-    color: "tag-gray-black",
-  },
-];
-
-const adminTypeList = [
-  {
-    value: "SUPER_ADMIN",
-    label: "최고관리자",
-    color: "tag-green",
-  },
-  {
-    value: "NORMAL_ADMIN",
-    label: "일반관리자",
-    color: "tag-gray",
-  },
-];
+const userTypeList = getRoleList("USER");
+const adminTypeList = getRoleList("ADMIN");
 
 const UserStatusTag = ({ status }) => {
   const tagAttr = userStatusList.find(item => item.value === status);

@@ -1,11 +1,9 @@
 import { useCallback, useLayoutEffect, useState } from "react";
-import styled from "styled-components";
 import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
-import { AdminBoard, AdminPageWrap, TableColumnId, TableEmptyDiv } from "components/styled/StyledComponents";
-import SvgProfile from "components/Icons/Profile";
+import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import { getAdminsApi } from "apis/manageAdminAPI";
 import { formatDate } from "utils/dateUtil";
@@ -14,24 +12,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions/loadingAction";
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import GlobalPopup from "components/layout/GlobalPopup";
+import UserNameColumn from "components/table/UserNameColumn";
 
 const ManageAdminList = () => {
   const columns = [
     {
-      width: 48,
+      width: 32,
     },
     {
       title: "이름",
       key: "id",
-      render: (_, record) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <SvgProfile className='mr-2' width='32' height='32' />
-          <div>
-            <div>{record?.name}</div>
-            <TableColumnId>{record?.id}</TableColumnId>
-          </div>
-        </div>
-      ),
+      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
     },
     {
       title: "이메일",
@@ -45,8 +36,8 @@ const ManageAdminList = () => {
     },
     {
       title: "가입일",
-      key: "joinDate",
-      dataIndex: "joinDate",
+      key: "createdAt",
+      render: (_, record) => <span>{formatDate(record?.createdAt)}</span>,
     },
     {
       title: "최근 접속일",
@@ -81,7 +72,7 @@ const ManageAdminList = () => {
   const [data, setData] = useState([]);
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -106,8 +97,25 @@ const ManageAdminList = () => {
     }
   };
 
-  const insertAdmin = () => {
-    console.log("insertAdmin");
+  /**
+   * 관리자 계정 등록
+   * @param {Object} formatData
+   */
+  const insertAdmin = formatData => {
+    console.log("insertAdmin", formatData);
+    dispatch(showSkeletonLoading());
+    const response = insertAdmin(formatData);
+    try {
+      if (response.status === 200 && response.data.status === "success") {
+        messageApi.success("관리자 계정이 등록되었습니다.");
+        // getAdminList();
+        navigator(0);
+      }
+    } catch (error) {
+      messageApi.error(response.message);
+    } finally {
+      dispatch(hideSkeletonLoading());
+    }
   };
 
   const updateAdmin = useCallback(id => {
@@ -123,7 +131,7 @@ const ManageAdminList = () => {
    * 관리자 삭제 confirm 취소
    */
   const cancleDelete = () => {
-    setSelectedUser({});
+    setSelectedUser(null);
     setIsConfirmOpen(false);
   };
 
@@ -137,7 +145,7 @@ const ManageAdminList = () => {
    * 관리자 계정 등록/수정 modal 닫기
    */
   const closeModal = () => {
-    setSelectedUser({});
+    setSelectedUser(null);
     setIsModalOpen(false);
   };
 
@@ -148,6 +156,7 @@ const ManageAdminList = () => {
   const onSubmit = formData => {
     console.log("formData");
     console.log(formData);
+    selectedUser ? updateAdmin(formData) : insertAdmin(formData);
     closeModal();
   };
 

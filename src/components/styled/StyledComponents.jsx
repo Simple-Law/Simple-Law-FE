@@ -44,17 +44,6 @@ const AdminBoard = styled(BoardDiv)`
 `;
 
 /**
- * 테이블 컬럼 중 사용자 ID 표기용 DIv
- */
-const TableColumnId = styled.div`
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: -0.02em;
-  color: #94a3b8;
-`;
-
-/**
  * 테이블 datasource가 비어있을 때 표기용 Div
  */
 const TableEmptyDiv = styled.div`
@@ -67,4 +56,4 @@ const TableEmptyDiv = styled.div`
   height: 100px;
 `;
 
-export { AdminPageWrap, AdminBoard, TableColumnId, TableEmptyDiv };
+export { AdminPageWrap, AdminBoard, TableEmptyDiv };
