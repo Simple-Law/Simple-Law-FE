@@ -1,7 +1,7 @@
 import axiosInstance from "./axiosConfig";
 
 /**
- * 역할 목록 조회 API
+ * 역할 목록 조회 API (사용X userTypes 로 대체)
  * @param {Array} params
  * @returns response
  */
