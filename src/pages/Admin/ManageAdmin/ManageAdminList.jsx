@@ -23,7 +23,7 @@ const ManageAdminList = () => {
     {
       title: "이름",
       key: "id",
-      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
+      render: (_, record) => <UserNameColumn mainText={record.name} subText={record.id} />,
     },
     {
       title: "이메일",

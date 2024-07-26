@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, Input, Select, Table } from "antd";
 import UserTag from "components/tags/UserTag";
-import { LoginStatusTag } from "components/tags/StatusTag";
+import { AccountStatusTag } from "components/tags/StatusTag";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import { useMessageApi } from "components/messaging/MessageProvider";
@@ -11,25 +11,26 @@ import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
 import SearchCheckbox from "components/input/SearchCheckbox";
+import { formatDate } from "utils/dateUtil";
 
 const ManageUserList = () => {
   const mockData = [
     {
       id: "law123",
       name: "김변호",
-      userType: "LAWYER",
+      type: "LAWYER",
       email: "law123@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
+      createdAt: new Date(),
+      latestAccessAt: "2024.06.16",
       loginStatus: false,
     },
     {
       id: "mem123",
       name: "김의뢰",
-      userType: "MEMBER",
+      type: "MEMBER",
       email: "mem123@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
+      createdAt: "2023.09.01",
+      latestAccessAt: "2024.06.16",
       loginStatus: true,
     },
   ];
@@ -42,29 +43,29 @@ const ManageUserList = () => {
       title: "이름",
       key: "name",
       dataIndex: "name",
-      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
+      render: (_, record) => <UserNameColumn userName={record.name} userId={record.email} />,
     },
     {
       title: "회원구분",
-      key: "userType",
-      dataIndex: "userType",
-      render: (_, record) => <UserTag userType={record.userType} />,
+      key: "type",
+      dataIndex: "type",
+      render: (_, record) => <UserTag userType={record.type} />,
     },
     {
       title: "가입일",
-      key: "joinDate",
-      dataIndex: "joinDate",
+      key: "createdAt",
+      render: (_, record) => <span>{formatDate(record.createdAt)}</span>,
     },
     {
       title: "최근 접속일",
-      key: "accessDate",
-      dataIndex: "accessDate",
+      key: "latestAccessAt",
+      render: (_, record) => <span>{formatDate(record.latestAccessAt)}</span>,
     },
     {
       title: "상태",
-      key: "loginStatus",
-      dataIndex: "loginStatus",
-      render: (_, record) => <LoginStatusTag status={record.loginStatus} />,
+      key: "status",
+      dataIndex: "status",
+      render: (_, record) => <AccountStatusTag status={record.status} />,
     },
   ];
 
@@ -87,8 +88,8 @@ const ManageUserList = () => {
     { label: "이메일", value: "email" },
   ];
   const dateOptions = [
-    { label: "가입일", value: "joinDate" },
-    { label: "최근접속일", value: "latestAccessDate" },
+    { label: "가입일", value: "createdAt" },
+    { label: "최근접속일", value: "latestlatestAccessAt" },
   ];
   const [typeList, setTypeList] = useState([]);
   const [statusList, setStatusList] = useState([]);

@@ -89,7 +89,7 @@ StatusTag.propTypes = {
   userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
 };
 
-export const LoginStatusTag = ({ status }) => {
+export const AccountStatusTag = ({ status }) => {
   return status ? (
     <StyledTag className={"status-tag true"}>활성화</StyledTag>
   ) : (
@@ -97,7 +97,7 @@ export const LoginStatusTag = ({ status }) => {
   );
 };
 
-LoginStatusTag.propTypes = {
+AccountStatusTag.propTypes = {
   status: PropTypes.bool.isRequired,
 };
 
