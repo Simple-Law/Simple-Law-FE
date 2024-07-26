@@ -5,7 +5,7 @@ import axiosInstance from "./axiosConfig";
  * @param {Object} adminData - 관리자의 데이터 객체
  * @returns {Promise} 응답 객체
  */
-export const insertAdmin = adminData => {
+export const postAdminAPI = adminData => {
   try {
     const response = axiosInstance.post("/api/v1/admins", adminData);
     return response;

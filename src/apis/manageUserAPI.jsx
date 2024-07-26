@@ -15,20 +15,6 @@ export const searchAdminAPI = params => {
 };
 
 /**
- * 관리자 생성 API
- * @param {Object} params
- * @returns response
- */
-export const postAdminAPI = params => {
-  try {
-    const response = axiosInstance.post("/api/v1/admins", params);
-    return response;
-  } catch (error) {
-    console.error("Error fetching postAdminAPI:", error);
-  }
-};
-
-/**
  * 관리자 수정 API
  * @param {Number} adminKey
  * @param {Object} adminData
