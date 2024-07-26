@@ -29,9 +29,10 @@ const QuestPage = () => {
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
+
   console.log("data", data);
   useEffect(() => {
-    dispatch(fetchMailsAction());
+    dispatch(fetchMailsAction(userType));
   }, [dispatch]);
 
   useEffect(() => {
@@ -62,8 +63,8 @@ const QuestPage = () => {
   };
 
   const menuItems = [
-    { key: "sentAt", label: "의뢰 요청시간" },
-    { key: "time", label: "의뢰 가능시간" },
+    { key: "requestAtDesc", label: "의뢰 요청시간" },
+    { key: "notifiedAtDesc", label: "알림시간" },
   ];
 
   const menu = <Menu items={menuItems} onClick={handleTimeMenuClick} />;

@@ -1,19 +1,17 @@
-import axios from "axios";
 import moment from "moment";
 import { formatDate } from "utils/dateUtil";
 import axiosInstance from "./axiosConfig";
-const glitchURL = axios.create({
-  baseURL: process.env.REACT_APP_GLITCH_URL,
-});
 
 /**
  * 의뢰 목록을 가져오는 API
  * @param {Object} params - 검색 및 페이징 파라미터
  * @returns {Promise}
  */
-export const fetchMails = async params => {
+export const fetchMails = async (userType, params) => {
+  const userPath = userType && userType.toLowerCase() + "s"; // 기본값 설정
+  console.log("userPath", userPath);
   try {
-    const response = await axiosInstance.get("/api/v1/members/cases", { params });
+    const response = await axiosInstance.get(`/api/v1/${userPath}/cases`, { params });
     const formattedData = response.data.data.payload
       .map(item => ({
         ...item,
@@ -42,9 +40,10 @@ export const fetchMails = async params => {
  */
 export const updateMail = async (id, updateData) => {
   try {
-    await glitchURL.patch(`/mails/${id}`, updateData);
+    await axiosInstance.patch(`/api/v1/members/cases/${id}`, updateData);
   } catch (error) {
     console.error("Error updating mail:", error);
+    throw error;
   }
 };
 
@@ -56,7 +55,6 @@ export const updateMail = async (id, updateData) => {
 
 export const createMail = async requestData => {
   try {
-    console.log("Request Data in createMail:", requestData);
     const response = await axiosInstance.post("/api/v1/members/cases", requestData, {
       headers: {
         "Content-Type": "application/json",
@@ -74,9 +72,11 @@ export const createMail = async requestData => {
  * @param {Number} caseKey - 가져올 의뢰의 케이스 키
  * @returns {Promise} 의뢰의 데이터
  */
-export const getMailById = async caseKey => {
+export const getMailById = async (userType, caseKey) => {
+  const userPath = userType.toLowerCase() + "s";
+  const url = `/api/v1/${userPath}/cases/${caseKey}`;
   try {
-    const response = await axiosInstance.get(`/api/v1/members/cases/${caseKey}`);
+    const response = await axiosInstance.get(url);
     return response.data.data.payload;
   } catch (error) {
     console.error("Error fetching mail by id:", error);

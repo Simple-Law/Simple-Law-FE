@@ -28,7 +28,7 @@ const DetailPage = () => {
   useEffect(() => {
     moment.locale("ko");
     if (!mail) {
-      dispatch(fetchMailsAction());
+      dispatch(fetchMailsAction(userType));
     }
   }, [id, mail, dispatch]);
 
@@ -69,7 +69,9 @@ const DetailPage = () => {
   };
 
   const sortedReplies = useMemo(() => {
-    return mail ? (mail.replies || []).slice().sort((a, b) => moment(b.sentAt).diff(moment(a.sentAt))) : [];
+    return mail
+      ? (mail.replies || []).slice().sort((a, b) => moment(b.requestAtDesc).diff(moment(a.requestAtDesc)))
+      : [];
   }, [mail]);
 
   if (!mail) {
@@ -100,7 +102,7 @@ const DetailPage = () => {
         </div>
         <div className='mx-8 mt-[20px]'>
           <div className='flex items-center gap-1'>
-            <span onClick={e => handleToggleImportant(mail.id, e)} className='cursor-pointer'>
+            <span onClick={e => handleToggleImportant(mail.caseKey, e)} className='cursor-pointer'>
               {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
             <div className='text-zinc-800 text-base font-medium  leading-normal'>{mail.title}</div>

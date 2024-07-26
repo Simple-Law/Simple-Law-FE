@@ -54,6 +54,13 @@ const mailReducer = (state = initialState, action) => {
     }
     case "SET_TABLE_DATA":
       return { ...state, tableData: action.payload };
+    case "TOGGLE_IMPORTANT":
+      return {
+        ...state,
+        mails: state.mails.map(mail =>
+          mail.caseKey === action.payload.caseKey ? { ...mail, isImportant: action.payload.isImportant } : mail,
+        ),
+      };
     default:
       return state;
   }
