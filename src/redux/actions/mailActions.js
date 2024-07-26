@@ -85,7 +85,7 @@ export const toggleImportant = id => async (dispatch, getState) => {
   dispatch(setTableData(filteredMails));
 
   try {
-    const updatedItem = updatedData.find(item => item.id === id);
+    const updatedItem = updatedData.find(item => item.caseKey === Number(id));
     await apiUpdateMail(id, { isImportant: updatedItem.isImportant });
   } catch (error) {
     console.error("중요 표시 업데이트 중 오류 발생:", error);
