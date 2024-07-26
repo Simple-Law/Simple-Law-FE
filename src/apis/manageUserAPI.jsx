@@ -20,6 +20,7 @@ export const searchAdminAPI = params => {
  * @returns {promise} 응답 객체
  */
 export const searchUserAPI = params => {
+  console.log("searchUserAPI params:", params);
   try {
     const response = axiosInstance.get("/api/v1/admins/users", params);
     return response;

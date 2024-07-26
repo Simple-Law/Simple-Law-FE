@@ -15,27 +15,6 @@ import { formatDate } from "utils/dateUtil";
 import { searchUserAPI } from "apis/manageUserAPI";
 
 const ManageUserList = () => {
-  const mockData = [
-    {
-      id: "law123",
-      name: "김변호",
-      type: "LAWYER",
-      email: "law123@simplelaw.com",
-      createdAt: new Date(),
-      latestAccessAt: "2024.06.16",
-      loginStatus: false,
-    },
-    {
-      id: "mem123",
-      name: "김의뢰",
-      type: "MEMBER",
-      email: "mem123@simplelaw.com",
-      createdAt: "2023.09.01",
-      latestAccessAt: "2024.06.16",
-      loginStatus: true,
-    },
-  ];
-
   const columns = [
     {
       width: 32,
@@ -73,13 +52,14 @@ const ManageUserList = () => {
   const { paginationConfig } = useCommonContext();
   const pageTitle = "전체 사용자";
 
+  //TODO: kmee js 분리
   const userOptions = [
     { label: "의뢰인", value: "MEMBER" },
     { label: "변호사", value: "LAWYER" },
   ];
   const statusOptions = [
-    { label: "활성화", value: "ON" },
-    { label: "비활성화", value: "OFF" },
+    { label: "활성화", value: "JOIN" },
+    { label: "비활성화", value: "WITHDRAW" },
   ];
   const searchOptions = [
     { label: "이름", value: "name" },
@@ -120,6 +100,7 @@ const ManageUserList = () => {
   /**
    * 회원관리 목록 조회
    */
+  //TODO: kmee 기간검색, 조건검색 추가. 상태 검색 data 확인
   const getUserList = async () => {
     console.log("getUserList : ", searchParams);
     dispatch(showSkeletonLoading());
