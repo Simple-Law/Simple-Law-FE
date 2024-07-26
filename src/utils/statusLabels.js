@@ -12,15 +12,16 @@ const statusLabels = {
     completed: "컨텍 완료",
   },
   LAWYER: {
-    contactRequest: "컨택 요청 중",
-    approvalPending: "승인 완료 중",
-    resolving: "해결 진행 중",
-    resolved: "해결 완료",
+    IN_CONTACT: "컨택 요청 중",
+    IN_PROGRESS: "해결 진행 중",
+    RESPONSE: "해결 완료",
+    DONE: "의뢰 종료",
   },
   MEMBER: {
-    requestInProgress: "요청 진행 중",
-    resolving: "해결 진행 중",
-    resolved: "해결 완료",
+    REQUEST: "요청 진행 중",
+    IN_PROGRESS: "해결 진행 중",
+    RESPONSE: "해결 완료",
+    DONE: "의뢰 종료",
   },
   guest: {
     requestInProgress: "비로그인 요청 중",
@@ -28,7 +29,34 @@ const statusLabels = {
     resolved: "비로그인 해결 완료",
   },
 };
+const subStatusLabels = {
+  assignLawyer: "변호사 배정 중",
+  extReject: "연장 제안 거절",
+  extAccept: "연장 제안 승인",
+  extRequest: "연장 제안 요청",
+  approved: "승인 완료",
+  addQuestion: "추가 질문",
+};
 
+const menuStatusTypes = {
+  LAWYER: {
+    IN_CONTACT: ["IN_CONTACT"],
+    IN_PROGRESS: ["IN_PROGRESS"],
+    RESPONSE: ["RESPONSE"],
+    DONE: ["DONE"],
+  },
+  MEMBER: {
+    REQUEST: ["REQUEST"],
+    IN_PROGRESS: ["IN_PROGRESS"],
+    RESPONSE: ["RESPONSE"],
+    DONE: ["DONE"],
+  },
+  guest: {
+    requestInProgress: ["requestInProgress"],
+    resolving: ["resolving"],
+    resolved: ["resolved"],
+  },
+};
 const adminStatusLabels = {
   manageAdmin: "관리자 계정 관리",
   manageUser: "회원 관리",
@@ -59,4 +87,12 @@ const anytimeLabels = [
   { value: "분쟁 해결 자문", label: "분쟁 해결 자문" },
   { value: "등기", label: "등기" },
 ];
-export { categoryLabels, anytimeLabels, commonStatusLabels, statusLabels, adminStatusLabels };
+export {
+  categoryLabels,
+  anytimeLabels,
+  commonStatusLabels,
+  statusLabels,
+  adminStatusLabels,
+  subStatusLabels,
+  menuStatusTypes,
+};

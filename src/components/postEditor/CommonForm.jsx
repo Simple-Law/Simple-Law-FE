@@ -7,7 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
-const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mode }) => {
+const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setDeletedImages, mode }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const messageApi = useMessageApi();
@@ -16,7 +16,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setDeletedImages, mod
     let newFileList = [...info.fileList];
     newFileList = newFileList.slice(-1);
     setFileList(newFileList);
-    setPendingImages(newFileList.map(file => file.originFileObj));
+    setPendingFiles(newFileList.map(file => file.originFileObj)); // 문서 첨부 파일 설정
   };
 
   const handleImageDelete = useCallback(
@@ -197,6 +197,7 @@ CommonForm.propTypes = {
     current: PropTypes.object,
   }).isRequired,
   setPendingImages: PropTypes.func.isRequired,
+  setPendingFiles: PropTypes.func.isRequired, // 문서 첨부 파일 설정 함수 추가
   setDeletedImages: PropTypes.func.isRequired,
   mode: PropTypes.string.isRequired,
 };
