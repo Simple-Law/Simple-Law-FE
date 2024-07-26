@@ -12,17 +12,16 @@ const statusLabels = {
     completed: "컨텍 완료",
   },
   LAWYER: {
-    contactRequest: "컨택 요청 중",
-    // approvalPending: "승인 완료 중",
-    resolving: "해결 진행 중",
-    resolved: "해결 완료",
-    // reconsider: "재검토 요청",
+    IN_CONTACT: "컨택 요청 중",
+    IN_PROGRESS: "해결 진행 중",
+    RESPONSE: "해결 완료",
+    DONE: "의뢰 종료",
   },
   MEMBER: {
-    requestInProgress: "요청 진행 중",
-    resolving: "해결 진행 중",
-    resolved: "해결 완료",
-    // reconsider: "재검토 요청",
+    REQUEST: "요청 진행 중",
+    IN_PROGRESS: "해결 진행 중",
+    RESPONSE: "해결 완료",
+    DONE: "의뢰 종료",
   },
   guest: {
     requestInProgress: "비로그인 요청 중",
@@ -41,14 +40,16 @@ const subStatusLabels = {
 
 const menuStatusTypes = {
   LAWYER: {
-    contactRequest: ["contactRequest", "approvalPending"],
-    resolving: ["resolving"],
-    resolved: ["resolved"],
+    IN_CONTACT: ["IN_CONTACT"],
+    IN_PROGRESS: ["IN_PROGRESS"],
+    RESPONSE: ["RESPONSE"],
+    DONE: ["DONE"],
   },
   MEMBER: {
-    requestInProgress: ["requestInProgress"],
-    resolving: ["resolving"],
-    resolved: ["resolved"],
+    REQUEST: ["REQUEST"],
+    IN_PROGRESS: ["IN_PROGRESS"],
+    RESPONSE: ["RESPONSE"],
+    DONE: ["DONE"],
   },
   guest: {
     requestInProgress: ["requestInProgress"],
