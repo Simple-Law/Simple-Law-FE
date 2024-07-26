@@ -36,8 +36,8 @@ const ManageAdminList = () => {
     },
     {
       title: "가입일",
-      key: "joinDate",
-      dataIndex: "joinDate",
+      key: "createdAt",
+      render: (_, record) => <span>{formatDate(record?.createdAt)}</span>,
     },
     {
       title: "최근 접속일",
@@ -72,7 +72,7 @@ const ManageAdminList = () => {
   const [data, setData] = useState([]);
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedUser, setSelectedUser] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
@@ -97,8 +97,25 @@ const ManageAdminList = () => {
     }
   };
 
-  const insertAdmin = () => {
-    console.log("insertAdmin");
+  /**
+   * 관리자 계정 등록
+   * @param {Object} formatData
+   */
+  const insertAdmin = formatData => {
+    console.log("insertAdmin", formatData);
+    dispatch(showSkeletonLoading());
+    const response = insertAdmin(formatData);
+    try {
+      if (response.status === 200 && response.data.status === "success") {
+        messageApi.success("관리자 계정이 등록되었습니다.");
+        // getAdminList();
+        navigator(0);
+      }
+    } catch (error) {
+      messageApi.error(response.message);
+    } finally {
+      dispatch(hideSkeletonLoading());
+    }
   };
 
   const updateAdmin = useCallback(id => {
@@ -114,7 +131,7 @@ const ManageAdminList = () => {
    * 관리자 삭제 confirm 취소
    */
   const cancleDelete = () => {
-    setSelectedUser({});
+    setSelectedUser(null);
     setIsConfirmOpen(false);
   };
 
@@ -128,7 +145,7 @@ const ManageAdminList = () => {
    * 관리자 계정 등록/수정 modal 닫기
    */
   const closeModal = () => {
-    setSelectedUser({});
+    setSelectedUser(null);
     setIsModalOpen(false);
   };
 
@@ -139,6 +156,7 @@ const ManageAdminList = () => {
   const onSubmit = formData => {
     console.log("formData");
     console.log(formData);
+    selectedUser ? updateAdmin(formData) : insertAdmin(formData);
     closeModal();
   };
 
