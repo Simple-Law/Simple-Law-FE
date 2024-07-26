@@ -29,7 +29,7 @@ const QuestPage = () => {
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
-
+  console.log("data", data);
   useEffect(() => {
     dispatch(fetchMailsAction());
   }, [dispatch]);
@@ -75,7 +75,7 @@ const QuestPage = () => {
       width: 48,
       onCell: record => ({
         onClick: e => {
-          handleToggleImportant(record.id, e);
+          handleToggleImportant(record.caseKey, e);
         },
       }),
       render: (_, record) => (
@@ -229,7 +229,7 @@ const QuestPage = () => {
         }}
         onRow={(record, rowIndex) => {
           return {
-            onClick: () => navigate(`/detail/${record.key}`),
+            onClick: () => navigate(`/detail/${record.caseKey}`),
           };
         }}
       />
