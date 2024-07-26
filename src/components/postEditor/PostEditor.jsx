@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Spin, Form } from "antd";
 import SvgLogo from "components/Icons/Logo";
@@ -14,9 +14,12 @@ const PostEditor = () => {
   const editorRef = useRef();
   const user = useSelector(state => state.auth.user);
 
-  console.log("useParams:", { id, mode }); // useParams로 받은 값 확인
-
-  const { formik, loading, existingMail, setPendingImages, setDeletedImages } = useMail(id, mode, user, editorRef);
+  const { formik, loading, existingMail, setPendingImages, setDeletedImages, setPendingFiles } = useMail(
+    id,
+    mode,
+    user,
+    editorRef,
+  );
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -42,9 +45,9 @@ const PostEditor = () => {
       <div className='border-b-[1px] w-full h-[100px] fixed bg-white top-0 left-0 z-[1000]'>
         <div className='flex justify-between items-center w-[1300px] mx-auto h-[100px]'>
           <div>
-            <Link to='/'>
+            {/* <Link to='/'>
               <SvgLogo width='140px' height='36px' className='mx-auto' />
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>
@@ -58,6 +61,7 @@ const PostEditor = () => {
             formik={formik}
             editorRef={editorRef}
             setPendingImages={setPendingImages}
+            setPendingFiles={setPendingFiles} // 문서 첨부 파일 설정 함수 전달
             setDeletedImages={setDeletedImages}
             mode={mode || "default"} // mode가 없을 경우 기본 값을 설정
           />
