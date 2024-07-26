@@ -5,7 +5,7 @@ import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
-import { getAdminsApi } from "apis/manageAdminAPI";
+import { searchAdminAPI, postAdminAPI } from "apis/manageAdminAPI";
 import { formatDate } from "utils/dateUtil";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { useDispatch, useSelector } from "react-redux";
@@ -85,7 +85,7 @@ const ManageAdminList = () => {
    */
   const getAdminList = async () => {
     dispatch(showSkeletonLoading());
-    const response = await getAdminsApi(searchParams);
+    const response = await searchAdminAPI(searchParams);
     try {
       if (response.status === 200 && response.data.status === "success") {
         setData(response.data.data.payload);
@@ -104,7 +104,7 @@ const ManageAdminList = () => {
   const insertAdmin = formatData => {
     console.log("insertAdmin", formatData);
     dispatch(showSkeletonLoading());
-    const response = insertAdmin(formatData);
+    const response = postAdminAPI(formatData);
     try {
       if (response.status === 200 && response.data.status === "success") {
         messageApi.success("관리자 계정이 등록되었습니다.");

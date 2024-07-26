@@ -5,26 +5,26 @@ import axiosInstance from "./axiosConfig";
  * @param {Object} params
  * @returns
  */
-export const getAdminsApi = params => {
+export const searchAdminAPI = params => {
   try {
     const response = axiosInstance.get("/api/v1/admins", { params });
     return response;
   } catch (error) {
-    console.error("Error fetching getAdminsApi:", error);
+    console.error("Error fetching searchAdminAPI:", error);
   }
 };
 
 /**
  * 관리자 생성 API
- * @param {Object} adminData
+ * @param {Object} params
  * @returns response
  */
-export const insertAdmin = adminData => {
+export const postAdminAPI = params => {
   try {
-    const response = axiosInstance.post("/api/v1//admins", adminData);
+    const response = axiosInstance.post("/api/v1/admins", params);
     return response;
   } catch (error) {
-    console.error("Error fetching insertAdmin:", error);
+    console.error("Error fetching postAdminAPI:", error);
   }
 };
 
