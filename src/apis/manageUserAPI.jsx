@@ -2,8 +2,8 @@ import axiosInstance from "./axiosConfig";
 
 /**
  * 관리자 계정관리 목록 조회 API
- * @param {Object} params
- * @returns
+ * @param {Object} params : 검색조건
+ * @returns {promise} 응답 객체
  */
 export const searchAdminAPI = params => {
   try {
@@ -15,16 +15,15 @@ export const searchAdminAPI = params => {
 };
 
 /**
- * 관리자 수정 API
- * @param {Number} adminKey
- * @param {Object} adminData
- * @returns response
+ * 회원관리 목록 조회 API
+ * @param {*} params : 검색조건
+ * @returns {promise} 응답 객체
  */
-export const updateAdmin = (adminKey, adminData) => {
+export const searchUserAPI = params => {
   try {
-    const response = axiosInstance.put(`/api/v1//admins/${adminKey}`, adminData);
+    const response = axiosInstance.get("/api/v1/admins/users", params);
     return response;
   } catch (error) {
-    console.error("Error fetching updateAdmin:", error);
+    console.error("Error fetching searchUserAPI:", error);
   }
 };

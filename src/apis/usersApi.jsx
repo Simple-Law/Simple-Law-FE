@@ -20,7 +20,7 @@ export const postAdminAPI = adminData => {
  * @param {Object} adminData - 관리자의 수정된 데이터 객체
  * @returns {Promise} 응답 객체
  */
-export const updateAdmin = (adminKey, adminData) => {
+export const putAdminAPI = (adminKey, adminData) => {
   try {
     const response = axiosInstance.put(`/api/v1/admins/${adminKey}`, adminData);
     return response;

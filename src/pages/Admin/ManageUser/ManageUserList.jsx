@@ -12,6 +12,7 @@ import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
 import SearchCheckbox from "components/input/SearchCheckbox";
 import { formatDate } from "utils/dateUtil";
+import { searchUserAPI } from "apis/manageUserAPI";
 
 const ManageUserList = () => {
   const mockData = [
@@ -42,13 +43,11 @@ const ManageUserList = () => {
     {
       title: "이름",
       key: "name",
-      dataIndex: "name",
-      render: (_, record) => <UserNameColumn userName={record.name} userId={record.email} />,
+      render: (_, record) => <UserNameColumn mainText={record.name} subText={record.email} />,
     },
     {
       title: "회원구분",
       key: "type",
-      dataIndex: "type",
       render: (_, record) => <UserTag userType={record.type} />,
     },
     {
@@ -64,7 +63,6 @@ const ManageUserList = () => {
     {
       title: "상태",
       key: "status",
-      dataIndex: "status",
       render: (_, record) => <AccountStatusTag status={record.status} />,
     },
   ];
@@ -99,6 +97,10 @@ const ManageUserList = () => {
     email: "",
     typeList: typeList,
     statusList: statusList,
+    // joinStartAt: "",
+    // joinEndAt: "",
+    // latestAccessStartAt: "",
+    // latestAccessEndAt: "",
     pageNumber: 1,
     pageSize: paginationConfig.pageSize,
   };
@@ -108,7 +110,7 @@ const ManageUserList = () => {
   const [selectedUser, setSelectedUser] = useState({});
 
   useLayoutEffect(() => {
-    getAdminList();
+    getUserList();
   }, []);
 
   useEffect(() => {
@@ -118,13 +120,14 @@ const ManageUserList = () => {
   /**
    * 회원관리 목록 조회
    */
-  const getAdminList = async () => {
-    console.log("getAdminList : ", searchParams);
+  const getUserList = async () => {
+    console.log("getUserList : ", searchParams);
     dispatch(showSkeletonLoading());
-    const response = await mockData;
+    const response = await searchUserAPI(searchParams);
     try {
-      response.forEach(item => (item.key = item.id));
-      setData(response);
+      if (response.status === 200 && response.data.status === "success") {
+        setData(response.data.data.payload);
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -180,7 +183,7 @@ const ManageUserList = () => {
 
             <div className='flex justify-end gap-[10px] '>
               <Button>초기화</Button>
-              <Button onClick={getAdminList}>검색</Button>
+              <Button onClick={getUserList}>검색</Button>
             </div>
           </div>
         </div>
