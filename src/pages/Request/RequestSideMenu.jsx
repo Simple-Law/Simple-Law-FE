@@ -32,6 +32,8 @@ const RequestSideMenu = () => {
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
+    console.log("userType", userType);
+    console.log("statusKey", statusKey);
     const filteredMails = filterMails(data, statusKey);
 
     dispatch(setMails(filteredMails));
@@ -81,7 +83,7 @@ const RequestSideMenu = () => {
       icon: <SvgMailStar />,
     },
     {
-      key: "endRequest", //TODO: 종료 의뢰함 보류중
+      key: "DONE", //TODO: 종료 의뢰함 보류중
       label: (
         <span className='text-stone-950'>
           {commonStatusLabels.endRequest}
