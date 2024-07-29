@@ -29,7 +29,6 @@ export const setTableData = data => ({
 
 export const fetchMailsAction = userType => async dispatch => {
   if (!userType) {
-    console.error("Error: userType is undefined");
     return;
   }
   dispatch(showUserLoading());
