@@ -39,11 +39,10 @@ export const useMail = (id, mode, user, editorRef) => {
         });
 
       const dataToSend = {
-        // categoryKey: values.category,
         categoryKey: values.categoryKey,
         title: values.title,
         content: contentWithImages,
-        fileUploadIdList,
+        fileUploadIdList: fileUploadIdList || [],
       };
 
       try {
