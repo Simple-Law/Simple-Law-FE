@@ -12,6 +12,7 @@ export const fetchMails = async (userType, params) => {
   console.log("userPath", userPath);
   try {
     const response = await axiosInstance.get(`/api/v1/${userPath}/cases`, { params });
+    console.log(response.data.data);
     const formattedData = response.data.data.payload
       .map(item => ({
         ...item,
@@ -22,6 +23,7 @@ export const fetchMails = async (userType, params) => {
         requestedAt: formatDate(item.requestedAt),
         status: item.displayStatus,
         additionList: item.additionList,
+        contentFileList: item.contentFileList,
       }))
       .sort((a, b) => moment(b.rawRequestedAt).diff(moment(a.rawRequestedAt)));
 
@@ -29,6 +31,23 @@ export const fetchMails = async (userType, params) => {
   } catch (error) {
     console.error("Error fetching data:", error);
     return { data: [], error };
+  }
+};
+
+/**
+ * 의뢰 상세 정보를 가져오는 API
+ * @param {Number} caseKey - 가져올 의뢰의 케이스 키
+ * @returns {Promise} 의뢰의 데이터
+ */
+export const getMailById = async (userType, caseKey) => {
+  const userPath = userType.toLowerCase() + "s";
+  const url = `/api/v1/${userPath}/cases/${caseKey}`;
+  try {
+    const response = await axiosInstance.get(url);
+    return response.data.data.payload;
+  } catch (error) {
+    console.error("Error fetching mail by id:", error);
+    throw error;
   }
 };
 
@@ -63,23 +82,6 @@ export const createMail = async requestData => {
     return response.data;
   } catch (error) {
     console.error("Error creating request:", error);
-    throw error;
-  }
-};
-
-/**
- * 의뢰 상세 정보를 가져오는 API
- * @param {Number} caseKey - 가져올 의뢰의 케이스 키
- * @returns {Promise} 의뢰의 데이터
- */
-export const getMailById = async (userType, caseKey) => {
-  const userPath = userType.toLowerCase() + "s";
-  const url = `/api/v1/${userPath}/cases/${caseKey}`;
-  try {
-    const response = await axiosInstance.get(url);
-    return response.data.data.payload;
-  } catch (error) {
-    console.error("Error fetching mail by id:", error);
     throw error;
   }
 };
