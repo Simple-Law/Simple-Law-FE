@@ -42,7 +42,11 @@ const ManageUserList = () => {
     {
       title: "상태",
       key: "status",
-      render: (_, record) => <AccountStatusTag status={record.status} />,
+      render: (_, record) => (
+        <div>
+          <AccountStatusTag status={record.status} />
+        </div>
+      ),
     },
   ];
 

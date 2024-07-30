@@ -106,8 +106,12 @@ DetailStatusTag.propTypes = {
   userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
 };
 
+/**
+ * 활성화 : JOIN
+ * 비활성화 : WAIT, WITHDRAW
+ */
 const AccountStatusTag = ({ status }) => {
-  return status ? (
+  return status === "JOIN" ? (
     <StyledTag className={"status-tag true"}>활성화</StyledTag>
   ) : (
     <StyledTag className={"status-tag false"}>비활성화</StyledTag>
@@ -115,7 +119,7 @@ const AccountStatusTag = ({ status }) => {
 };
 
 AccountStatusTag.propTypes = {
-  status: PropTypes.bool.isRequired,
+  status: PropTypes.oneOf(["JOIN", "WAIT", "WITHDRAW"]).isRequired,
 };
 
 export { StatusTag, AccountStatusTag, DetailStatusTag };
