@@ -14,7 +14,6 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setD
 
   const handleFileChange = info => {
     let newFileList = [...info.fileList];
-    newFileList = newFileList.slice(-1);
     setFileList(newFileList);
     setPendingFiles(newFileList.map(file => file.originFileObj)); // 문서 첨부 파일 설정
   };
@@ -167,6 +166,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setD
                   onSuccess("ok");
                 }, 0);
               }}
+              multiple
             >
               <StyledButton icon={<PaperClipOutlined />}>파일 선택</StyledButton>
             </Upload>

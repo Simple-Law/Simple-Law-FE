@@ -12,6 +12,7 @@ import { DetailStatusTag } from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowDown from "components/Icons/ArrowDown";
 import ConfirmModal from "components/modal/ConfirmModal";
+import { downloadAllFiles, downloadFile } from "apis/commonAPI";
 
 const { Search } = Input;
 
@@ -35,7 +36,7 @@ const DetailPage = () => {
           console.log("fetchedMail", fetchedMail);
           setMailData(fetchedMail);
         } catch (error) {
-          console.error("Error fetching mail by id:", error);
+          console.error("Error fetching mail:", error);
         }
       };
       fetchMail();
@@ -78,6 +79,14 @@ const DetailPage = () => {
     navigate(`/mail/quest/${id}/reply`);
   };
 
+  const handleDownloadFile = async fileId => {
+    await downloadFile(fileId);
+  };
+
+  const handleDownloadAllFiles = async () => {
+    await downloadAllFiles(mailData.contentFileList);
+  };
+
   const sortedReplies = useMemo(() => {
     return mailData
       ? (mailData.replies || []).slice().sort((a, b) => moment(b.requestAtDesc).diff(moment(a.requestAtDesc)))
@@ -89,6 +98,12 @@ const DetailPage = () => {
   }
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
+
+  const renderFileSize = size => {
+    if (size < 1024) return `${size} bytes`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  };
 
   return (
     <>
@@ -178,30 +193,38 @@ const DetailPage = () => {
               </div>
             </div>
           </div>
-
-          <div className='mt-4 mb-6 pl-[20px]'>
-            <div className='justify-start items-center gap-3 flex mb-[10px]'>
-              <div className='text-gray-500 text-sm font-semibold  leading-normal'>
-                첨부파일 3개
-                <span className='text-slate-400 text-sm font-normal  leading-normal'>(35.2MB)</span>
+          {mailData && mailData.contentFileList.length > 0 && (
+            <div className='mt-4 mb-6 pl-[20px]'>
+              <div className='justify-start items-center gap-3 flex mb-[10px]'>
+                <div className='text-gray-500 text-sm font-semibold leading-normal'>
+                  첨부파일 {mailData.contentFileList.length}개
+                  <span className='text-slate-400 text-sm font-normal leading-normal'>
+                    ({renderFileSize(mailData.contentFileList.reduce((acc, file) => acc + file.fileSize, 0))})
+                  </span>
+                </div>
+                <div
+                  onClick={handleDownloadAllFiles}
+                  className='text-blue-500 text-sm font-medium leading-tight cursor-pointer'
+                >
+                  모두 저장
+                </div>
               </div>
-              <div className='text-blue-500 text-sm font-medium  leading-tight'>모두 저장</div>
+              <div className='justify-start items-start gap-2 inline-flex'>
+                {mailData.contentFileList.map(file => (
+                  <div
+                    key={file.fileId}
+                    className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex cursor-pointer'
+                    onClick={() => handleDownloadFile(file.fileId)}
+                  >
+                    <div className='text-gray-500 text-[0.8125rem] font-normal leading-normal'>{file.fileName}</div>
+                    <div className='text-slate-400 text-[0.8125rem] font-normal leading-normal'>
+                      ({renderFileSize(file.fileSize)})
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className='justify-start items-start gap-2 inline-flex'>
-              <div className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex'>
-                <div className='text-gray-500 text-[0.8125rem] font-normal  leading-normal'>파일_1.pdf</div>
-                <div className='text-slate-400 text-[0.8125rem] font-normal  leading-normal'>(35.2MB)</div>
-              </div>
-              <div className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex'>
-                <div className='text-gray-500 text-[0.8125rem] font-normal  leading-normal'>파일_1.pdf</div>
-                <div className='text-slate-400 text-[0.8125rem] font-normal  leading-normal'>(35.2MB)</div>
-              </div>
-              <div className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex'>
-                <div className='text-gray-500 text-[0.8125rem] font-normal  leading-normal'>파일_1.pdf</div>
-                <div className='text-slate-400 text-[0.8125rem] font-normal  leading-normal'>(35.2MB)</div>
-              </div>
-            </div>
-          </div>
+          )}
 
           <div className='text-zinc-800 text-base font-normal pt-[24px] pl-[20px]  mt-[24px] border-t border-solid border-slate-100'>
             <div dangerouslySetInnerHTML={{ __html: mailData.content }} />

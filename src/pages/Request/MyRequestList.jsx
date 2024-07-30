@@ -33,7 +33,7 @@ const QuestPage = () => {
   console.log("data", data);
   useEffect(() => {
     dispatch(fetchMailsAction(userType));
-  }, [dispatch]);
+  }, [dispatch, userType]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
