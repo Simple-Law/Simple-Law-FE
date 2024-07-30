@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Tag } from "antd";
-import { statusLabels } from "utils/statusLabels";
+import { statusLabels, subStatusLabels } from "utils/statusLabels";
 
 const StyledTag = styled(Tag)`
   &.status-tag {
@@ -71,6 +71,14 @@ const StyledTag = styled(Tag)`
       background-color: #ff4242;
     }
   }
+  &.status-tag.approved {
+    border: solid 1px #4274ff;
+    background: #ffffff;
+    color: #4274ff;
+    &::before {
+      display: none;
+    }
+  }
 `;
 
 const StatusTag = ({ status, userType }) => {
@@ -89,7 +97,16 @@ StatusTag.propTypes = {
   userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
 };
 
-export const AccountStatusTag = ({ status }) => {
+const DetailStatusTag = ({ status }) => {
+  return <StyledTag className={`status-tag ${status}`}>{subStatusLabels[status]}</StyledTag>;
+};
+
+DetailStatusTag.propTypes = {
+  status: PropTypes.string.isRequired,
+  userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
+};
+
+const AccountStatusTag = ({ status }) => {
   return status ? (
     <StyledTag className={"status-tag true"}>활성화</StyledTag>
   ) : (
@@ -101,4 +118,4 @@ AccountStatusTag.propTypes = {
   status: PropTypes.bool.isRequired,
 };
 
-export default StatusTag;
+export { StatusTag, AccountStatusTag, DetailStatusTag };
