@@ -1,6 +1,7 @@
 // auth 관련 액션 타입
 export const LOGIN = "LOGIN";
 export const LOGOUT = "LOGOUT";
+export const REFRESH_ACCESS_TOKEN = "REFRESH_ACCESS_TOKEN";
 
 // mail 관련 액션 타입
 export const SET_MAILS = "SET_MAILS";

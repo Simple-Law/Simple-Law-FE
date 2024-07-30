@@ -1,15 +1,18 @@
 import axios from "axios";
 import { store } from "../redux/store";
+import { refreshAccessToken } from "../redux/actions/authActions";
+import { logout } from "../redux/actions/authActions";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
 });
 
-// Axios 요청 인터셉터를 사용하여 토큰을 자동으로 헤더에 추가
 axiosInstance.interceptors.request.use(
   config => {
-    const state = store.getState();
-    const token = state.auth.tokens.accessToken;
+    const token = cookies.get("accessToken");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -22,10 +25,47 @@ axiosInstance.interceptors.request.use(
   },
 );
 
-// Axios 응답 인터셉터를 사용하여 응답을 처리
+const getNewAccessToken = async () => {
+  const refreshToken = cookies.get("refreshToken");
+
+  if (refreshToken) {
+    try {
+      const response = await axiosInstance.post("/auth/refresh", {
+        refreshToken: refreshToken,
+      });
+      const newAccessToken = response.data.accessToken;
+      store.dispatch(refreshAccessToken(newAccessToken));
+      return newAccessToken;
+    } catch (error) {
+      console.error("Failed to refresh access token", error);
+      store.dispatch(logout());
+      return null;
+    }
+  }
+
+  return null;
+};
+
 axiosInstance.interceptors.response.use(
   response => response,
-  error => Promise.reject(error),
+  async error => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      const newAccessToken = await getNewAccessToken();
+
+      if (newAccessToken) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+        return axiosInstance(originalRequest);
+      }
+    }
+
+    return Promise.reject(error);
+  },
 );
 
 export default axiosInstance;
