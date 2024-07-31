@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, Input, Select, Table } from "antd";
 import UserTag from "components/tags/UserTag";
-import { LoginStatusTag } from "components/tags/StatusTag";
+import { AccountStatusTag } from "components/tags/StatusTag";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import { useMessageApi } from "components/messaging/MessageProvider";
@@ -11,29 +11,10 @@ import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
 import SearchCheckbox from "components/input/SearchCheckbox";
+import { formatDate } from "utils/dateUtil";
+import { searchUserAPI } from "apis/manageUserAPI";
 
 const ManageUserList = () => {
-  const mockData = [
-    {
-      id: "law123",
-      name: "김변호",
-      userType: "LAWYER",
-      email: "law123@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-      loginStatus: false,
-    },
-    {
-      id: "mem123",
-      name: "김의뢰",
-      userType: "MEMBER",
-      email: "mem123@simplelaw.com",
-      joinDate: "2023.09.01",
-      accessDate: "2024.06.16",
-      loginStatus: true,
-    },
-  ];
-
   const columns = [
     {
       width: 32,
@@ -41,30 +22,31 @@ const ManageUserList = () => {
     {
       title: "이름",
       key: "name",
-      dataIndex: "name",
-      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
+      render: (_, record) => <UserNameColumn mainText={record.name} subText={record.email} />,
     },
     {
       title: "회원구분",
-      key: "userType",
-      dataIndex: "userType",
-      render: (_, record) => <UserTag userType={record.userType} />,
+      key: "type",
+      render: (_, record) => <UserTag userType={record.type} />,
     },
     {
       title: "가입일",
-      key: "joinDate",
-      dataIndex: "joinDate",
+      key: "createdAt",
+      render: (_, record) => <span>{formatDate(record.createdAt)}</span>,
     },
     {
       title: "최근 접속일",
-      key: "accessDate",
-      dataIndex: "accessDate",
+      key: "latestAccessAt",
+      render: (_, record) => <span>{formatDate(record.latestAccessAt)}</span>,
     },
     {
       title: "상태",
-      key: "loginStatus",
-      dataIndex: "loginStatus",
-      render: (_, record) => <LoginStatusTag status={record.loginStatus} />,
+      key: "status",
+      render: (_, record) => (
+        <div>
+          <AccountStatusTag status={record.status} />
+        </div>
+      ),
     },
   ];
 
@@ -74,21 +56,22 @@ const ManageUserList = () => {
   const { paginationConfig } = useCommonContext();
   const pageTitle = "전체 사용자";
 
+  //TODO: kmee js 분리
   const userOptions = [
     { label: "의뢰인", value: "MEMBER" },
     { label: "변호사", value: "LAWYER" },
   ];
   const statusOptions = [
-    { label: "활성화", value: "ON" },
-    { label: "비활성화", value: "OFF" },
+    { label: "활성화", value: "JOIN" },
+    { label: "비활성화", value: "WITHDRAW" },
   ];
   const searchOptions = [
     { label: "이름", value: "name" },
     { label: "이메일", value: "email" },
   ];
   const dateOptions = [
-    { label: "가입일", value: "joinDate" },
-    { label: "최근접속일", value: "latestAccessDate" },
+    { label: "가입일", value: "createdAt" },
+    { label: "최근접속일", value: "latestlatestAccessAt" },
   ];
   const [typeList, setTypeList] = useState([]);
   const [statusList, setStatusList] = useState([]);
@@ -98,6 +81,10 @@ const ManageUserList = () => {
     email: "",
     typeList: typeList,
     statusList: statusList,
+    // joinStartAt: "",
+    // joinEndAt: "",
+    // latestAccessStartAt: "",
+    // latestAccessEndAt: "",
     pageNumber: 1,
     pageSize: paginationConfig.pageSize,
   };
@@ -107,7 +94,7 @@ const ManageUserList = () => {
   const [selectedUser, setSelectedUser] = useState({});
 
   useLayoutEffect(() => {
-    getAdminList();
+    getUserList();
   }, []);
 
   useEffect(() => {
@@ -117,13 +104,15 @@ const ManageUserList = () => {
   /**
    * 회원관리 목록 조회
    */
-  const getAdminList = async () => {
-    console.log("getAdminList : ", searchParams);
+  //TODO: kmee 기간검색, 조건검색 추가. 상태 검색 data 확인
+  const getUserList = async () => {
+    console.log("getUserList : ", searchParams);
     dispatch(showSkeletonLoading());
-    const response = await mockData;
+    const response = await searchUserAPI(searchParams);
     try {
-      response.forEach(item => (item.key = item.id));
-      setData(response);
+      if (response.status === 200 && response.data.status === "success") {
+        setData(response.data.data.payload);
+      }
     } catch (e) {
       console.log(e);
     } finally {
@@ -179,7 +168,7 @@ const ManageUserList = () => {
 
             <div className='flex justify-end gap-[10px] '>
               <Button>초기화</Button>
-              <Button onClick={getAdminList}>검색</Button>
+              <Button onClick={getUserList}>검색</Button>
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import axiosInstance from "./axiosConfig";
  * @param {Object} adminData - 관리자의 데이터 객체
  * @returns {Promise} 응답 객체
  */
-export const insertAdmin = adminData => {
+export const postAdminAPI = adminData => {
   try {
     const response = axiosInstance.post("/api/v1/admins", adminData);
     return response;
@@ -20,7 +20,7 @@ export const insertAdmin = adminData => {
  * @param {Object} adminData - 관리자의 수정된 데이터 객체
  * @returns {Promise} 응답 객체
  */
-export const updateAdmin = (adminKey, adminData) => {
+export const putAdminAPI = (adminKey, adminData) => {
   try {
     const response = axiosInstance.put(`/api/v1/admins/${adminKey}`, adminData);
     return response;
