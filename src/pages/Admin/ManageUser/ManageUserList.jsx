@@ -178,7 +178,7 @@ const ManageUserList = () => {
         ) : (
           <Table
             className='border-t-2'
-            rowKey='id'
+            rowKey={data => data.key}
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}
