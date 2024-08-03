@@ -22,7 +22,7 @@ export const searchAdminAPI = params => {
 export const searchUserAPI = params => {
   console.log("searchUserAPI params:", params);
   try {
-    const response = axiosInstance.get("/api/v1/admins/users", params);
+    const response = axiosInstance.get("/api/v1/admins/users", { params });
     return response;
   } catch (error) {
     console.error("Error fetching searchUserAPI:", error);

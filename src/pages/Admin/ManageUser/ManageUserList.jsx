@@ -13,6 +13,7 @@ import UserNameColumn from "components/table/UserNameColumn";
 import { SearchCheckbox, SearchDatePicker } from "components/input/SearchItems";
 import { formatDate } from "utils/dateUtil";
 import { searchUserAPI } from "apis/manageUserAPI";
+import dayjs from "dayjs";
 
 const ManageUserList = () => {
   const columns = [
@@ -73,16 +74,16 @@ const ManageUserList = () => {
     { label: "가입일", value: "createdAt" },
     { label: "최근접속일", value: "latestlatestAccessAt" },
   ];
-  const [typeList, setTypeList] = useState([]);
-  const [statusList, setStatusList] = useState([]);
+  const [typeList, setTypeList] = useState(userOptions.map(option => option.value));
+  const [statusList, setStatusList] = useState(statusOptions.map(option => option.value));
 
   const initialSearchParams = {
     name: "",
     email: "",
     typeList: typeList,
     statusList: statusList,
-    // joinStartAt: "",
-    // joinEndAt: "",
+    joinStartAt: "",
+    joinEndAt: "",
     // latestAccessStartAt: "",
     // latestAccessEndAt: "",
     pageNumber: 1,
@@ -90,12 +91,17 @@ const ManageUserList = () => {
   };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
+  const [paramDate, setParamDate] = useState({
+    startDate: dayjs().subtract(1, "month"),
+    endDate: dayjs(),
+  });
+
   const [data, setData] = useState([]);
   const [selectedUser, setSelectedUser] = useState({});
 
   useLayoutEffect(() => {
     getUserList();
-  }, []);
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({ ...searchParams, typeList, statusList });
@@ -107,9 +113,18 @@ const ManageUserList = () => {
   //TODO: kmee 기간검색, 조건검색 추가. 상태 검색 data 확인
   const getUserList = async () => {
     console.log("getUserList : ", searchParams);
-    dispatch(showSkeletonLoading());
-    const response = await searchUserAPI(searchParams);
+
     try {
+      const apiParams = {
+        ...searchParams,
+        typeList: searchParams.typeList.join(","),
+        statusList: searchParams.statusList.join(","),
+        joinStartAt: paramDate.startDate.toISOString(),
+        joinEndAt: paramDate.endDate.toISOString(),
+      };
+
+      dispatch(showSkeletonLoading());
+      const response = await searchUserAPI(apiParams);
       if (response.status === 200 && response.data.status === "success") {
         setData(response.data.data.payload);
       }
@@ -149,6 +164,7 @@ const ManageUserList = () => {
                     options={dateOptions}
                     defaultValue={dateOptions[0]}
                   />
+                  <SearchDatePicker paramDate={paramDate} setParamDate={setParamDate} />
                 </TdDiv>
               </div>
               <div className='flex'>

@@ -5,10 +5,12 @@ import { dateFormat } from "utils/dateUtil";
 import dayjs from "dayjs";
 import localeData from "dayjs/plugin/localeData";
 import weekday from "dayjs/plugin/weekday";
-
 dayjs.extend(weekday);
 dayjs.extend(localeData);
 
+/**
+ * 목록 검색용 기간 선택 컴포넌트
+ */
 const SearchDatePicker = ({ paramDate, setParamDate }) => {
   const { RangePicker } = DatePicker;
   const today = dayjs();
@@ -56,6 +58,13 @@ const SearchDatePicker = ({ paramDate, setParamDate }) => {
       </div>
     </div>
   );
+};
+SearchDatePicker.propTypes = {
+  paramDate: PropTypes.shape({
+    startDate: PropTypes.object.isRequired,
+    endDate: PropTypes.object.isRequired,
+  }).isRequired,
+  setParamDate: PropTypes.func.isRequired,
 };
 
 /**
