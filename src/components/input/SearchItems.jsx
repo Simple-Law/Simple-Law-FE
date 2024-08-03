@@ -1,5 +1,62 @@
 import { useEffect } from "react";
+import { DatePicker, Tag } from "antd";
 import PropTypes from "prop-types";
+import { dateFormat } from "utils/dateUtil";
+import dayjs from "dayjs";
+import localeData from "dayjs/plugin/localeData";
+import weekday from "dayjs/plugin/weekday";
+
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+
+const SearchDatePicker = ({ paramDate, setParamDate }) => {
+  const { RangePicker } = DatePicker;
+  const today = dayjs();
+
+  const dateTagList = [
+    { label: "오늘", value: today },
+    { label: "1주", value: today.subtract(1, "week") },
+    { label: "15일", value: today.subtract(15, "day") },
+    { label: "1개월", value: today.subtract(1, "month") },
+    { label: "3개월", value: today.subtract(3, "month") },
+    { label: "6개월", value: today.subtract(6, "month") },
+  ];
+
+  /**
+   * 날짜 태그 클릭 이벤트
+   * @param {dayjs} tagDate
+   */
+  const clickDateTag = tagDate => {
+    setParamDate({
+      ...paramDate,
+      startDate: tagDate,
+    });
+  };
+
+  return (
+    <div className='flex'>
+      <RangePicker
+        format={dateFormat}
+        defaultValue={[paramDate.startDate, paramDate.endDate]}
+        value={[paramDate.startDate, paramDate.endDate]}
+        maxDate={today}
+      />
+      <div>
+        {dateTagList.map((date, idx) => (
+          <Tag
+            className='ml-[3px] cursor-pointer'
+            key={idx}
+            onClick={() => {
+              clickDateTag(date.value);
+            }}
+          >
+            {date.label}
+          </Tag>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 /**
  * 목록 검색용 체크박스 컴포넌트
@@ -7,7 +64,7 @@ import PropTypes from "prop-types";
 const SearchCheckbox = ({ optionList, checkedOptions, setCheckedOptions }) => {
   /**
    * 개별 체크박스 변경 이벤트
-   * @param {*} e
+   * @param {event} e
    */
   const changeCheck = e => {
     const { value } = e.target;
@@ -20,7 +77,7 @@ const SearchCheckbox = ({ optionList, checkedOptions, setCheckedOptions }) => {
 
   /**
    * 전체 체크박스 변경 이벤트
-   * @param {*} e
+   * @param {event} e
    */
   const changeAllCheck = e => {
     if (e.target.checked) {
@@ -74,4 +131,4 @@ SearchCheckbox.propTypes = {
   setCheckedOptions: PropTypes.func.isRequired,
 };
 
-export default SearchCheckbox;
+export { SearchDatePicker, SearchCheckbox };

@@ -10,7 +10,7 @@ import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
-import SearchCheckbox from "components/input/SearchCheckbox";
+import { SearchCheckbox, SearchDatePicker } from "components/input/SearchItems";
 import { formatDate } from "utils/dateUtil";
 import { searchUserAPI } from "apis/manageUserAPI";
 
