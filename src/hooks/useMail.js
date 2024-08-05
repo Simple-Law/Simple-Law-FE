@@ -7,9 +7,7 @@ import { addReply, createMail } from "../redux/actions/mailActions"; // 경로�
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export const useMail = (id, mode, user, editorRef) => {
-  const [pendingImages, setPendingImages] = useState([]);
-  const [deletedImages, setDeletedImages] = useState([]);
+export const useMail = (id, mode) => {
   const [pendingFiles, setPendingFiles] = useState([]);
   const [existingMail, setExistingMail] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,21 +25,13 @@ export const useMail = (id, mode, user, editorRef) => {
       isCheckboxChecked: false,
     },
     onSubmit: async values => {
-      await deleteImagesFromServer();
-      const imageUrls = await uploadImagesToServer();
       const fileUploadIdList = await uploadFilesToServer(); // 문서 첨부 파일 업로드
-
-      const contentWithImages = editorRef.current
-        .getEditor()
-        .root.innerHTML.replace(/<img src="data:([^"]*)">/g, (match, p1, offset, string) => {
-          const url = imageUrls.shift();
-          return `<img src="${url}">`;
-        });
 
       const dataToSend = {
         categoryKey: values.categoryKey,
         title: values.title,
-        content: contentWithImages,
+
+        content: values.content,
         fileUploadIdList: fileUploadIdList || [],
       };
 
@@ -104,35 +94,6 @@ export const useMail = (id, mode, user, editorRef) => {
     }
   }, [existingMail]);
 
-  const uploadImagesToServer = async () => {
-    const imageUrls = [];
-    const currentDate = new Date().toISOString().split("T")[0];
-    for (const file of pendingImages) {
-      const fileUploadId = await uploadToServer(file);
-      if (fileUploadId) {
-        const fileUrl = `https://prod-simplelaw-api-server-bucket.s3.ap-northeast-2.amazonaws.com/TEMP/${currentDate}/${fileUploadId}.jpg`;
-        imageUrls.push(fileUrl);
-      }
-    }
-    return imageUrls;
-  };
-
-  const uploadToServer = async file => {
-    const formData = new FormData();
-    formData.append("files", file);
-
-    try {
-      const response = await uploadFile(formData);
-      const fileUploadId = response?.data?.payload[0]?.fileUploadId;
-      messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
-      return fileUploadId;
-    } catch (error) {
-      messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
-      console.error("Error uploading file:", error);
-      throw error;
-    }
-  };
-
   const uploadFilesToServer = async () => {
     const fileUploadIdList = [];
     for (const file of pendingFiles) {
@@ -165,23 +126,11 @@ export const useMail = (id, mode, user, editorRef) => {
     }
   };
 
-  const deleteImagesFromServer = async () => {
-    for (const url of deletedImages) {
-      try {
-        await deleteFile(url);
-        console.log("Image deleted:", url);
-      } catch (error) {
-        console.error("Error deleting image:", error);
-      }
-    }
-  };
-
   return {
     formik,
     loading,
     existingMail,
-    setPendingImages,
+
     setPendingFiles, // 문서 첨부 파일 상태 설정 함수 추가
-    setDeletedImages,
   };
 };
