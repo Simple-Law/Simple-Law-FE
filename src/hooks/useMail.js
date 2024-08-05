@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useMessageApi } from "components/messaging/MessageProvider";
-import { deleteFile, uploadFile } from "apis/commonAPI"; // 경로를 확인하세요
-import { getMailById, updateMail } from "apis/mailsApi"; // 경로를 확인하세요
-import { addReply, createMail } from "../redux/actions/mailActions"; // 경로를 확인하세요
+import { uploadFile } from "apis/commonAPI";
+import { getMailById, updateMail } from "apis/mailsApi";
+import { addReply, createMail } from "../redux/actions/mailActions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -130,7 +130,6 @@ export const useMail = (id, mode) => {
     formik,
     loading,
     existingMail,
-
     setPendingFiles, // 문서 첨부 파일 상태 설정 함수 추가
   };
 };
