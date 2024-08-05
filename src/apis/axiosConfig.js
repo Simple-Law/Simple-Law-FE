@@ -63,7 +63,9 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       }
     }
-
+    if (error.response && error.response.status === 401 && originalRequest._retry) {
+      store.dispatch(logout()); // 리프레시 토큰이 만료된 경우 로그아웃 처리
+    }
     return Promise.reject(error);
   },
 );
