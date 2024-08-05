@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState } from "react";
 import { Input, Form, Button, Upload } from "antd";
 import { PaperClipOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
@@ -18,26 +18,6 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
     setPendingFiles(newFileList.map(file => file.originFileObj)); // 문서 첨부 파일 설정
   };
 
-  const imageHandler = useCallback(() => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-
-    input.addEventListener("change", () => {
-      const file = input.files[0];
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        const editor = quillRef.current.getEditor();
-        const range = editor.getSelection();
-
-        editor.setSelection(range.index + 1);
-      };
-      reader.readAsDataURL(file);
-    });
-  }, []);
-
   const handleChange = (content, delta, source, editor) => {
     formik.setFieldValue("content", editor.getHTML());
   };
@@ -49,9 +29,7 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
         [{ size: [] }],
         ["bold", "italic", "underline", "strike", "blockquote"],
         [{ list: "ordered" }, { list: "bullet" }, { align: [] }],
-        ["image"],
       ],
-      handlers: { image: imageHandler },
     },
     clipboard: {
       matchVisual: false,
