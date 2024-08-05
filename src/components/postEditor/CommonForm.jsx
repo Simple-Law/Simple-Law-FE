@@ -73,7 +73,6 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
     "list",
     "bullet",
     "align",
-    "image",
   ];
 
   return (
