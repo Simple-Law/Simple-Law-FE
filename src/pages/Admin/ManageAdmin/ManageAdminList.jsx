@@ -173,7 +173,7 @@ const ManageAdminList = () => {
         ) : (
           <Table
             className='border-t-2'
-            rowKey='id'
+            rowKey={data => data.adminKey}
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}
