@@ -42,9 +42,7 @@ export const useMail = (id, mode) => {
           await updateMail(id, { status: "resolved" });
           messageApi.success("답변이 등록되었습니다!");
         } else {
-          console.log("👉dataToSend", dataToSend);
-          const response = await dispatch(createMail(dataToSend));
-          console.log("Response:", response);
+          await dispatch(createMail(dataToSend));
           messageApi.success("게시글이 등록되었습니다!");
         }
         formik.resetForm();
