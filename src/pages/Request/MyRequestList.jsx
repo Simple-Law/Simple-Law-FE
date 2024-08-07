@@ -30,7 +30,6 @@ const QuestPage = () => {
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
 
-  console.log("data", data);
   useEffect(() => {
     dispatch(fetchMailsAction(userType));
   }, [dispatch, userType]);
@@ -103,7 +102,7 @@ const QuestPage = () => {
     {
       title: (
         <div>
-          <span style={{ width: "27px", display: "inline-block" }}>분야</span>
+          <span style={{ display: "inline-block" }}>분야</span>
           <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
           <span>세부 분야</span>
         </div>
@@ -114,9 +113,9 @@ const QuestPage = () => {
       className: "category-column",
       render: (_, record) => (
         <>
-          <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
+          <span>{record.category}</span>
           <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
-          <span>{record.anytime}</span>
+          <span style={{ display: "inline-block" }}>{record.subCategory}</span>
         </>
       ),
     },
