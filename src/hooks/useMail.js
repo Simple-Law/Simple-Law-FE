@@ -90,7 +90,7 @@ export const useMail = (id, mode) => {
         isCheckboxChecked: existingMail.isCheckboxChecked || false,
       });
     }
-  }, [existingMail]);
+  }, [existingMail, formik]);
 
   const uploadFilesToServer = async () => {
     const fileUploadIdList = [];
