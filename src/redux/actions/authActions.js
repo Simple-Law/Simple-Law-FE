@@ -9,6 +9,7 @@ export const login = (tokens, user) => {
   // 쿠키에 토큰 저장
   cookies.set("accessToken", tokens.accessToken, { path: "/" });
   cookies.set("refreshToken", tokens.refreshToken, { path: "/" });
+  cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" }); // 액세스 토큰 만료 시간 저장
   return {
     type: LOGIN,
     payload: { tokens, user },
@@ -19,6 +20,7 @@ export const logout = () => {
   // 쿠키에서 토큰 제거
   cookies.remove("accessToken", { path: "/" });
   cookies.remove("refreshToken", { path: "/" });
+  cookies.remove("expiresAt", { path: "/" }); // 액세스 토큰 만료 시간 제거
   return {
     type: LOGOUT,
   };
@@ -43,6 +45,7 @@ export const loginUserAction = (values, userType) => async dispatch => {
     // 쿠키에 토큰 저장
     cookies.set("accessToken", tokens.accessToken, { path: "/" });
     cookies.set("refreshToken", tokens.refreshToken, { path: "/" });
+    cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" }); // 액세스 토큰 만료 시간 저장
 
     dispatch(login(tokens, user));
     dispatch(hideUserLoading());
