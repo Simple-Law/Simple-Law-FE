@@ -1,8 +1,9 @@
 import {
   createMail as apiCreateMail,
   fetchMails as apiFetchMails,
-  updateMail as apiUpdateMail,
   addReply as apiAddReply,
+  markAsImportant,
+  unMarkAsImportant,
 } from "apis/mailsApi";
 import { SET_MAILS, SET_DATA, UPDATE_COUNTS, SET_TABLE_DATA, ADD_REPLY, TOGGLE_IMPORTANT } from "../types";
 import { showUserLoading, hideUserLoading } from "../../redux/actions/loadingAction";
@@ -67,6 +68,34 @@ export const addReply = (id, reply) => async dispatch => {
   }
 };
 
+// export const toggleImportant = id => async (dispatch, getState) => {
+//   const state = getState();
+//   const mail = state.mail.mails.find(mail => mail.caseKey === Number(id));
+//   if (!mail) {
+//     console.error(`Mail with id ${id} not found.`);
+//     return;
+//   }
+
+//   const updatedMail = { ...mail, isImportant: !mail.isImportant };
+
+//   try {
+//     await apiUpdateMail(id, { isImportant: updatedMail.isImportant });
+
+//     // 상태 업데이트
+//     const updatedData = state.mail.data.map(item => (item.caseKey === Number(id) ? updatedMail : item));
+
+//     const filteredMails = updatedData.filter(mail => mail.status !== "trash");
+
+//     dispatch({ type: SET_DATA, payload: updatedData });
+//     dispatch({ type: SET_MAILS, payload: filteredMails });
+//     dispatch({ type: UPDATE_COUNTS, payload: updatedData });
+//     dispatch({ type: SET_TABLE_DATA, payload: { mails: filteredMails } });
+
+//     dispatch({ type: TOGGLE_IMPORTANT, payload: updatedMail });
+//   } catch (error) {
+//     console.error("Error updating importance:", error);
+//   }
+// };
 export const toggleImportant = id => async (dispatch, getState) => {
   const state = getState();
   const mail = state.mail.mails.find(mail => mail.caseKey === Number(id));
@@ -76,14 +105,19 @@ export const toggleImportant = id => async (dispatch, getState) => {
     return;
   }
 
+  const isCurrentlyImportant = mail.isImportant;
   const updatedMail = { ...mail, isImportant: !mail.isImportant };
 
   try {
-    await apiUpdateMail(id, { isImportant: updatedMail.isImportant });
+    // 현재 상태에 따라 적절한 API 호출
+    if (isCurrentlyImportant) {
+      await unMarkAsImportant(id);
+    } else {
+      await markAsImportant(id);
+    }
 
     // 상태 업데이트
     const updatedData = state.mail.data.map(item => (item.caseKey === Number(id) ? updatedMail : item));
-
     const filteredMails = updatedData.filter(mail => mail.status !== "trash");
 
     dispatch({ type: SET_DATA, payload: updatedData });
@@ -93,6 +127,6 @@ export const toggleImportant = id => async (dispatch, getState) => {
 
     dispatch({ type: TOGGLE_IMPORTANT, payload: updatedMail });
   } catch (error) {
-    console.error("Error updating importance:", error);
+    console.error("Error toggling importance:", error);
   }
 };

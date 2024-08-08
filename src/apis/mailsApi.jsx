@@ -9,10 +9,8 @@ import axiosInstance from "./axiosConfig";
  */
 export const fetchMails = async (userType, params) => {
   const userPath = userType && userType.toLowerCase() + "s"; // 기본값 설정
-  console.log("userPath", userPath);
   try {
     const response = await axiosInstance.get(`/api/v1/${userPath}/cases`, { params });
-    console.log(response.data.data);
     const formattedData = response.data.data.payload
       .map(item => ({
         ...item,
@@ -118,6 +116,38 @@ export const fetchCaseCategories = async () => {
     return response.data.data.payload;
   } catch (error) {
     console.error("Error fetching case categories:", error);
+    throw error;
+  }
+};
+
+/**
+ * 중요 상태를 토글하는 API (POST)
+ * @param {Number} caseKey - 중요 상태를 토글할 의뢰의 케이스 키
+ * @returns {Promise} 성공 여부
+ */
+export const markAsImportant = async caseKey => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/members/cases/${caseKey}/important`);
+    // return response.data;
+    console.log("markAsImportant", response.data);
+  } catch (error) {
+    console.error("Error marking as important:", error);
+    throw error;
+  }
+};
+
+/**
+ * 중요 상태를 해제하는 API (DELETE)
+ * @param {Number} caseKey - 중요 상태를 해제할 의뢰의 케이스 키
+ * @returns {Promise} 성공 여부
+ */
+export const unMarkAsImportant = async caseKey => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/members/cases/${caseKey}/important`);
+    // return response.data;
+    console.log("unMarkAsImportant", response.data);
+  } catch (error) {
+    console.error("Error unmarking as important:", error);
     throw error;
   }
 };
