@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Dropdown, Input, Menu, Table, Skeleton } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
-import StatusTag from "components/tags/StatusTag";
+import { StatusTag } from "components/tags/StatusTag";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
@@ -29,7 +29,7 @@ const QuestPage = () => {
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
-
+  console.log("data", data);
   useEffect(() => {
     dispatch(fetchMailsAction());
   }, [dispatch]);
@@ -75,7 +75,7 @@ const QuestPage = () => {
       width: 48,
       onCell: record => ({
         onClick: e => {
-          handleToggleImportant(record.id, e);
+          handleToggleImportant(record.caseKey, e);
         },
       }),
       render: (_, record) => (
@@ -229,7 +229,7 @@ const QuestPage = () => {
         }}
         onRow={(record, rowIndex) => {
           return {
-            onClick: () => navigate(`/detail/${record.key}`),
+            onClick: () => navigate(`/detail/${record.caseKey}`),
           };
         }}
       />

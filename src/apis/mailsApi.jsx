@@ -1,28 +1,31 @@
 import axios from "axios";
 import moment from "moment";
 import { formatDate } from "utils/dateUtil";
-
+import axiosInstance from "./axiosConfig";
 const glitchURL = axios.create({
   baseURL: process.env.REACT_APP_GLITCH_URL,
 });
+
 /**
- * 메일을 가져오는 API
+ * 의뢰 목록을 가져오는 API
+ * @param {Object} params - 검색 및 페이징 파라미터
  * @returns {Promise}
  */
-export const fetchMails = async () => {
+export const fetchMails = async params => {
   try {
-    const response = await glitchURL.get("/mails");
-    const formattedData = response.data
+    const response = await axiosInstance.get("/api/v1/members/cases", { params });
+    const formattedData = response.data.data.payload
       .map(item => ({
         ...item,
-        key: item.id,
-        category: "Text",
-        rawSentAt: item.sentAt,
-        sentAt: formatDate(item.sentAt),
-        time: item.time,
-        replies: item.replies || [],
+        key: item.caseKey,
+        category: item.mainCaseCategoryName,
+        subCategory: item.subCaseCategoryName,
+        rawRequestedAt: item.requestedAt,
+        requestedAt: formatDate(item.requestedAt),
+        status: item.displayStatus,
+        additionList: item.additionList,
       }))
-      .sort((a, b) => moment(b.rawSentAt).diff(moment(a.rawSentAt)));
+      .sort((a, b) => moment(b.rawRequestedAt).diff(moment(a.rawRequestedAt)));
 
     return { data: formattedData, error: null };
   } catch (error) {
@@ -30,6 +33,7 @@ export const fetchMails = async () => {
     return { data: [], error };
   }
 };
+
 /**
  * 메일을 업데이트하는 API
  * @param {Number} id - 업데이트할 메일의 ID
@@ -43,56 +47,74 @@ export const updateMail = async (id, updateData) => {
     console.error("Error updating mail:", error);
   }
 };
+
 /**
  * 새로운 메일을 생성하는 API
  * @param {Object} mailData - 생성할 메일의 데이터 객체
  * @returns {Promise} 생성된 메일의 데이터
  */
-export const createMail = async mailData => {
+
+export const createMail = async requestData => {
   try {
-    const response = await glitchURL.post("/mails", mailData);
+    console.log("Request Data in createMail:", requestData);
+    const response = await axiosInstance.post("/api/v1/members/cases", requestData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response.data;
   } catch (error) {
-    console.error("Error creating mail:", error);
+    console.error("Error creating request:", error);
     throw error;
   }
 };
+
 /**
- * ID로 메일을 가져오는 API
- * @param {Number} id - 가져올 메일의 ID
- * @returns {Promise} 메일의 데이터
+ * 의뢰 상세 정보를 가져오는 API
+ * @param {Number} caseKey - 가져올 의뢰의 케이스 키
+ * @returns {Promise} 의뢰의 데이터
  */
-export const getMailById = async id => {
+export const getMailById = async caseKey => {
   try {
-    const response = await glitchURL.get(`/mails/${id}`);
-    return response.data;
+    const response = await axiosInstance.get(`/api/v1/members/cases/${caseKey}`);
+    return response.data.data.payload;
   } catch (error) {
     console.error("Error fetching mail by id:", error);
     throw error;
   }
 };
+
 /**
- * 메일에 답변을 추가하는 API
- * @param {Number} id - 회신을 추가할 메일의 ID
- * @param {String} reply - 추가할 회신 내용
- * @returns {Promise} 업데이트된 메일의 데이터
+ * 의뢰에 추가 요청을 추가하는 API
+ * @param {Number} caseKey - 추가 요청을 추가할 의뢰의 케이스 키
+ * @param {Object} additionData - 추가할 요청의 데이터 객체
+ * @returns {Promise} 업데이트된 의뢰의 데이터
  */
-export const addReply = async (id, reply) => {
+export const addReply = async (caseKey, additionData) => {
   try {
-    // 기존 메일 데이터를 가져옴
-    const mail = await getMailById(id);
-
-    // replies 배열이 없는 경우 초기화
-    const updatedReplies = mail.replies ? [...mail.replies, reply] : [reply];
-
-    // 메일 업데이트
-    const response = await glitchURL.patch(`/mails/${id}`, {
-      replies: updatedReplies,
+    const response = await axiosInstance.post(`/api/v1/members/cases/${caseKey}/additions`, additionData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-
     return response.data;
   } catch (error) {
     console.error("Error adding reply:", error);
+    throw error;
+  }
+};
+
+/**
+ * 세부 분야 카테고리를 가져오는 API
+ * @returns {Promise<Array>} 세부 분야 카테고리 목록
+ * @throws {Error} 데이터를 가져오는 도중 발생한 오류
+ */
+export const fetchCaseCategories = async () => {
+  try {
+    const response = await axiosInstance.get("/api/v1/categories/case");
+    return response.data.data.payload;
+  } catch (error) {
+    console.error("Error fetching case categories:", error);
     throw error;
   }
 };

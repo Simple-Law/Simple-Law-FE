@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { getRoleList } from "utils/userTypes";
 import { Select, Tag } from "antd";
 import styled from "styled-components";
-import { get } from "lodash";
 
 const userStatusList = [
   {

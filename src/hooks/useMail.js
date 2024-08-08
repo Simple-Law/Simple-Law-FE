@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useMessageApi } from "components/messaging/MessageProvider";
-import { deleteFile, uploadFile } from "apis/commonAPI";
-import { getMailById, updateMail } from "apis/mailsApi";
-import { addReply, createMail } from "../redux/actions/mailActions";
+import { deleteFile, uploadFile } from "apis/commonAPI"; // 경로를 확인하세요
+import { getMailById, updateMail } from "apis/mailsApi"; // 경로를 확인하세요
+import { addReply, createMail } from "../redux/actions/mailActions"; // 경로를 확인하세요
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export const useMail = (id, mode, user, editorRef) => {
   const [pendingImages, setPendingImages] = useState([]);
   const [deletedImages, setDeletedImages] = useState([]);
+  const [pendingFiles, setPendingFiles] = useState([]);
   const [existingMail, setExistingMail] = useState(null);
   const [loading, setLoading] = useState(true);
   const messageApi = useMessageApi();
@@ -20,7 +21,7 @@ export const useMail = (id, mode, user, editorRef) => {
     initialValues: {
       title: "",
       content: "",
-      category: "",
+      categoryKey: "", // categoryKey를 추가
       time: "",
       status: "preparing",
       isCheckboxChecked: false,
@@ -28,6 +29,8 @@ export const useMail = (id, mode, user, editorRef) => {
     onSubmit: async values => {
       await deleteImagesFromServer();
       const imageUrls = await uploadImagesToServer();
+      const fileUploadIdList = await uploadFilesToServer(); // 문서 첨부 파일 업로드
+
       const contentWithImages = editorRef.current
         .getEditor()
         .root.innerHTML.replace(/<img src="data:([^"]*)">/g, (match, p1, offset, string) => {
@@ -35,15 +38,12 @@ export const useMail = (id, mode, user, editorRef) => {
           return `<img src="${url}">`;
         });
 
-      const currentTime = new Date().toISOString();
       const dataToSend = {
-        ...values,
+        // categoryKey: values.category,
+        categoryKey: values.categoryKey,
+        title: values.title,
         content: contentWithImages,
-        status: mode === "reply" ? "resolved" : values.status || "preparing", // mode가 reply일 때만 resolved로 설정
-        sentAt: currentTime,
-        userId: user.id,
-        userName: user.name,
-        userType: user.type,
+        fileUploadIdList,
       };
 
       try {
@@ -53,7 +53,9 @@ export const useMail = (id, mode, user, editorRef) => {
           await updateMail(id, { status: "resolved" });
           messageApi.success("답변이 등록되었습니다!");
         } else {
-          await dispatch(createMail(dataToSend));
+          console.log("👉dataToSend", dataToSend);
+          const response = await dispatch(createMail(dataToSend));
+          console.log("Response:", response);
           messageApi.success("게시글이 등록되었습니다!");
         }
         formik.resetForm();
@@ -97,7 +99,7 @@ export const useMail = (id, mode, user, editorRef) => {
         title: existingMail.title || "",
         category: existingMail.category || "",
         time: existingMail.time || "",
-        status: "preparing", // 초기 상태를 preparing으로 설정
+        status: "preparing",
         isCheckboxChecked: existingMail.isCheckboxChecked || false,
       });
     }
@@ -128,6 +130,39 @@ export const useMail = (id, mode, user, editorRef) => {
     } catch (error) {
       messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
       console.error("Error uploading file:", error);
+      throw error;
+    }
+  };
+
+  const uploadFilesToServer = async () => {
+    const fileUploadIdList = [];
+    for (const file of pendingFiles) {
+      try {
+        const fileUploadId = await uploadFileToServer(file);
+        if (fileUploadId) {
+          fileUploadIdList.push(fileUploadId);
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+    return fileUploadIdList;
+  };
+
+  const uploadFileToServer = async file => {
+    const formData = new FormData();
+    formData.append("files", file);
+
+    try {
+      const response = await uploadFile(formData);
+      const fileUploadId = response?.data?.payload[0]?.fileUploadId;
+      console.log("Uploaded file ID:", fileUploadId); // 업로드된 파일 ID 출력
+      messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
+      return fileUploadId;
+    } catch (error) {
+      messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
+      console.error("Error uploading file:", error.response ? error.response.data : error.message);
+      throw error;
     }
   };
 
@@ -147,6 +182,7 @@ export const useMail = (id, mode, user, editorRef) => {
     loading,
     existingMail,
     setPendingImages,
+    setPendingFiles, // 문서 첨부 파일 상태 설정 함수 추가
     setDeletedImages,
   };
 };

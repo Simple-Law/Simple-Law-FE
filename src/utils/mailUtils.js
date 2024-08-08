@@ -3,7 +3,7 @@ export const filterMails = (data, statusKey) => {
     case "important":
       return data.filter(mail => mail.isImportant);
     case "trash":
-      return data.filter(mail => mail.status === "휴지통");
+      return data.filter(mail => mail.status === "trash");
     case "All_request":
       return data;
     default:

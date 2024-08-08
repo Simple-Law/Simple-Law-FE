@@ -5,7 +5,8 @@ import AuthButton from "components/button/AuthButton";
 import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
-import { getAdminsApi } from "apis/manageAdminAPI";
+import { searchAdminAPI } from "apis/manageUserAPI";
+import { postAdminAPI } from "apis/usersApi";
 import { formatDate } from "utils/dateUtil";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +23,7 @@ const ManageAdminList = () => {
     {
       title: "이름",
       key: "id",
-      render: (_, record) => <UserNameColumn userName={record.name} userId={record.id} />,
+      render: (_, record) => <UserNameColumn mainText={record.name} subText={record.id} />,
     },
     {
       title: "이메일",
@@ -32,7 +33,7 @@ const ManageAdminList = () => {
     {
       title: "권한",
       key: "userType",
-      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]?.role} />,
+      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]} />,
     },
     {
       title: "가입일",
@@ -85,7 +86,7 @@ const ManageAdminList = () => {
    */
   const getAdminList = async () => {
     dispatch(showSkeletonLoading());
-    const response = await getAdminsApi(searchParams);
+    const response = await searchAdminAPI(searchParams);
     try {
       if (response.status === 200 && response.data.status === "success") {
         setData(response.data.data.payload);
@@ -104,7 +105,7 @@ const ManageAdminList = () => {
   const insertAdmin = formatData => {
     console.log("insertAdmin", formatData);
     dispatch(showSkeletonLoading());
-    const response = insertAdmin(formatData);
+    const response = postAdminAPI(formatData);
     try {
       if (response.status === 200 && response.data.status === "success") {
         messageApi.success("관리자 계정이 등록되었습니다.");
@@ -172,7 +173,7 @@ const ManageAdminList = () => {
         ) : (
           <Table
             className='border-t-2'
-            rowKey='id'
+            rowKey={data => data.adminKey}
             columns={columns}
             dataSource={data}
             pagination={paginationConfig}

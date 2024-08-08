@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import styled from "styled-components";
 import { Tag } from "antd";
-import { statusLabels } from "utils/statusLabels";
+import { statusLabels, subStatusLabels } from "utils/statusLabels";
 
 const StyledTag = styled(Tag)`
   &.status-tag {
@@ -71,6 +71,14 @@ const StyledTag = styled(Tag)`
       background-color: #ff4242;
     }
   }
+  &.status-tag.approved {
+    border: solid 1px #4274ff;
+    background: #ffffff;
+    color: #4274ff;
+    &::before {
+      display: none;
+    }
+  }
 `;
 
 const StatusTag = ({ status, userType }) => {
@@ -89,16 +97,29 @@ StatusTag.propTypes = {
   userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
 };
 
-export const LoginStatusTag = ({ status }) => {
-  return status ? (
+const DetailStatusTag = ({ status }) => {
+  return <StyledTag className={`status-tag ${status}`}>{subStatusLabels[status]}</StyledTag>;
+};
+
+DetailStatusTag.propTypes = {
+  status: PropTypes.string.isRequired,
+  userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
+};
+
+/**
+ * 활성화 : JOIN
+ * 비활성화 : WAIT, WITHDRAW
+ */
+const AccountStatusTag = ({ status }) => {
+  return status === "JOIN" ? (
     <StyledTag className={"status-tag true"}>활성화</StyledTag>
   ) : (
     <StyledTag className={"status-tag false"}>비활성화</StyledTag>
   );
 };
 
-LoginStatusTag.propTypes = {
-  status: PropTypes.bool.isRequired,
+AccountStatusTag.propTypes = {
+  status: PropTypes.oneOf(["JOIN", "WAIT", "WITHDRAW"]).isRequired,
 };
 
-export default StatusTag;
+export { StatusTag, AccountStatusTag, DetailStatusTag };
