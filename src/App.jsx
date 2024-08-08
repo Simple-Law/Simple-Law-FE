@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Outlet, Navigate } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import CommonProvider from "contexts/CommonContext";
 import SignUpPage from "pages/SignUp/SignUp";
@@ -7,7 +7,6 @@ import LoginPage from "pages/Login/Login";
 import Header from "components/layout/Header";
 import AppLayout from "components/messaging/MessageProvider";
 import MyQuestListPage from "pages/Request/MyRequestList";
-// import QuestPostPage from "pages/Quest/QuestPost";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import RequestDetailPage from "pages/Request/RequestDetail";
 import PostEditor from "components/postEditor/PostEditor";
@@ -19,15 +18,15 @@ import JoinRequestList from "pages/Admin/JoinRequest/JoinRequestList";
 const App = () => {
   return (
     <CommonProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<AppLayout />}>
-            <Route index element={<HomePage />} />
-            <Route path='login' element={<Navigate to='/login/quest' replace />} />
-            <Route path='admin/login' element={<Navigate to='/login/admin' replace />} />
-            <Route path='login/:type' element={<LoginPage />} />
-            <Route path='find-id' element={<FindUserIdPage />} />
-            <Route path='sign-up/:type' element={<SignUpPage />} />
+      <Routes>
+        <Route path='/' element={<AppLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path='login' element={<Navigate to='/login/quest' replace />} />
+          <Route path='admin/login' element={<Navigate to='/login/admin' replace />} />
+          <Route path='login/:type' element={<LoginPage />} />
+          <Route path='find-id' element={<FindUserIdPage />} />
+          <Route path='sign-up/:type' element={<SignUpPage />} />
+          <Route element={<PrivateRoute />}>
             <Route path='mail/quest' element={<PostEditor />} />
             <Route path='mail/quest/:id/:mode' element={<PostEditor />} />
             <Route element={<LayoutWithHeader />}>
@@ -40,10 +39,15 @@ const App = () => {
               </Route>
             </Route>
           </Route>
-        </Routes>
-      </BrowserRouter>
+        </Route>
+      </Routes>
     </CommonProvider>
   );
+};
+const PrivateRoute = () => {
+  const accessToken = useSelector(state => state.auth.tokens.accessToken);
+
+  return accessToken ? <Outlet /> : <Navigate to='/login' replace />;
 };
 
 const LayoutWithHeader = () => {

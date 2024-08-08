@@ -1,42 +1,53 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { fetchMails, updateMail } from "apis/mailsApi";
+import { fetchMails, getMailById, updateMail } from "apis/mailsApi";
 import moment from "moment";
 import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setData, setMails, updateCounts, fetchMailsAction, toggleImportant } from "../../redux/actions/mailActions";
+import { setData, setMails, updateCounts, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import { DetailStatusTag } from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowDown from "components/Icons/ArrowDown";
 import ConfirmModal from "components/modal/ConfirmModal";
+import { downloadAllFiles, downloadFile } from "apis/commonAPI";
 
 const { Search } = Input;
 
 const DetailPage = () => {
   const { id } = useParams();
+
   const [modalInfo, setModalInfo] = useState({ isVisible: false, title: "", onOk: () => {} });
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { mails } = useSelector(state => state.mail);
-  const mail = mails.find(m => m.caseKey === Number(id));
+
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
+  const [mailData, setMailData] = useState();
 
   useEffect(() => {
     moment.locale("ko");
-    if (!mail) {
-      dispatch(fetchMailsAction());
+    if (!mailData) {
+      const fetchMail = async () => {
+        try {
+          const fetchedMail = await getMailById(userType, id);
+          console.log("fetchedMail", fetchedMail);
+          setMailData(fetchedMail);
+        } catch (error) {
+          console.error("Error fetching mail:", error);
+        }
+      };
+      fetchMail();
     }
-  }, [id, mail, dispatch]);
+  }, [id, mailData, userType]);
+  console.log("mailData", mailData);
 
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
     dispatch(toggleImportant(id));
   };
-
   const handleReject = async () => {
     setModalInfo({ ...modalInfo, isVisible: false });
     try {
@@ -68,15 +79,31 @@ const DetailPage = () => {
     navigate(`/mail/quest/${id}/reply`);
   };
 
-  const sortedReplies = useMemo(() => {
-    return mail ? (mail.replies || []).slice().sort((a, b) => moment(b.sentAt).diff(moment(a.sentAt))) : [];
-  }, [mail]);
+  const handleDownloadFile = async fileId => {
+    await downloadFile(fileId);
+  };
 
-  if (!mail) {
+  const handleDownloadAllFiles = async () => {
+    await downloadAllFiles(mailData.contentFileList);
+  };
+
+  const sortedReplies = useMemo(() => {
+    return mailData
+      ? (mailData.replies || []).slice().sort((a, b) => moment(b.requestAtDesc).diff(moment(a.requestAtDesc)))
+      : [];
+  }, [mailData]);
+
+  if (!mailData) {
     return <div>Loading...</div>;
   }
 
   const onSearch = (value, _e, info) => console.log(info?.source, value);
+
+  const renderFileSize = size => {
+    if (size < 1024) return `${size} bytes`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+    return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+  };
 
   return (
     <>
@@ -100,23 +127,23 @@ const DetailPage = () => {
         </div>
         <div className='mx-8 mt-[20px]'>
           <div className='flex items-center gap-1'>
-            <span onClick={e => handleToggleImportant(mail.id, e)} className='cursor-pointer'>
-              {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
+            <span onClick={e => handleToggleImportant(mailData.caseKey, e)} className='cursor-pointer'>
+              {mailData.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
-            <div className='text-zinc-800 text-base font-medium  leading-normal'>{mail.title}</div>
-            {mail.detailStatus && <DetailStatusTag status={mail.detailStatus} />}
+            <div className='text-zinc-800 text-base font-medium  leading-normal'>{mailData.title}</div>
+            {mailData.detailStatus && <DetailStatusTag status={mailData.detailStatus} />}
           </div>
 
           <div className='justify-start items-center gap-2 flex pl-[20px] mb-[18px] mt-2'>
             <div className='text-gray-500 text-sm font-normal leading-tight'>
-              {mail.anytime} ∙ {mail.category}
+              {mailData.anytime} ∙ {mailData.category}
             </div>
             <div className='w-px h-2.5 bg-zinc-300'></div>
             <div className='justify-start items-center gap-1.5 flex'>
               <div className='text-gray-500 text-sm font-normal '>의뢰자 :</div>
               <div className='text-gray-500 text-sm font-semibold '>홍길동</div>
             </div>
-            {mail.status === "contactRequest" && !mail.isApproved && (
+            {mailData.status === "contactRequest" && !mailData.isApproved && (
               // TODO: DY - 답변 달리면 해결 완료로 이동 -> 추가질문 버튼 생성 :: 의뢰자가 의뢰에대한 종료 처리해야만 종료된 의뢰
               // TODO: DY - 변호사 승인하면 승인완료 뱃지 달리기 거절하면 휴지통으로
               <div className='flex gap-2'>
@@ -134,7 +161,7 @@ const DetailPage = () => {
                 </p>
               </div>
             )}
-            {userType === "LAWYER" && mail.status === "resolving" && (
+            {userType === "LAWYER" && mailData.status === "resolving" && (
               <div>
                 <Button type='primary' onClick={handleReplyClick}>
                   답변
@@ -149,16 +176,16 @@ const DetailPage = () => {
                 의뢰 요청 시간
                 <span className='text-gray-500 text-sm font-normal px-1'>:</span>
                 <span className='text-gray-500 text-sm font-semibold leading-tight'>
-                  {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
-                  {moment(mail.sentAt).format("A h:mm").replace("AM", "오전").replace("PM", "오후")}
+                  {moment(mailData.sentAt).format("YYYY년 MM월 DD일 (dd)")}
+                  {moment(mailData.sentAt).format("A h:mm").replace("AM", "오전").replace("PM", "오후")}
                 </span>
               </div>
               <div className='text-gray-500 text-sm font-normal  leading-tight'>
                 배정 완료 후 작업 기한
                 <span className='text-gray-500 text-sm font-normal px-1'>:</span>
                 <span className='text-gray-500 text-sm font-semibold leading-tight'>
-                  {moment(mail.sentAt)
-                    .add(mail.time, "hours")
+                  {moment(mailData.sentAt)
+                    .add(mailData.time, "hours")
                     .format("YYYY년 MM월 DD일 (dd) A h:mm")
                     .replace("AM", "오전")
                     .replace("PM", "오후")}
@@ -166,33 +193,41 @@ const DetailPage = () => {
               </div>
             </div>
           </div>
-
-          <div className='mt-4 mb-6 pl-[20px]'>
-            <div className='justify-start items-center gap-3 flex mb-[10px]'>
-              <div className='text-gray-500 text-sm font-semibold  leading-normal'>
-                첨부파일 3개
-                <span className='text-slate-400 text-sm font-normal  leading-normal'>(35.2MB)</span>
+          {mailData && mailData.contentFileList.length > 0 && (
+            <div className='mt-4 mb-6 pl-[20px]'>
+              <div className='justify-start items-center gap-3 flex mb-[10px]'>
+                <div className='text-gray-500 text-sm font-semibold leading-normal'>
+                  첨부파일 {mailData.contentFileList.length}개
+                  <span className='text-slate-400 text-sm font-normal leading-normal'>
+                    ({renderFileSize(mailData.contentFileList.reduce((acc, file) => acc + file.fileSize, 0))})
+                  </span>
+                </div>
+                <div
+                  onClick={handleDownloadAllFiles}
+                  className='text-blue-500 text-sm font-medium leading-tight cursor-pointer'
+                >
+                  모두 저장
+                </div>
               </div>
-              <div className='text-blue-500 text-sm font-medium  leading-tight'>모두 저장</div>
+              <div className='justify-start items-start gap-2 inline-flex'>
+                {mailData.contentFileList.map(file => (
+                  <div
+                    key={file.fileId}
+                    className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex cursor-pointer'
+                    onClick={() => handleDownloadFile(file.fileId)}
+                  >
+                    <div className='text-gray-500 text-[0.8125rem] font-normal leading-normal'>{file.fileName}</div>
+                    <div className='text-slate-400 text-[0.8125rem] font-normal leading-normal'>
+                      ({renderFileSize(file.fileSize)})
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className='justify-start items-start gap-2 inline-flex'>
-              <div className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex'>
-                <div className='text-gray-500 text-[0.8125rem] font-normal  leading-normal'>파일_1.pdf</div>
-                <div className='text-slate-400 text-[0.8125rem] font-normal  leading-normal'>(35.2MB)</div>
-              </div>
-              <div className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex'>
-                <div className='text-gray-500 text-[0.8125rem] font-normal  leading-normal'>파일_1.pdf</div>
-                <div className='text-slate-400 text-[0.8125rem] font-normal  leading-normal'>(35.2MB)</div>
-              </div>
-              <div className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex'>
-                <div className='text-gray-500 text-[0.8125rem] font-normal  leading-normal'>파일_1.pdf</div>
-                <div className='text-slate-400 text-[0.8125rem] font-normal  leading-normal'>(35.2MB)</div>
-              </div>
-            </div>
-          </div>
+          )}
 
           <div className='text-zinc-800 text-base font-normal pt-[24px] pl-[20px]  mt-[24px] border-t border-solid border-slate-100'>
-            <div dangerouslySetInnerHTML={{ __html: mail.content }} />
+            <div dangerouslySetInnerHTML={{ __html: mailData.content }} />
           </div>
 
           <div>
@@ -204,7 +239,7 @@ const DetailPage = () => {
                     <div className='text-gray-500 text-sm'>
                       {moment(reply.sentAt).format("YYYY년 MM월 DD일 A h:mm")}
                     </div>
-                    <Link to={`/requestion/${mail.id}`}>
+                    <Link to={`/requestion/${mailData.id}`}>
                       <Button type='link'>재질문하기</Button>
                     </Link>
                   </div>

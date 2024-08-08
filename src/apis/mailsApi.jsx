@@ -1,19 +1,16 @@
-import axios from "axios";
 import moment from "moment";
 import { formatDate } from "utils/dateUtil";
 import axiosInstance from "./axiosConfig";
-const glitchURL = axios.create({
-  baseURL: process.env.REACT_APP_GLITCH_URL,
-});
 
 /**
  * 의뢰 목록을 가져오는 API
  * @param {Object} params - 검색 및 페이징 파라미터
  * @returns {Promise}
  */
-export const fetchMails = async params => {
+export const fetchMails = async (userType, params) => {
+  const userPath = userType && userType.toLowerCase() + "s"; // 기본값 설정
   try {
-    const response = await axiosInstance.get("/api/v1/members/cases", { params });
+    const response = await axiosInstance.get(`/api/v1/${userPath}/cases`, { params });
     const formattedData = response.data.data.payload
       .map(item => ({
         ...item,
@@ -24,6 +21,7 @@ export const fetchMails = async params => {
         requestedAt: formatDate(item.requestedAt),
         status: item.displayStatus,
         additionList: item.additionList,
+        contentFileList: item.contentFileList,
       }))
       .sort((a, b) => moment(b.rawRequestedAt).diff(moment(a.rawRequestedAt)));
 
@@ -35,6 +33,23 @@ export const fetchMails = async params => {
 };
 
 /**
+ * 의뢰 상세 정보를 가져오는 API
+ * @param {Number} caseKey - 가져올 의뢰의 케이스 키
+ * @returns {Promise} 의뢰의 데이터
+ */
+export const getMailById = async (userType, caseKey) => {
+  const userPath = userType.toLowerCase() + "s";
+  const url = `/api/v1/${userPath}/cases/${caseKey}`;
+  try {
+    const response = await axiosInstance.get(url);
+    return response.data.data.payload;
+  } catch (error) {
+    console.error("Error fetching mail by id:", error);
+    throw error;
+  }
+};
+
+/**
  * 메일을 업데이트하는 API
  * @param {Number} id - 업데이트할 메일의 ID
  * @param {Object} updateData - 업데이트할 데이터 객체
@@ -42,9 +57,10 @@ export const fetchMails = async params => {
  */
 export const updateMail = async (id, updateData) => {
   try {
-    await glitchURL.patch(`/mails/${id}`, updateData);
+    await axiosInstance.patch(`/api/v1/members/cases/${id}`, updateData);
   } catch (error) {
     console.error("Error updating mail:", error);
+    throw error;
   }
 };
 
@@ -55,8 +71,8 @@ export const updateMail = async (id, updateData) => {
  */
 
 export const createMail = async requestData => {
+  console.log("requestData", requestData);
   try {
-    console.log("Request Data in createMail:", requestData);
     const response = await axiosInstance.post("/api/v1/members/cases", requestData, {
       headers: {
         "Content-Type": "application/json",
@@ -65,21 +81,6 @@ export const createMail = async requestData => {
     return response.data;
   } catch (error) {
     console.error("Error creating request:", error);
-    throw error;
-  }
-};
-
-/**
- * 의뢰 상세 정보를 가져오는 API
- * @param {Number} caseKey - 가져올 의뢰의 케이스 키
- * @returns {Promise} 의뢰의 데이터
- */
-export const getMailById = async caseKey => {
-  try {
-    const response = await axiosInstance.get(`/api/v1/members/cases/${caseKey}`);
-    return response.data.data.payload;
-  } catch (error) {
-    console.error("Error fetching mail by id:", error);
     throw error;
   }
 };
@@ -115,6 +116,38 @@ export const fetchCaseCategories = async () => {
     return response.data.data.payload;
   } catch (error) {
     console.error("Error fetching case categories:", error);
+    throw error;
+  }
+};
+
+/**
+ * 중요 상태를 토글하는 API (POST)
+ * @param {Number} caseKey - 중요 상태를 토글할 의뢰의 케이스 키
+ * @returns {Promise} 성공 여부
+ */
+export const markAsImportant = async caseKey => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/members/cases/${caseKey}/important`);
+    // return response.data;
+    console.log("markAsImportant", response.data);
+  } catch (error) {
+    console.error("Error marking as important:", error);
+    throw error;
+  }
+};
+
+/**
+ * 중요 상태를 해제하는 API (DELETE)
+ * @param {Number} caseKey - 중요 상태를 해제할 의뢰의 케이스 키
+ * @returns {Promise} 성공 여부
+ */
+export const unMarkAsImportant = async caseKey => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/members/cases/${caseKey}/important`);
+    // return response.data;
+    console.log("unMarkAsImportant", response.data);
+  } catch (error) {
+    console.error("Error unmarking as important:", error);
     throw error;
   }
 };

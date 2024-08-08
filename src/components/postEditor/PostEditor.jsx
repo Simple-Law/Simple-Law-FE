@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Spin, Form } from "antd";
 import SvgLogo from "components/Icons/Logo";
@@ -14,12 +14,7 @@ const PostEditor = () => {
   const editorRef = useRef();
   const user = useSelector(state => state.auth.user);
 
-  const { formik, loading, existingMail, setPendingImages, setDeletedImages, setPendingFiles } = useMail(
-    id,
-    mode,
-    user,
-    editorRef,
-  );
+  const { formik, loading, existingMail, setPendingFiles } = useMail(id, mode, user, editorRef);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -60,9 +55,7 @@ const PostEditor = () => {
           <CommonForm
             formik={formik}
             editorRef={editorRef}
-            setPendingImages={setPendingImages}
             setPendingFiles={setPendingFiles} // 문서 첨부 파일 설정 함수 전달
-            setDeletedImages={setDeletedImages}
             mode={mode || "default"} // mode가 없을 경우 기본 값을 설정
           />
         </Form>

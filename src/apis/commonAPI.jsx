@@ -63,28 +63,47 @@ export const deleteFile = async url => {
 };
 
 /**
- * 파일 다운로드 API
- * @param {string} fileId - 다운로드할 파일 아이디
- * @returns response
+ * 파일을 다운로드하는 API
+ * @param {String} fileId - 다운로드할 파일의 ID
+ * @returns {Promise}
  */
 export const downloadFile = async fileId => {
+  console.log(fileId);
   try {
-    const response = await axiosInstance.post(`/api/v1/files/${fileId}`, null, {
-      responseType: "blob", // 파일 다운로드를 위한 설정
+    const response = await axiosInstance.get(`/api/v1/files/${fileId}`, {
+      responseType: "blob",
     });
 
-    // 파일 다운로드
     const url = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", response.headers["content-disposition"].split("filename=")[1]);
+
+    let fileName = `${fileId}.pdf`;
+
+    const contentDisposition = response.headers["content-disposition"];
+    if (contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/);
+      if (fileNameMatch && fileNameMatch.length === 2) {
+        fileName = fileNameMatch[1];
+      }
+    }
+
+    link.setAttribute("download", fileName);
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
-
-    return response;
+    link.parentNode.removeChild(link);
   } catch (error) {
     console.error("Error downloading file:", error);
     throw error;
+  }
+};
+
+/**
+ * 모든 파일을 다운로드하는 함수
+ * @param {Array} files - 다운로드할 파일 목록
+ */
+export const downloadAllFiles = async files => {
+  for (const file of files) {
+    await downloadFile(file.fileId);
   }
 };

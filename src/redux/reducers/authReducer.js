@@ -1,3 +1,4 @@
+import { LOGIN, LOGOUT, REFRESH_ACCESS_TOKEN } from "../types";
 const initialState = {
   user: null,
   tokens: {
@@ -10,14 +11,26 @@ const initialState = {
 
 const authReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "LOGIN":
+    case LOGIN:
       return {
         ...state,
         tokens: action.payload.tokens,
         user: action.payload.user,
       };
-    case "LOGOUT":
-      return initialState;
+    case LOGOUT:
+      return {
+        ...state,
+        tokens: initialState.tokens,
+        user: initialState.user,
+      };
+    case REFRESH_ACCESS_TOKEN:
+      return {
+        ...state,
+        tokens: {
+          ...state.tokens,
+          accessToken: action.payload,
+        },
+      };
     default:
       return state;
   }
