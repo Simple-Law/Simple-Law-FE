@@ -33,7 +33,7 @@ const ManageAdminList = () => {
     {
       title: "권한",
       key: "userType",
-      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]?.role} />,
+      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]} />,
     },
     {
       title: "가입일",
