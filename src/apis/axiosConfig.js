@@ -8,9 +8,6 @@ const cookies = new Cookies();
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // 새로운 액세스 토큰을 리프레시 토큰을 통해 얻는 함수
@@ -24,6 +21,8 @@ const getNewAccessToken = async userType => {
 
   const userPath = userType.toLowerCase() + "s";
   const url = `/api/v1/${userPath}/refresh-token`;
+  console.log(userType);
+  console.log(url);
 
   try {
     const response = await axiosInstance.post(
@@ -54,23 +53,25 @@ const getNewAccessToken = async userType => {
     return null;
   }
 };
-
 axiosInstance.interceptors.request.use(
   config => {
-    const copyConfig = { ...config };
-    if (!config.headers) return config;
-
     const token = cookies.get("accessToken");
+    const expiresAt = cookies.get("expiresAt");
 
-    if (token && config.headers) {
-      copyConfig.headers.Authorization = `Bearer ${token}`;
+    if (token && expiresAt && moment().isBefore(moment(expiresAt))) {
+      // 토큰이 유효하다면 기존 토큰을 사용
+      config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      // 토큰이 만료되었거나 없으면, 새로운 토큰을 얻기 위해 401 응답을 기다림
     }
+
     return config;
   },
   error => {
     return Promise.reject(error);
   },
 );
+
 // 응답 인터셉터: 401 오류를 처리하여 새로운 액세스 토큰을 발급받음
 axiosInstance.interceptors.response.use(
   response => response,
@@ -83,7 +84,7 @@ axiosInstance.interceptors.response.use(
 
       const state = store.getState();
       const userType = state.auth.user?.type;
-
+      console.log(userType);
       if (!userType) {
         console.error("사용자 유형이 정의되지 않았습니다. 로그아웃 처리합니다.");
         store.dispatch(logout());
