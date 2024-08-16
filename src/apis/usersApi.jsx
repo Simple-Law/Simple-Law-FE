@@ -69,10 +69,11 @@ export const loginUser = async (credentials, userType) => {
  * @returns {Promise} 응답 데이터
  */
 export const getMemberInfo = async userType => {
-  const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members"; // 엔드포인트 설정
+  const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
   try {
     const response = await axiosInstance.get(`/api/v1/${endpoint}/me`);
-    return response.data;
+
+    return response.data.data.payload;
   } catch (error) {
     console.error("Error fetching member info:", error.response?.data || error);
     throw error;
