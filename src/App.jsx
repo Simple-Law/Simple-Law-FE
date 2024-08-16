@@ -14,6 +14,7 @@ import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
 import ManageAdminList from "pages/Admin/ManageAdmin/ManageAdminList";
 import ManageUserList from "pages/Admin/ManageUser/ManageUserList";
 import JoinRequestList from "pages/Admin/JoinRequest/JoinRequestList";
+import MyPage from "pages/MyPage/MyPage";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
             <Route path='mail/quest' element={<PostEditor />} />
             <Route path='mail/quest/:id/:mode' element={<PostEditor />} />
             <Route element={<LayoutWithHeader />}>
+              <Route path='my-page' element={<MyPage />} />
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
                 <Route path='board' element={<MyQuestListPage />} />
@@ -54,7 +56,9 @@ const LayoutWithHeader = () => {
   return (
     <>
       <Header />
-      <Outlet />
+      <div className='mt-16'>
+        <Outlet />
+      </div>
     </>
   );
 };
@@ -69,7 +73,7 @@ const LayoutWithSidebar = () => {
   };
 
   return (
-    <div className='flex w-full pt-16'>
+    <div className='flex w-full'>
       {userType === "ADMIN" ? (
         <AdminSideMenu />
       ) : (

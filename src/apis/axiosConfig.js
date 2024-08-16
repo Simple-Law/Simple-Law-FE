@@ -61,8 +61,6 @@ axiosInstance.interceptors.request.use(
     if (token && expiresAt && moment().isBefore(moment(expiresAt))) {
       // 토큰이 유효하다면 기존 토큰을 사용
       config.headers.Authorization = `Bearer ${token}`;
-    } else {
-      // 토큰이 만료되었거나 없으면, 새로운 토큰을 얻기 위해 401 응답을 기다림
     }
 
     return config;
