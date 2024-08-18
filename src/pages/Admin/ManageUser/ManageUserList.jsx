@@ -89,7 +89,7 @@ const ManageUserList = () => {
     // latestAccessStartAt: "",
     // latestAccessEndAt: "",
     pageNumber: 1,
-    pageSize: paginationConfig.pageSize,
+    pageSize: 5,
   };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
