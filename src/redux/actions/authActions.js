@@ -1,4 +1,4 @@
-import { loginUser as apiLoginUser, sendAuthCode as apiSendAuthCode } from "apis/usersApi";
+import { loginUser as apiLoginUser, sendAuthCode as apiSendAuthCode, getMemberInfo } from "apis/usersApi";
 import { LOGIN, LOGOUT, REFRESH_ACCESS_TOKEN } from "../types";
 import { showUserLoading, hideUserLoading } from "../../redux/actions/loadingAction";
 import Cookies from "universal-cookie";
@@ -47,7 +47,12 @@ export const loginUserAction = (values, userType) => async dispatch => {
     cookies.set("refreshToken", tokens.refreshToken, { path: "/" });
     cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" }); // 액세스 토큰 만료 시간 저장
 
-    dispatch(login(tokens, user));
+    // 로그인 후 사용자 정보 가져오기
+    const userInfo = await getMemberInfo(userType);
+
+    // 상태에 토큰과 사용자 정보 저장
+    dispatch(login(tokens, { ...user, ...userInfo }));
+    // dispatch(login(tokens, user));
     dispatch(hideUserLoading());
 
     return { success: true };
