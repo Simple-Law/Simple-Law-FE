@@ -15,13 +15,13 @@ const statusLabels = {
     IN_CONTACT: "컨택 요청 중",
     IN_PROGRESS: "해결 진행 중",
     RESPONSE: "해결 완료",
-    DONE: "의뢰 종료",
+    // DONE: "의뢰 종료",
   },
   MEMBER: {
     REQUEST: "요청 진행 중",
     IN_PROGRESS: "해결 진행 중",
     RESPONSE: "해결 완료",
-    DONE: "의뢰 종료",
+    // DONE: "의뢰 종료",
   },
   guest: {
     requestInProgress: "비로그인 요청 중",

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState } from "react";
 import { Input, Form, Button, Upload } from "antd";
 import { PaperClipOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill";
@@ -7,72 +7,16 @@ import "react-quill/dist/quill.snow.css";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
-const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setDeletedImages, mode }) => {
+const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const messageApi = useMessageApi();
 
   const handleFileChange = info => {
     let newFileList = [...info.fileList];
-    newFileList = newFileList.slice(-1);
     setFileList(newFileList);
     setPendingFiles(newFileList.map(file => file.originFileObj)); // 문서 첨부 파일 설정
   };
-
-  const handleImageDelete = useCallback(
-    mutationsList => {
-      const quill = quillRef.current?.getEditor();
-      if (!quill) return;
-      const deletedImages = [];
-      mutationsList.forEach(mutation => {
-        if (mutation.type === "childList" && mutation.removedNodes.length > 0) {
-          mutation.removedNodes.forEach(node => {
-            if (node.tagName === "IMG" && node.src.startsWith("http")) {
-              deletedImages.push(node.src);
-            }
-          });
-        }
-      });
-      setDeletedImages(prevImages => [...prevImages, ...deletedImages]);
-    },
-    [setDeletedImages],
-  );
-
-  useEffect(() => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-
-    const observer = new MutationObserver(handleImageDelete);
-    observer.observe(quill.root, {
-      childList: true,
-      subtree: true,
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [handleImageDelete]);
-
-  const imageHandler = useCallback(() => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-
-    input.addEventListener("change", () => {
-      const file = input.files[0];
-      setPendingImages(prevImages => [...prevImages, file]);
-      const reader = new FileReader();
-      reader.onload = e => {
-        const imgUrl = e.target.result;
-        const editor = quillRef.current.getEditor();
-        const range = editor.getSelection();
-        editor.insertEmbed(range.index, "image", imgUrl);
-        editor.setSelection(range.index + 1);
-      };
-      reader.readAsDataURL(file);
-    });
-  }, [setPendingImages]);
 
   const handleChange = (content, delta, source, editor) => {
     formik.setFieldValue("content", editor.getHTML());
@@ -85,9 +29,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setD
         [{ size: [] }],
         ["bold", "italic", "underline", "strike", "blockquote"],
         [{ list: "ordered" }, { list: "bullet" }, { align: [] }],
-        ["image"],
       ],
-      handlers: { image: imageHandler },
     },
     clipboard: {
       matchVisual: false,
@@ -109,7 +51,6 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setD
     "list",
     "bullet",
     "align",
-    "image",
   ];
 
   return (
@@ -167,6 +108,7 @@ const CommonForm = ({ formik, editorRef, setPendingImages, setPendingFiles, setD
                   onSuccess("ok");
                 }, 0);
               }}
+              multiple
             >
               <StyledButton icon={<PaperClipOutlined />}>파일 선택</StyledButton>
             </Upload>
@@ -196,9 +138,9 @@ CommonForm.propTypes = {
   editorRef: PropTypes.shape({
     current: PropTypes.object,
   }).isRequired,
-  setPendingImages: PropTypes.func.isRequired,
+
   setPendingFiles: PropTypes.func.isRequired, // 문서 첨부 파일 설정 함수 추가
-  setDeletedImages: PropTypes.func.isRequired,
+
   mode: PropTypes.string.isRequired,
 };
 

@@ -78,6 +78,8 @@ const ManageUserList = () => {
   const [statusList, setStatusList] = useState(statusOptions.map(option => option.value));
 
   const initialSearchParams = {
+    textType: searchOptions[0].value,
+    dateType: dateOptions[0].value,
     name: "",
     email: "",
     typeList: typeList,
@@ -87,7 +89,7 @@ const ManageUserList = () => {
     // latestAccessStartAt: "",
     // latestAccessEndAt: "",
     pageNumber: 1,
-    pageSize: paginationConfig.pageSize,
+    pageSize: 5,
   };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
@@ -101,7 +103,8 @@ const ManageUserList = () => {
 
   useLayoutEffect(() => {
     getUserList();
-  }, [searchParams]);
+  }, []);
+  // }, [searchParams]);
 
   useEffect(() => {
     setSearchParams({ ...searchParams, typeList, statusList });
@@ -112,9 +115,17 @@ const ManageUserList = () => {
    */
   //TODO: kmee 기간검색, 조건검색 추가. 상태 검색 data 확인
   const getUserList = async () => {
-    console.log("getUserList : ", searchParams);
-
     try {
+      const text = document.getElementById("searchText");
+      console.log("text : ", text.value);
+      if (searchParams.textType === "name") {
+        searchParams.name = text.value;
+        searchParams.email = "";
+      } else if (searchParams.textType === "email") {
+        searchParams.email = text.value;
+        searchParams.name = "";
+      }
+
       const apiParams = {
         ...searchParams,
         typeList: searchParams.typeList.join(","),
@@ -172,11 +183,13 @@ const ManageUserList = () => {
                 <TdDiv className='w-11/12 border-y border-r border-solid border-black'>
                   <div className='flex gap-[10px] h-[48px]'>
                     <Select
+                      id='searchType'
                       className='justify-center w-[160px] ml-[10px]'
                       options={searchOptions}
-                      defaultValue={searchOptions[0]}
+                      defaultValue={searchParams.textType}
+                      onChange={value => setSearchParams({ ...searchParams, textType: value })}
                     />
-                    <Input className='justify-center' />
+                    <Input id='searchText' className='justify-center' />
                   </div>
                 </TdDiv>
               </div>

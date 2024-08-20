@@ -29,10 +29,10 @@ const QuestPage = () => {
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
-  console.log("data", data);
+
   useEffect(() => {
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+    dispatch(fetchMailsAction(userType));
+  }, [dispatch, userType]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -62,8 +62,8 @@ const QuestPage = () => {
   };
 
   const menuItems = [
-    { key: "sentAt", label: "의뢰 요청시간" },
-    { key: "time", label: "의뢰 가능시간" },
+    { key: "requestAtDesc", label: "의뢰 요청시간" },
+    { key: "notifiedAtDesc", label: "알림시간" },
   ];
 
   const menu = <Menu items={menuItems} onClick={handleTimeMenuClick} />;
@@ -102,7 +102,7 @@ const QuestPage = () => {
     {
       title: (
         <div>
-          <span style={{ width: "27px", display: "inline-block" }}>분야</span>
+          <span style={{ display: "inline-block" }}>분야</span>
           <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
           <span>세부 분야</span>
         </div>
@@ -113,9 +113,9 @@ const QuestPage = () => {
       className: "category-column",
       render: (_, record) => (
         <>
-          <span style={{ width: "27px", display: "inline-block" }}>{record.category}</span>
+          <span>{record.category}</span>
           <span style={{ fontSize: "12px", color: "#D9D9D9", margin: "0 10px" }}>|</span>
-          <span>{record.anytime}</span>
+          <span style={{ display: "inline-block" }}>{record.subCategory}</span>
         </>
       ),
     },
