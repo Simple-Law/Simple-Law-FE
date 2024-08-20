@@ -34,11 +34,10 @@ const RequestSideMenu = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    // .ant-menu-submenu-arrow 요소에 클릭 이벤트 리스너 추가
     const arrowElement = document.querySelector(".ant-menu-sub .ant-menu-submenu-arrow");
 
     const handleArrowClick = e => {
-      e.stopPropagation(); // 이벤트 전파를 중지하여 onTitleClick 실행 방지
+      e.stopPropagation();
       setOpenKeys(prevKeys =>
         prevKeys.includes("All_request") ? prevKeys.filter(key => key !== "All_request") : [...prevKeys, "All_request"],
       );
@@ -48,7 +47,6 @@ const RequestSideMenu = () => {
       arrowElement.addEventListener("click", handleArrowClick);
     }
 
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
     return () => {
       if (arrowElement) {
         arrowElement.removeEventListener("click", handleArrowClick);
@@ -86,7 +84,7 @@ const RequestSideMenu = () => {
       onTitleClick: e => {
         console.log("title click");
         if (e && e.domEvent) {
-          e.domEvent.stopPropagation(); // 이벤트 전파 중지
+          e.domEvent.stopPropagation();
         }
         setOpenKeys([]);
         handleMenuClick("All_request");
@@ -171,8 +169,6 @@ const RequestSideMenu = () => {
         onClick={onClick}
         openKeys={openKeys}
         onOpenChange={handleSubMenuOpenChange}
-        // defaultSelectedKeys={["1"]}
-        // defaultOpenKeys={["main"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
