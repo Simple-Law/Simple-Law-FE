@@ -14,6 +14,7 @@ import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
 import { commonStatusLabels, statusLabels, adminStatusLabels } from "utils/statusLabels";
 import { filterMails } from "utils/mailUtils";
+import { useState } from "react";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -21,6 +22,9 @@ const RequestSideMenu = () => {
   const { data, counts } = useSelector(state => state.mail);
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
+
+  const [openKeys, setOpenKeys] = useState(["main"]);
+
   useEffect(() => {
     const parentElement = document.querySelector(".my-column").closest(".ant-menu-title-content");
     if (parentElement) {
@@ -29,11 +33,32 @@ const RequestSideMenu = () => {
     dispatch(fetchMailsAction());
   }, [dispatch]);
 
+  useEffect(() => {
+    // .ant-menu-submenu-arrow 요소에 클릭 이벤트 리스너 추가
+    const arrowElement = document.querySelector(".ant-menu-sub .ant-menu-submenu-arrow");
+
+    const handleArrowClick = e => {
+      e.stopPropagation(); // 이벤트 전파를 중지하여 onTitleClick 실행 방지
+      setOpenKeys(prevKeys =>
+        prevKeys.includes("All_request") ? prevKeys.filter(key => key !== "All_request") : [...prevKeys, "All_request"],
+      );
+    };
+
+    if (arrowElement) {
+      arrowElement.addEventListener("click", handleArrowClick);
+    }
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      if (arrowElement) {
+        arrowElement.removeEventListener("click", handleArrowClick);
+      }
+    };
+  }, []);
+
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    console.log("userType", userType);
-    console.log("statusKey", statusKey);
     const filteredMails = filterMails(data, statusKey);
 
     dispatch(setMails(filteredMails));
@@ -41,6 +66,13 @@ const RequestSideMenu = () => {
     navigate(`/board?status=${statusKey}`);
   };
 
+  const handleSubMenuOpenChange = keys => {
+    if (keys.includes("All_request")) {
+      setOpenKeys(["main"]);
+    } else {
+      setOpenKeys(keys);
+    }
+  };
   const menuItems = [
     {
       key: "All_request",
@@ -51,7 +83,14 @@ const RequestSideMenu = () => {
         </span>
       ),
       icon: <SvgMailAll />,
-      onTitleClick: () => handleMenuClick("All_request"),
+      onTitleClick: e => {
+        console.log("title click");
+        if (e && e.domEvent) {
+          e.domEvent.stopPropagation(); // 이벤트 전파 중지
+        }
+        setOpenKeys([]);
+        handleMenuClick("All_request");
+      },
 
       children: Object.keys(statusTypes).map(statusKey => ({
         key: statusKey,
@@ -130,8 +169,10 @@ const RequestSideMenu = () => {
       )}
       <Menu
         onClick={onClick}
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["main"]}
+        openKeys={openKeys}
+        onOpenChange={handleSubMenuOpenChange}
+        // defaultSelectedKeys={["1"]}
+        // defaultOpenKeys={["main"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
@@ -279,6 +320,18 @@ const Board = styled.div`
   .custom-arrow + .ant-menu-submenu-arrow {
     left: 65px;
   }
+  .ant-menu-sub .ant-menu-submenu-arrow {
+    width: 40px;
+    height: 40px;
+    z-index: 100000;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    position: relative;
+    right: -20px;
+  }
 `;
 
 const AdminMenuWrap = styled(Board)`
@@ -319,6 +372,6 @@ const Menulv3 = styled.span`
   color: rgba(110, 119, 128, 1);
   font-size: 14px;
   font-weight: 500;
-  e-height: 18px;
+  line-height: 18px;
   letter-spacing: -0.28px;
 `;
