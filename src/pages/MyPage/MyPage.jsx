@@ -95,7 +95,7 @@ const MyPage = () => {
   };
   const handleCancel = () => {
     setIsModalVisible(false);
-    setImageSrc(null); // 모달이 닫힐 때 이미지 프리뷰 초기화
+    setImageSrc(null);
   };
   return (
     <div>
