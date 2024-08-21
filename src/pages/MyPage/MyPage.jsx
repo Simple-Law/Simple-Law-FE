@@ -93,7 +93,10 @@ const MyPage = () => {
       };
     }
   };
-
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setImageSrc(null); // 모달이 닫힐 때 이미지 프리뷰 초기화
+  };
   return (
     <div>
       <h2>계정 관리</h2>
@@ -126,7 +129,7 @@ const MyPage = () => {
       <Modal
         open={isModalVisible}
         onOk={handleFileUpload}
-        onCancel={() => setIsModalVisible(false)}
+        onCancel={handleCancel}
         okText='이미지 업로드'
         cancelText='취소'
       >
