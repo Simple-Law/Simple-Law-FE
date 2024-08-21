@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import { useMessageApi } from "components/messaging/MessageProvider";
-import { uploadFile } from "apis/commonAPI";
 import { getMailById, updateMail } from "apis/mailsApi";
 import { addReply, createMail } from "../redux/actions/mailActions";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useFileUpload } from "./useFileUpload";
 
 export const useMail = (id, mode) => {
   const [pendingFiles, setPendingFiles] = useState([]);
+  const { uploadFileToServer } = useFileUpload();
+
   const [existingMail, setExistingMail] = useState(null);
   const [loading, setLoading] = useState(true);
   const messageApi = useMessageApi();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -105,23 +106,6 @@ export const useMail = (id, mode) => {
       }
     }
     return fileUploadIdList;
-  };
-
-  const uploadFileToServer = async file => {
-    const formData = new FormData();
-    formData.append("files", file);
-
-    try {
-      const response = await uploadFile(formData);
-      const fileUploadId = response?.data?.payload[0]?.fileUploadId;
-      console.log("Uploaded file ID:", fileUploadId); // 업로드된 파일 ID 출력
-      messageApi.success(`${file.name} 파일이 성공적으로 업로드되었습니다.`);
-      return fileUploadId;
-    } catch (error) {
-      messageApi.error(`${file.name} 파일 업로드에 실패했습니다.`);
-      console.error("Error uploading file:", error.response ? error.response.data : error.message);
-      throw error;
-    }
   };
 
   return {
