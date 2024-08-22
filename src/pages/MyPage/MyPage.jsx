@@ -51,10 +51,14 @@ const MyPage = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const { handleFileChange } = useFileUpload();
 
-  const onChange = checked => {
-    console.log(`switch to ${checked}`);
-  };
+  // 체크박스 상태 관리
+  const [isMarketingConsent, setIsMarketingConsent] = useState(user.isMarketingConsent);
 
+  const onToggleMarketingConsent = checked => {
+    setIsMarketingConsent(checked);
+    console.log(`마케팅 수신 설정: ${checked}`);
+    // TODO: DY - 마케팅 수신 동의 상태를 업데이트 API 추가.
+  };
   const formatPhoneNumber = phoneNumber => {
     return phoneNumber.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
   };
@@ -97,15 +101,18 @@ const MyPage = () => {
     setIsModalVisible(false);
     setImageSrc(null);
   };
+  const handleDeleteImage = () => {
+    setImageSrc(null); // 이미지만 초기화하고 모달은 유지
+  };
   return (
     <div>
       <h2>계정 관리</h2>
       <p>가입 정보</p>
-      <div>
-        <div style={{ cursor: "pointer", color: "blue" }} onClick={handleProfileClick}>
-          프로필
-        </div>
+
+      <div style={{ cursor: "pointer", color: "blue" }} onClick={handleProfileClick}>
+        프로필
       </div>
+
       <div>이름 {user.name}</div>
       <div>아이디 {user.id}</div>
       {user.type !== "MEMBER" && (
@@ -121,17 +128,24 @@ const MyPage = () => {
       <div>휴대폰 번호 {formattedPhone}</div>
       <p>알림 설정</p>
       <div>
-        마케팅 수신 설정 <Switch checked={user.isMarketingConsent} onChange={onChange} />
+        마케팅 수신 설정 <Switch checked={isMarketingConsent} onChange={onToggleMarketingConsent} />
       </div>
       {user.type !== "MEMBER" && <div>의뢰 안내 설정</div>}
       <Button>회원탈퇴</Button>
 
       <Modal
+        title='프로필 사진'
         open={isModalVisible}
         onOk={handleFileUpload}
         onCancel={handleCancel}
-        okText='이미지 업로드'
-        cancelText='취소'
+        footer={[
+          <Button key='delete' onClick={handleDeleteImage}>
+            삭제
+          </Button>,
+          <Button key='submit' type='primary' onClick={handleFileUpload}>
+            등록하기
+          </Button>,
+        ]}
       >
         <div style={{ textAlign: "center" }}>
           {imageSrc ? (
@@ -140,6 +154,7 @@ const MyPage = () => {
                 <Cropper
                   image={imageSrc}
                   crop={crop}
+                  cropShape='round'
                   zoom={zoom}
                   aspect={1}
                   onCropChange={setCrop}
