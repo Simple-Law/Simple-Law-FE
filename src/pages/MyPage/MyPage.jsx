@@ -1,8 +1,9 @@
 import { useState, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { Button, Switch, Modal } from "antd";
+import { Button, Switch } from "antd";
 import Cropper from "react-easy-crop";
 import { useFileUpload } from "hooks/useFileUpload";
+import ConfirmModal from "components/modal/ConfirmModal";
 // import { updateProfileImageApi } from "apis/userApi";
 
 export const getCroppedImg = async (imageSrc, pixelCrop) => {
@@ -132,8 +133,7 @@ const MyPage = () => {
       </div>
       {user.type !== "MEMBER" && <div>의뢰 안내 설정</div>}
       <Button>회원탈퇴</Button>
-
-      <Modal
+      <ConfirmModal
         title='프로필 사진'
         open={isModalVisible}
         onOk={handleFileUpload}
@@ -167,7 +167,7 @@ const MyPage = () => {
             <input type='file' accept='image/*' onChange={handleImageChange} />
           )}
         </div>
-      </Modal>
+      </ConfirmModal>
     </div>
   );
 };
