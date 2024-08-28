@@ -152,6 +152,88 @@ const ManageUserList = () => {
         <div>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <div className='my-3'>
+            {/* searchbox start */}
+            <div className='h-[236px] p-6 bg-white rounded-xl flex-col justify-start items-end gap-8 inline-flex'>
+              <div className='self-stretch h-[188px] flex-col justify-start items-end gap-3 flex'>
+                <div className='self-stretch h-[132px] flex-col justify-start items-start gap-3 flex'>
+                  <div className='justify-start items-start inline-flex'>
+                    <SearchDiv className='w-1/2'>
+                      <span>회원 구분</span>
+                      <SearchCheckbox
+                        optionList={userOptions}
+                        checkedOptions={typeList}
+                        setCheckedOptions={setTypeList}
+                      />
+                    </SearchDiv>
+                    <SearchDiv className='w-1/2'>
+                      <span>상태</span>
+                      <SearchCheckbox
+                        optionList={statusOptions}
+                        checkedOptions={statusList}
+                        setCheckedOptions={setStatusList}
+                      />
+                    </SearchDiv>
+                  </div>
+
+                  <SearchDiv>
+                    <span>검색기간</span>
+                    <Select className='w-[150px] h-[38px] mr-2' options={dateOptions} defaultValue={dateOptions[0]} />
+                    <SearchDatePicker paramDate={paramDate} setParamDate={setParamDate} />
+                  </SearchDiv>
+
+                  <div className='self-stretch justify-start items-center inline-flex'>
+                    <div className="w-[120px] text-black text-sm font-semibold font-['Pretendard'] leading-tight">
+                      검색기간
+                    </div>
+                    <div className='justify-start items-center gap-2 flex'>
+                      <div className='justify-start items-start gap-2 flex'>
+                        <div className='pl-4 pr-1.5 py-1.5 bg-white rounded-md border border-[#d4dde6] justify-start items-center flex'>
+                          <div className="w-[100px] text-[#6e7780] text-sm font-normal font-['Pretendard'] leading-tight">
+                            가입일
+                          </div>
+                          <div className='w-6 h-6 relative' />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className='self-stretch justify-between items-center inline-flex'>
+                    <div className="w-[120px] text-black text-sm font-semibold font-['Pretendard'] leading-tight">
+                      검색어
+                    </div>
+                    <div className='grow shrink basis-0 h-9 justify-start items-center gap-2 flex'>
+                      <div className='justify-start items-start gap-2 flex'>
+                        <div className='pl-4 pr-1.5 py-1.5 bg-white rounded-md border border-[#d4dde6] justify-start items-center flex'>
+                          <div className="w-[100px] text-[#6e7780] text-sm font-normal font-['Pretendard'] leading-tight">
+                            이름
+                          </div>
+                          <div className='w-6 h-6 relative' />
+                        </div>
+                      </div>
+                      <div className='grow shrink basis-0 h-9 px-4 py-2 bg-white rounded-md border border-[#d4dde6] justify-start items-center flex'>
+                        <div className="text-[#6e7780] text-sm font-normal font-['Pretendard'] leading-tight">
+                          검색어를 입력하세요
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className='justify-start items-center gap-2 inline-flex'>
+                  <div className='w-[88px] px-8 py-3 bg-white rounded-lg border border-[#e3e9ee] flex-col justify-center items-center gap-1 inline-flex'>
+                    <div className="text-center text-[#6e7780] text-sm font-medium font-['Pretendard'] leading-tight">
+                      초기화
+                    </div>
+                  </div>
+                  <div className='h-11 px-8 py-3 bg-[#287eff] rounded-lg justify-center items-center gap-1 flex'>
+                    <div className="text-center text-white text-sm font-medium font-['Pretendard'] leading-tight">
+                      검색
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* searchbox start */}
             <div className='w-full'>
               <div className='flex'>
                 <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
@@ -201,6 +283,7 @@ const ManageUserList = () => {
             </div>
           </div>
         </div>
+        {/* searchbox end */}
 
         {loading ? (
           <SkeletonLoading type='default' length={5} />
@@ -234,15 +317,39 @@ const ManageUserList = () => {
   );
 };
 
-const ThDiv = styled.div`
+const SearchDiv = styled.div`
   display: flex;
-  justify-content: center;
-  text-align: center;
   align-items: center;
 
-  min-width: 100px;
-  height: 60px;
-  background-color: #f1f5f9;
+  > span {
+    width: 120px;
+    color: black;
+
+    font-family: Pretendard;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 146%; /* 20.44px */
+    letter-spacing: -0.28px;
+  }
+}
+`;
+
+const ThDiv = styled.div`
+  display: flex;
+  width: 120px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  align-self: stretch;
+
+  // display: flex;
+  // justify-content: center;
+  // text-align: center;
+  // align-items: center;
+
+  // min-width: 100px;
+  // height: 60px;
+  // background-color: #f1f5f9;
 `;
 
 const TdDiv = styled.div`
