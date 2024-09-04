@@ -10,7 +10,7 @@ import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
-import { SearchCheckbox, SearchDatePicker } from "components/input/SearchItems";
+import { SearchButtons, SearchCheckbox, SearchDatePicker } from "components/input/SearchItems";
 import { formatDate } from "utils/dateUtil";
 import { searchUserAPI } from "apis/manageUserAPI";
 import dayjs from "dayjs";
@@ -153,10 +153,10 @@ const ManageUserList = () => {
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <div className='my-3'>
             {/* searchbox start */}
-            <div className='h-[236px] p-6 bg-white rounded-xl flex-col justify-start items-end gap-8 inline-flex'>
+            <div className='h-[236px] p-6 bg-white rounded-xl flex-col justify-start items-end gap-8 '>
               <div className='self-stretch h-[188px] flex-col justify-start items-end gap-3 flex'>
                 <div className='self-stretch h-[132px] flex-col justify-start items-start gap-3 flex'>
-                  <div className='justify-start items-start inline-flex'>
+                  <div className='w-full justify-start items-start inline-flex'>
                     <SearchDiv className='w-1/2'>
                       <span>회원 구분</span>
                       <SearchCheckbox
@@ -175,111 +175,35 @@ const ManageUserList = () => {
                     </SearchDiv>
                   </div>
 
-                  <SearchDiv>
+                  <SearchDiv className='w-full'>
                     <span>검색기간</span>
-                    <Select className='w-[150px] h-[38px] mr-2' options={dateOptions} defaultValue={dateOptions[0]} />
+                    <Select
+                      className='min-w-[150px] h-[38px] mr-2'
+                      options={dateOptions}
+                      defaultValue={dateOptions[0]}
+                    />
                     <SearchDatePicker paramDate={paramDate} setParamDate={setParamDate} />
                   </SearchDiv>
 
-                  <div className='self-stretch justify-start items-center inline-flex'>
-                    <div className="w-[120px] text-black text-sm font-semibold font-['Pretendard'] leading-tight">
-                      검색기간
-                    </div>
-                    <div className='justify-start items-center gap-2 flex'>
-                      <div className='justify-start items-start gap-2 flex'>
-                        <div className='pl-4 pr-1.5 py-1.5 bg-white rounded-md border border-[#d4dde6] justify-start items-center flex'>
-                          <div className="w-[100px] text-[#6e7780] text-sm font-normal font-['Pretendard'] leading-tight">
-                            가입일
-                          </div>
-                          <div className='w-6 h-6 relative' />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className='self-stretch justify-between items-center inline-flex'>
-                    <div className="w-[120px] text-black text-sm font-semibold font-['Pretendard'] leading-tight">
-                      검색어
-                    </div>
-                    <div className='grow shrink basis-0 h-9 justify-start items-center gap-2 flex'>
-                      <div className='justify-start items-start gap-2 flex'>
-                        <div className='pl-4 pr-1.5 py-1.5 bg-white rounded-md border border-[#d4dde6] justify-start items-center flex'>
-                          <div className="w-[100px] text-[#6e7780] text-sm font-normal font-['Pretendard'] leading-tight">
-                            이름
-                          </div>
-                          <div className='w-6 h-6 relative' />
-                        </div>
-                      </div>
-                      <div className='grow shrink basis-0 h-9 px-4 py-2 bg-white rounded-md border border-[#d4dde6] justify-start items-center flex'>
-                        <div className="text-[#6e7780] text-sm font-normal font-['Pretendard'] leading-tight">
-                          검색어를 입력하세요
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className='justify-start items-center gap-2 inline-flex'>
-                  <div className='w-[88px] px-8 py-3 bg-white rounded-lg border border-[#e3e9ee] flex-col justify-center items-center gap-1 inline-flex'>
-                    <div className="text-center text-[#6e7780] text-sm font-medium font-['Pretendard'] leading-tight">
-                      초기화
-                    </div>
-                  </div>
-                  <div className='h-11 px-8 py-3 bg-[#287eff] rounded-lg justify-center items-center gap-1 flex'>
-                    <div className="text-center text-white text-sm font-medium font-['Pretendard'] leading-tight">
-                      검색
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* searchbox start */}
-            <div className='w-full'>
-              <div className='flex'>
-                <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
-                <TdDiv className='w-5/12 border-y border-solid border-black'>
-                  <SearchCheckbox optionList={userOptions} checkedOptions={typeList} setCheckedOptions={setTypeList} />
-                </TdDiv>
-                <ThDiv className='w-1/12 border-y border-l border-solid border-black'>상태</ThDiv>
-                <TdDiv className='w-5/12 border border-solid border-black'>
-                  <SearchCheckbox
-                    optionList={statusOptions}
-                    checkedOptions={statusList}
-                    setCheckedOptions={setStatusList}
-                  />
-                </TdDiv>
-              </div>
-              <div className='flex'>
-                <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
-                <TdDiv className='w-11/12 border-r border-solid border-black'>
-                  <Select
-                    className='justify-center w-[150px] ml-[10px] '
-                    options={dateOptions}
-                    defaultValue={dateOptions[0]}
-                  />
-                  <SearchDatePicker paramDate={paramDate} setParamDate={setParamDate} />
-                </TdDiv>
-              </div>
-              <div className='flex'>
-                <ThDiv className='w-1/12 border border-solid border-black'>조건검색</ThDiv>
-                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>
-                  <div className='flex gap-[10px] h-[48px]'>
+                  <SearchDiv className='w-full'>
+                    <span>검색어</span>
                     <Select
                       id='searchType'
-                      className='justify-center w-[160px] ml-[10px]'
+                      className='min-w-[150px] h-[38px] mr-2'
                       options={searchOptions}
                       defaultValue={searchParams.textType}
                       onChange={value => setSearchParams({ ...searchParams, textType: value })}
                     />
-                    <Input id='searchText' className='justify-center' />
-                  </div>
-                </TdDiv>
-              </div>
-            </div>
+                    <Input
+                      id='searchText'
+                      className='w-full h-9 px-4 py-2 justify-start items-center flex text-[#6e7780] text-sm font-normal font-["Pretendard"] leading-tight'
+                      placeholder='검색어를 입력하세요'
+                    />
+                  </SearchDiv>
+                </div>
 
-            <div className='flex justify-end gap-[10px] '>
-              <Button>초기화</Button>
-              <Button onClick={getUserList}>검색</Button>
+                <SearchButtons onSearch={getUserList} onReset={() => setSearchParams(initialSearchParams)} />
+              </div>
             </div>
           </div>
         </div>
@@ -322,7 +246,7 @@ const SearchDiv = styled.div`
   align-items: center;
 
   > span {
-    width: 120px;
+    min-width: 120px;
     color: black;
 
     font-family: Pretendard;

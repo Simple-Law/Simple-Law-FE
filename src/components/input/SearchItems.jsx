@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Checkbox, DatePicker } from "antd";
+import { Button, Checkbox, DatePicker } from "antd";
 import PropTypes from "prop-types";
 import { dateFormat } from "utils/dateUtil";
 import dayjs from "dayjs";
@@ -171,4 +171,34 @@ SearchCheckbox.propTypes = {
   setCheckedOptions: PropTypes.func.isRequired,
 };
 
-export { SearchDatePicker, SearchCheckbox };
+/**
+ * 목록 검색용 버튼 컴포넌트
+ */
+const SearchButtons = ({ onSearch, onReset }) => {
+  return (
+    <div className='justify-start items-center gap-2 inline-flex'>
+      {onReset && (
+        <Button
+          className='w-[88px] h-11 px-8 py-3 rounded-lg justify-center items-center gap-1 flex leading-tight'
+          onClick={onReset}
+        >
+          초기화
+        </Button>
+      )}
+      <Button
+        type='primary'
+        className='w-[88px] h-11 px-8 py-3 rounded-lg justify-center items-center gap-1 flex leading-tight'
+        onClick={onSearch}
+      >
+        검색
+      </Button>
+    </div>
+  );
+};
+
+SearchButtons.propTypes = {
+  onSearch: PropTypes.func.isRequired,
+  onReset: PropTypes.func,
+};
+
+export { SearchDatePicker, SearchCheckbox, SearchButtons };
