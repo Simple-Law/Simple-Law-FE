@@ -10,7 +10,7 @@ import { hideSkeletonLoading, showSkeletonLoading } from "../../../redux/actions
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
 import styled from "styled-components";
 import UserNameColumn from "components/table/UserNameColumn";
-import { SearchCheckbox, SearchDatePicker } from "components/input/SearchItems";
+import { SearchButtons, SearchCheckbox, SearchDatePicker } from "components/input/SearchItems";
 import { formatDate } from "utils/dateUtil";
 import { searchUserAPI } from "apis/manageUserAPI";
 import dayjs from "dayjs";
@@ -152,55 +152,62 @@ const ManageUserList = () => {
         <div>
           <h2 className=' font-bold text-[20px]'>{pageTitle}</h2>
           <div className='my-3'>
-            <div className='w-full'>
-              <div className='flex'>
-                <ThDiv className='w-1/12 border border-solid border-black'>회원구분</ThDiv>
-                <TdDiv className='w-5/12 border-y border-solid border-black'>
-                  <SearchCheckbox optionList={userOptions} checkedOptions={typeList} setCheckedOptions={setTypeList} />
-                </TdDiv>
-                <ThDiv className='w-1/12 border-y border-l border-solid border-black'>상태</ThDiv>
-                <TdDiv className='w-5/12 border border-solid border-black'>
-                  <SearchCheckbox
-                    optionList={statusOptions}
-                    checkedOptions={statusList}
-                    setCheckedOptions={setStatusList}
-                  />
-                </TdDiv>
-              </div>
-              <div className='flex'>
-                <ThDiv className='w-1/12 border-x border-solid border-black'>검색기간</ThDiv>
-                <TdDiv className='w-11/12 border-r border-solid border-black'>
-                  <Select
-                    className='justify-center w-[150px] ml-[10px] '
-                    options={dateOptions}
-                    defaultValue={dateOptions[0]}
-                  />
-                  <SearchDatePicker paramDate={paramDate} setParamDate={setParamDate} />
-                </TdDiv>
-              </div>
-              <div className='flex'>
-                <ThDiv className='w-1/12 border border-solid border-black'>조건검색</ThDiv>
-                <TdDiv className='w-11/12 border-y border-r border-solid border-black'>
-                  <div className='flex gap-[10px] h-[48px]'>
+            {/* searchbox start */}
+            <div className='h-[236px] p-6 bg-white rounded-xl flex-col justify-start items-end gap-8 '>
+              <div className='self-stretch h-[188px] flex-col justify-start items-end gap-3 flex'>
+                <div className='self-stretch h-[132px] flex-col justify-start items-start gap-3 flex'>
+                  <div className='w-full justify-start items-start inline-flex'>
+                    <SearchDiv className='w-1/2'>
+                      <span>회원 구분</span>
+                      <SearchCheckbox
+                        optionList={userOptions}
+                        checkedOptions={typeList}
+                        setCheckedOptions={setTypeList}
+                      />
+                    </SearchDiv>
+                    <SearchDiv className='w-1/2'>
+                      <span>상태</span>
+                      <SearchCheckbox
+                        optionList={statusOptions}
+                        checkedOptions={statusList}
+                        setCheckedOptions={setStatusList}
+                      />
+                    </SearchDiv>
+                  </div>
+
+                  <SearchDiv className='w-full'>
+                    <span>검색기간</span>
+                    <Select
+                      className='min-w-[150px] h-[38px] mr-2'
+                      options={dateOptions}
+                      defaultValue={dateOptions[0]}
+                    />
+                    <SearchDatePicker paramDate={paramDate} setParamDate={setParamDate} />
+                  </SearchDiv>
+
+                  <SearchDiv className='w-full'>
+                    <span>검색어</span>
                     <Select
                       id='searchType'
-                      className='justify-center w-[160px] ml-[10px]'
+                      className='min-w-[150px] h-[38px] mr-2'
                       options={searchOptions}
                       defaultValue={searchParams.textType}
                       onChange={value => setSearchParams({ ...searchParams, textType: value })}
                     />
-                    <Input id='searchText' className='justify-center' />
-                  </div>
-                </TdDiv>
-              </div>
-            </div>
+                    <Input
+                      id='searchText'
+                      className='w-full h-9 px-4 py-2 justify-start items-center flex text-[#6e7780] text-sm font-normal font-["Pretendard"] leading-tight'
+                      placeholder='검색어를 입력하세요'
+                    />
+                  </SearchDiv>
+                </div>
 
-            <div className='flex justify-end gap-[10px] '>
-              <Button>초기화</Button>
-              <Button onClick={getUserList}>검색</Button>
+                <SearchButtons onSearch={getUserList} onReset={() => setSearchParams(initialSearchParams)} />
+              </div>
             </div>
           </div>
         </div>
+        {/* searchbox end */}
 
         {loading ? (
           <SkeletonLoading type='default' length={5} />
@@ -234,15 +241,39 @@ const ManageUserList = () => {
   );
 };
 
-const ThDiv = styled.div`
+const SearchDiv = styled.div`
   display: flex;
-  justify-content: center;
-  text-align: center;
   align-items: center;
 
-  min-width: 100px;
-  height: 60px;
-  background-color: #f1f5f9;
+  > span {
+    min-width: 120px;
+    color: black;
+
+    font-family: Pretendard;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 146%; /* 20.44px */
+    letter-spacing: -0.28px;
+  }
+}
+`;
+
+const ThDiv = styled.div`
+  display: flex;
+  width: 120px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  align-self: stretch;
+
+  // display: flex;
+  // justify-content: center;
+  // text-align: center;
+  // align-items: center;
+
+  // min-width: 100px;
+  // height: 60px;
+  // background-color: #f1f5f9;
 `;
 
 const TdDiv = styled.div`
