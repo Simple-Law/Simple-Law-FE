@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
-import { verifyAuthCode, checkDuplicate } from "apis/usersApi";
-import { useMessageApi } from "components/messaging/MessageProvider";
 import PropTypes from "prop-types";
-import { sendAuthCodeAction } from "../../../redux/actions/authActions";
-import { useDispatch } from "react-redux";
 import { validationSchema } from "utils/validations";
+import { useAuthCode } from "utils/verification";
+import { checkDuplicate } from "apis/usersApi";
+import { formatBirthday, formatPhoneNumber } from "utils/formatters";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const {
@@ -21,44 +20,18 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     resolver: yupResolver(validationSchema),
     mode: "onBlur",
   });
+
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
-  const [timer, setTimer] = useState(0);
-  const [countdown, setCountdown] = useState(null);
-  const [idMessage, setIdMessage] = useState(null);
+  const { handleSendAuthCode, handleVerifyAuthCode, handleAuthCodeChange, formatTime, timer } = useAuthCode(
+    watch,
+    setShowAuthenticationCodeField,
+    setValue,
+  );
+
+  const [idMessage, setIdMessage] = useState("");
   const [idValidateStatus, setIdValidateStatus] = useState("");
-  const [emailMessage, setEmailMessage] = useState(null);
+  const [emailMessage, setEmailMessage] = useState("");
   const [emailValidateStatus, setEmailValidateStatus] = useState("");
-
-  const messageApi = useMessageApi();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    return () => {
-      if (countdown) {
-        clearInterval(countdown);
-      }
-    };
-  }, [countdown]);
-
-  const onFinish = async values => {
-    try {
-      const isVerified = await handleVerifyAuthCode();
-      if (!isVerified) {
-        console.log("Verification failed");
-        return;
-      }
-
-      handleData(values);
-      if (type !== "lawyer") {
-        await handleSubmit(values);
-      } else {
-        nextStep();
-      }
-      console.log("폼 제출:", values);
-    } catch (error) {
-      console.error("Error in onFinish:", error);
-    }
-  };
 
   const handleBlur = async field => {
     const value = watch(field);
@@ -98,90 +71,31 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
       }
     } catch (error) {
       console.error("Error in handleBlur:", error);
-      messageApi.error(`${fieldNames[field]} 중복 검사 중 오류가 발생했습니다.`);
     }
   };
 
-  const handlePhoneNumberChange = e => {
-    const { value } = e.target;
-    const phoneNumber = value.replace(/\D/g, "");
-    const formattedPhoneNumber = phoneNumber.replace(/(\d{3})(\d{3,4})(\d{4})/, "$1-$2-$3");
-    setValue("phoneNumber", formattedPhoneNumber);
-  };
-
+  // 생년월일 처리
   const handleBirthdayChange = e => {
-    const { value } = e.target;
-    const formattedValue = value.replace(/\D/g, "");
-    const formattedDate = formattedValue
-      .split("")
-      .reduce((acc, char, index) => (index === 4 || index === 6 ? acc + "." + char : acc + char), "");
-    setValue("birthDay", formattedDate);
+    const formattedValue = formatBirthday(e.target.value); // 생년월일 포맷팅 적용
+    setValue("birthDay", formattedValue);
   };
 
-  const handleAuthCodeChange = e => {
-    const { value } = e.target;
-    setValue("verificationCode", value);
+  // 전화번호 처리
+  const handlePhoneNumberChange = e => {
+    const formattedValue = formatPhoneNumber(e.target.value); // 전화번호 포맷팅 적용
+    setValue("phoneNumber", formattedValue);
   };
 
-  const handleSendAuthCode = async () => {
-    const phoneNumber = watch("phoneNumber");
-    const name = watch("name");
-    if (!phoneNumber || !name) {
-      messageApi.error("이름과 휴대전화 번호를 입력하세요.");
-      return;
+  const onFinish = async values => {
+    const isVerified = await handleVerifyAuthCode(type);
+    if (!isVerified) return;
+
+    handleData(values);
+    if (type !== "lawyer") {
+      await handleSubmit(values);
+    } else {
+      nextStep();
     }
-
-    const cleanedPhoneNumber = phoneNumber.replace(/-/g, "");
-
-    try {
-      await dispatch(sendAuthCodeAction(cleanedPhoneNumber, type));
-      messageApi.success("인증번호가 발송되었습니다.");
-      setShowAuthenticationCodeField(true);
-      startTimer(180);
-    } catch (error) {
-      console.error("Error in handleSendAuthCode:", error);
-      messageApi.error("인증번호 발송에 실패했습니다.");
-      setShowAuthenticationCodeField(false);
-    }
-  };
-
-  const handleVerifyAuthCode = async () => {
-    const phoneNumber = watch("phoneNumber").replace(/-/g, "");
-    const verificationCode = watch("verificationCode");
-    if (!phoneNumber || !verificationCode) {
-      messageApi.error("휴대전화 번호와 인증번호를 입력하세요.");
-      return false;
-    }
-
-    try {
-      await verifyAuthCode(phoneNumber, verificationCode, type);
-      return true;
-    } catch (error) {
-      console.error("Error in handleVerifyAuthCode:", error);
-      messageApi.error("인증번호가 올바르지 않습니다. 확인 후 다시 입력해 주세요.");
-      return false;
-    }
-  };
-
-  const formatTime = seconds => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
-
-  const startTimer = seconds => {
-    setTimer(seconds);
-    if (countdown) clearInterval(countdown);
-    const newCountdown = setInterval(() => {
-      setTimer(prevTimer => {
-        if (prevTimer <= 1) {
-          clearInterval(newCountdown);
-          return 0;
-        }
-        return prevTimer - 1;
-      });
-    }, 1000);
-    setCountdown(newCountdown);
   };
 
   return (
@@ -224,7 +138,9 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
           </Form.Item>
         </div>
+
         <div className='w-full h-px bg-zinc-200 my-[20px]'></div>
+
         <div className='flex gap-2 flex-col'>
           <Form.Item>
             <Controller name='name' control={control} render={({ field }) => <Input placeholder='이름' {...field} />} />
@@ -236,7 +152,12 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               name='birthDay'
               control={control}
               render={({ field }) => (
-                <Input placeholder='생년월일 8자리' maxLength='10' {...field} onChange={handleBirthdayChange} />
+                <Input
+                  placeholder='생년월일 8자리 (YYYY.MM.DD)'
+                  maxLength='10'
+                  {...field}
+                  onChange={handleBirthdayChange} // 생년월일 포맷팅 적용
+                />
               )}
             />
             {errors.birthDay && <p style={{ color: "red" }}>{errors.birthDay.message}</p>}
@@ -270,8 +191,8 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                   style={{ width: "100%" }}
                   placeholder="휴대전화번호('-' 제외하고 입력)"
                   {...field}
-                  onChange={handlePhoneNumberChange}
                   maxLength='13'
+                  onChange={handlePhoneNumberChange} // 전화번호 포맷팅 적용
                   suffix={
                     <p
                       onClick={handleSendAuthCode}
@@ -296,9 +217,9 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                   <Input
                     placeholder='인증번호 입력'
                     {...field}
-                    onChange={handleAuthCodeChange}
                     maxLength='4'
-                    suffix={<span style={{ color: "#287fff" }}>{timer > 0 ? `${formatTime(timer)}` : ""}</span>}
+                    onChange={handleAuthCodeChange}
+                    suffix={<span style={{ color: "#287fff" }}>{timer > 0 ? formatTime(timer) : "0:00"}</span>}
                   />
                 )}
               />
@@ -306,6 +227,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             </Form.Item>
           )}
         </div>
+
         <Form.Item className='mt-8'>
           <Button type='primary' htmlType='submit' disabled={!isValid} block>
             가입하기
