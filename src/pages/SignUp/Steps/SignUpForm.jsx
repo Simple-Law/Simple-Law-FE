@@ -6,7 +6,7 @@ import { Input, Button, Radio, Form } from "antd";
 import PropTypes from "prop-types";
 import { validationSchema } from "utils/validations";
 import { useAuthCode } from "utils/verification";
-import { checkDuplicate } from "apis/usersApi";
+// import { checkDuplicate } from "apis/usersApi";
 import { formatBirthday, formatPhoneNumber } from "utils/formatters";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
@@ -28,51 +28,31 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     setValue,
   );
 
-  const [idMessage, setIdMessage] = useState("");
-  const [idValidateStatus, setIdValidateStatus] = useState("");
-  const [emailMessage, setEmailMessage] = useState("");
-  const [emailValidateStatus, setEmailValidateStatus] = useState("");
+  // const [idMessage, setIdMessage] = useState("");
+  // const [idValidateStatus, setIdValidateStatus] = useState("");
 
-  const handleBlur = async field => {
-    const value = watch(field);
-    if (!value) return;
+  // const handleBlur = async field => {
+  //   const value = watch(field);
+  //   if (!value) return;
 
-    const fieldNames = {
-      id: "아이디",
-      email: "이메일",
-    };
+  //   const fieldNames = {
+  //     id: "아이디",
+  //     email: "이메일",
+  //   };
 
-    const setFieldMessages = (field, errorMessage, successMessage) => {
-      if (field === "id") {
-        setIdMessage(errorMessage || successMessage);
-        setIdValidateStatus(errorMessage ? "error" : "success");
-      } else if (field === "email") {
-        setEmailMessage(errorMessage || successMessage);
-        setEmailValidateStatus(errorMessage ? "error" : "success");
-      }
-    };
-
-    if (field === "id" && !/^[a-z0-9]{4,16}$/.test(value)) {
-      setFieldMessages(field, "아이디는 영문 소문자와 숫자로 이루어진 4~16자로 입력해야 합니다!", "");
-      return;
-    }
-
-    if (field === "email" && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
-      setFieldMessages(field, "올바른 이메일 양식이 아닙니다.", "");
-      return;
-    }
-
-    try {
-      const isDuplicate = await checkDuplicate(field, value);
-      if (isDuplicate) {
-        setFieldMessages(field, `이미 사용 중인 ${fieldNames[field]}입니다.`, "");
-      } else {
-        setFieldMessages(field, "", `사용 가능한 ${fieldNames[field]}입니다.`);
-      }
-    } catch (error) {
-      console.error("Error in handleBlur:", error);
-    }
-  };
+  //   try {
+  //     const isDuplicate = await checkDuplicate(field, value);
+  //     if (isDuplicate) {
+  //       setIdMessage(`이미 사용 중인 ${fieldNames[field]}입니다.`);
+  //       setIdValidateStatus("error");
+  //     } else {
+  //       setIdMessage(`사용 가능한 ${fieldNames[field]}입니다.`);
+  //       setIdValidateStatus("success");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error in handleBlur:", error);
+  //   }
+  // };
 
   // 생년월일 처리
   const handleBirthdayChange = e => {
@@ -102,13 +82,15 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
       <Form onFinish={onSubmit(onFinish)}>
         <div className='flex gap-2 flex-col'>
-          <Form.Item validateStatus={idValidateStatus} help={idMessage}>
+          <Form.Item
+            validateStatus={errors.id ? "error" : "success"}
+            help={errors.id?.message || ""} // 에러 메시지를 표시
+          >
             <Controller
               name='id'
               control={control}
-              render={({ field }) => <Input placeholder='아이디 입력' {...field} onBlur={() => handleBlur("id")} />}
+              render={({ field }) => <Input placeholder='아이디 입력' {...field} />}
             />
-            {errors.id && <p style={{ color: "red" }}>{errors.id.message}</p>}
           </Form.Item>
 
           <Form.Item>
@@ -129,13 +111,15 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             {errors.passwordConfirm && <p style={{ color: "red" }}>{errors.passwordConfirm.message}</p>}
           </Form.Item>
 
-          <Form.Item validateStatus={emailValidateStatus} help={emailMessage}>
+          <Form.Item
+            validateStatus={errors.email ? "error" : "success"}
+            help={errors.email?.message || ""} // 에러 메시지를 표시
+          >
             <Controller
               name='email'
               control={control}
-              render={({ field }) => <Input placeholder='이메일 입력' {...field} onBlur={() => handleBlur("email")} />}
+              render={({ field }) => <Input placeholder='이메일 입력' {...field} />}
             />
-            {errors.email && <p style={{ color: "red" }}>{errors.email.message}</p>}
           </Form.Item>
         </div>
 
