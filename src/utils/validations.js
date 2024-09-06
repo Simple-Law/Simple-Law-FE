@@ -70,7 +70,6 @@ export const detailFormSchema = yup.object().shape({
   fileUploadId: yup.string().required("파일을 업로드해 주세요."),
 });
 export const findUserIdSchema = yup.object().shape({
-  name: yup.string().required("이름은 필수로 입력해야 합니다."),
   email: yup.string().email("올바른 이메일 양식이 아닙니다.").required("이메일은 필수로 입력해야 합니다!"),
 });
 export const findUserPWSchema = yup.object().shape({

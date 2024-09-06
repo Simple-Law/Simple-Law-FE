@@ -27,14 +27,6 @@ const FindUserId = () => {
     <LoginForm title='아이디 찾기'>
       <Form onFinish={onSubmit(onFinish)}>
         <div className='flex gap-2 flex-col'>
-          <Form.Item validateStatus={errors.name ? "error" : ""} help={errors.name?.message || ""}>
-            <Controller
-              name='name'
-              control={control}
-              render={({ field }) => <Input placeholder='이름 입력' {...field} />}
-            />
-          </Form.Item>
-
           <Form.Item
             validateStatus={errors.email ? "error" : "success"}
             help={errors.email?.message || ""} // 에러 메시지를 표시
@@ -54,7 +46,7 @@ const FindUserId = () => {
               htmlType='submit'
               disabled={!isValid}
             >
-              아이디 찾기
+              아이디 정보 발송
             </Button>
           </Form.Item>
         </div>
