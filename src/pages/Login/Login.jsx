@@ -84,11 +84,17 @@ const Login = () => {
                   회원가입
                 </Link>
                 <div className='w-px h-3 bg-zinc-300'></div>
-                <Link to='/find-id' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
+                <Link
+                  to={`/find-id/${type}`}
+                  className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
+                >
                   아이디 찾기
                 </Link>
                 <div className='w-px h-3 bg-zinc-300'></div>
-                <Link to='/' className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight">
+                <Link
+                  to={`/find-pw/${type}`}
+                  className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
+                >
                   <span>비밀번호 찾기</span>
                 </Link>
               </div>
