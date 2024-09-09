@@ -6,6 +6,8 @@ import { Input, Button, Radio, Form } from "antd";
 import PropTypes from "prop-types";
 import { validationSchema } from "utils/validations";
 import { useAuthCode } from "utils/verification";
+import SvgEye from "components/Icons/Eye";
+import SvgEyeclose from "components/Icons/Eyeclose";
 // import { checkDuplicate } from "apis/usersApi";
 import { formatBirthday, formatPhoneNumber } from "utils/formatters";
 
@@ -97,7 +99,14 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             <Controller
               name='password'
               control={control}
-              render={({ field }) => <Input type='password' placeholder='비밀번호 입력' {...field} />}
+              render={({ field }) => (
+                <Input.Password
+                  type='password'
+                  placeholder='비밀번호 입력'
+                  {...field}
+                  iconRender={visible => (visible ? <SvgEye /> : <SvgEyeclose />)}
+                />
+              )}
             />
             {errors.password && <p style={{ color: "red" }}>{errors.password.message}</p>}
           </Form.Item>
@@ -106,7 +115,14 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             <Controller
               name='passwordConfirm'
               control={control}
-              render={({ field }) => <Input type='password' placeholder='비밀번호 재확인' {...field} />}
+              render={({ field }) => (
+                <Input.Password
+                  type='password'
+                  placeholder='비밀번호 재확인'
+                  {...field}
+                  iconRender={visible => (visible ? <SvgEye /> : <SvgEyeclose />)}
+                />
+              )}
             />
             {errors.passwordConfirm && <p style={{ color: "red" }}>{errors.passwordConfirm.message}</p>}
           </Form.Item>
