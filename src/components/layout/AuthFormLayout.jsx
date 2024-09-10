@@ -10,7 +10,7 @@ const LoginForm = ({ children, title }) => {
             <Link to='/'>
               <SvgLogo width='226px' height='58px' className='mx-auto' />
             </Link>
-            <h1 className='text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]'>{title}</h1>
+            {title && <h1 className='text-center text-lg text-gray-400 font-medium mt-4 pb-[20px]'>{title}</h1>}
           </div>
           {children}
         </div>
