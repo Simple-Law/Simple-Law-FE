@@ -31,20 +31,24 @@ const FindUserId = () => {
   if (emailSent) {
     return (
       <LoginForm>
-        <div className='flex flex-col items-center justify-center p-4'>
-          <h2>메일을 확인해 주세요</h2>
-          <p>{emailAddress}로 인증메일이 전송되었습니다</p>
-          <p>메일이 오지 않았나요?</p>
-          <p>
+        <div className='flex flex-col items-center justify-center'>
+          <h2 className='mt-9 font-bold text-[32px] text-[#171717] tracking-[-0.64px] leading-10 mb-[14px]'>
+            메일을 확인해 주세요
+          </h2>
+          <p className='text-[#94A3B8] text-base font-medium pb-10 border-b border-[#E3E9EE]'>
+            {emailAddress}로 인증메일이 전송되었습니다
+          </p>
+          <p className='text-[#94A3B8] text-base font-medium leading-5 pb-[6px] mt-5'>메일이 오지 않았나요?</p>
+          <p className='text-[#94A3B8] text-base font-medium'>
             스팸함을 확인하거나 인증메일을
-            <span className='text-Base-Blue font-semibold' onClick={() => setEmailSent(false)}>
+            <span className='pl-1 text-Base-Blue font-semibold cursor-pointer' onClick={() => setEmailSent(false)}>
               재전송
             </span>
-            하세요
+            하세요.
           </p>
 
-          <Button type='primary' block className='px-4 py-3 h-12 text-base font-medium'>
-            <Link to={"/login"}>로그인</Link>
+          <Button type='primary' block className='px-4 py-3 h-12 text-base font-medium mt-[60px]'>
+            <Link to='/login'>로그인</Link>
           </Button>
         </div>
       </LoginForm>
