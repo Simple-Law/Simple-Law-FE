@@ -1,58 +1,90 @@
-import React, { useState } from "react";
-import axios from "axios";
 import LoginForm from "components/layout/AuthFormLayout";
-import { Button, Form, Input } from "antd";
+import { Input, Button, Form } from "antd";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { findUserIdSchema } from "utils/validations";
+import PropTypes from "prop-types";
+import { useForm, Controller } from "react-hook-form";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+// import { useParams } from "react-router-dom";
 
 const FindUserId = () => {
-  const [form] = Form.useForm();
-  const [userId, setUserId] = useState("");
-  const [error, setError] = useState("");
+  // const { type } = useParams();
 
-  const onFormFinish = async values => {
-    setError("");
-    setUserId("");
-    try {
-      const response = await axios.get("http://localhost:4000/users", {
-        params: { name: values.name, email: values.email },
-      });
-      const user = response.data.find(user => user.name === values.name && user.email === values.email);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailAddress, setEmailAddress] = useState("");
+  const {
+    control,
+    handleSubmit: onSubmit,
+    formState: { errors, isValid },
+  } = useForm({
+    resolver: yupResolver(findUserIdSchema),
+    mode: "onBlur",
+  });
+  const onFinish = async values => {
+    console.log("폼 제출 값:", values);
 
-      if (user) {
-        setUserId(user.userId);
-      } else {
-        setError("User not found");
-      }
-    } catch (error) {
-      setError("Error fetching user data");
-    }
+    setEmailAddress(values.email);
+    setEmailSent(true);
   };
+  // 이메일 발송 성공 후 메시지 화면
+  if (emailSent) {
+    return (
+      <LoginForm>
+        <div className='flex flex-col items-center justify-center p-4'>
+          <h2>메일을 확인해 주세요</h2>
+          <p>{emailAddress}로 인증메일이 전송되었습니다</p>
+          <p>메일이 오지 않았나요?</p>
+          <p>
+            스팸함을 확인하거나 인증메일을
+            <span className='text-Base-Blue font-semibold' onClick={() => setEmailSent(false)}>
+              재전송
+            </span>
+            하세요
+          </p>
+
+          <Button type='primary' block className='px-4 py-3 h-12 text-base font-medium'>
+            <Link to={"/login"}>로그인</Link>
+          </Button>
+        </div>
+      </LoginForm>
+    );
+  }
 
   return (
     <LoginForm title='아이디 찾기'>
-      <Form
-        form={form}
-        onFinish={onFormFinish}
-        initialValues={{
-          name: "",
-          email: "",
-        }}
-      >
-        <Form.Item className='mb-2' name='name' rules={[{ required: true, message: "이름을 입력해주세요." }]}>
-          <Input placeholder='이름 입력' />
-        </Form.Item>
-        <Form.Item name='email' rules={[{ required: true, message: "이메일을 입력해주세요." }]}>
-          <Input placeholder='이메일 입력' />
-        </Form.Item>
-        <Form.Item>
-          <Button type='primary' htmlType='submit' block className='mt-8'>
-            아이디 찾기
-          </Button>
-        </Form.Item>
+      <Form onFinish={onSubmit(onFinish)}>
+        <div className='flex gap-2 flex-col'>
+          <Form.Item
+            validateStatus={errors.email ? "error" : "success"}
+            help={errors.email?.message || ""} // 에러 메시지를 표시
+          >
+            <Controller
+              name='email'
+              control={control}
+              render={({ field }) => <Input placeholder='이메일 입력' {...field} />}
+            />
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type='primary'
+              block
+              className='px-4 py-3 h-12 text-base font-medium'
+              htmlType='submit'
+              disabled={!isValid}
+            >
+              아이디 정보 발송
+            </Button>
+          </Form.Item>
+        </div>
       </Form>
-      {userId && <p>User ID: {userId}</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
     </LoginForm>
   );
+};
+
+FindUserId.propTypes = {
+  handleData: PropTypes.func,
 };
 
 export default FindUserId;

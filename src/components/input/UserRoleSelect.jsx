@@ -2,15 +2,20 @@ import PropTypes from "prop-types";
 import { getRoleList } from "utils/userTypes";
 import { Select } from "antd";
 import { isEmpty } from "lodash";
+import { useEffect } from "react";
 
 /**
  * 유저 권한 Select input 컴포넌트
  */
-const UserRoleSelect = ({ value, userType = "ADMIN" }) => {
+const UserRoleSelect = ({ value, onChange, userType = "ADMIN" }) => {
   const roleOptions = getRoleList(userType);
 
+  useEffect(() => {
+    console.log("value:", value);
+  }, [value]);
+
   return (
-    <Select defaultValue={value}>
+    <Select value={value} onChange={onChange}>
       {isEmpty(roleOptions) ? (
         <Select.Option className='h-[30px]' value=''>
           선택지 없음
@@ -28,6 +33,7 @@ const UserRoleSelect = ({ value, userType = "ADMIN" }) => {
 
 UserRoleSelect.propTypes = {
   value: PropTypes.string,
+  onChange: PropTypes.func,
   userType: PropTypes.string,
 };
 

@@ -8,6 +8,7 @@ import Header from "components/layout/Header";
 import AppLayout from "components/messaging/MessageProvider";
 import MyQuestListPage from "pages/Request/MyRequestList";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
+import FindPassword from "pages/Login/findUser/FindPassword";
 import RequestDetailPage from "pages/Request/RequestDetail";
 import PostEditor from "components/postEditor/PostEditor";
 import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
@@ -25,7 +26,8 @@ const App = () => {
           <Route path='login' element={<Navigate to='/login/quest' replace />} />
           <Route path='admin/login' element={<Navigate to='/login/admin' replace />} />
           <Route path='login/:type' element={<LoginPage />} />
-          <Route path='find-id' element={<FindUserIdPage />} />
+          <Route path='find-id/:type' element={<FindUserIdPage />} />
+          <Route path='find-pw/:type' element={<FindPassword />} />
           <Route path='sign-up/:type' element={<SignUpPage />} />
           <Route element={<PrivateRoute />}>
             <Route path='mail/quest' element={<PostEditor />} />

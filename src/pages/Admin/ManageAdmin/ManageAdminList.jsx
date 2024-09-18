@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Table, Button } from "antd";
 import { AdminTag } from "components/tags/UserTag";
 import AuthButton from "components/button/AuthButton";
@@ -6,7 +6,7 @@ import UserInfoEditorForm from "components/editor/UserInfoEditorForm";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import { useCommonContext } from "contexts/CommonContext";
 import { searchAdminAPI } from "apis/manageUserAPI";
-import { postAdminAPI } from "apis/usersApi";
+import { postAdminAPI, putAdminAPI } from "apis/usersApi";
 import { formatDate } from "utils/dateUtil";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { useDispatch, useSelector } from "react-redux";
@@ -33,7 +33,7 @@ const ManageAdminList = () => {
     {
       title: "권한",
       key: "userType",
-      render: (_, record) => <AdminTag adminType={record?.roleList?.[0]} />,
+      render: (_, record) => record.roleList.map(role => <AdminTag key={role} adminType={role} className='mb-[5px]' />),
     },
     {
       title: "가입일",
@@ -100,16 +100,15 @@ const ManageAdminList = () => {
 
   /**
    * 관리자 계정 등록
-   * @param {Object} formatData
+   * @param {Object} paramData
    */
-  const insertAdmin = formatData => {
-    console.log("insertAdmin", formatData);
+  const insertAdmin = paramData => {
     dispatch(showSkeletonLoading());
-    const response = postAdminAPI(formatData);
+    const response = postAdminAPI(paramData);
     try {
       if (response.status === 200 && response.data.status === "success") {
         messageApi.success("관리자 계정이 등록되었습니다.");
-        // getAdminList();
+        getAdminList();
         navigator(0);
       }
     } catch (error) {
@@ -119,9 +118,22 @@ const ManageAdminList = () => {
     }
   };
 
-  const updateAdmin = useCallback(id => {
-    console.log("updateAdmin", id);
-  }, []);
+  const updateAdmin = (adminKey, paramData) => {
+    console.log("updateAdmin", paramData);
+    const response = putAdminAPI(adminKey, paramData);
+    try {
+      dispatch(showSkeletonLoading());
+      if (response.status === 200 && response.data.status === "success") {
+        messageApi.success("관리자 계정이 수정되었습니다.");
+        getAdminList();
+        navigator(0);
+      }
+    } catch (error) {
+      messageApi.error(response.message);
+    } finally {
+      dispatch(hideSkeletonLoading());
+    }
+  };
 
   const deleteAdmin = () => {
     console.log("deleteAdmin API");
@@ -155,9 +167,12 @@ const ManageAdminList = () => {
    * @param {Object} formData : modal에서 입력한 formData
    */
   const onSubmit = formData => {
-    console.log("formData");
-    console.log(formData);
-    selectedUser ? updateAdmin(formData) : insertAdmin(formData);
+    const { role, ...rest } = formData;
+    const paramData = {
+      ...rest,
+      roleList: [role],
+    };
+    selectedUser ? updateAdmin(selectedUser?.adminKey, paramData) : insertAdmin(paramData);
     closeModal();
   };
 
