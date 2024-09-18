@@ -18,13 +18,15 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = {}, isAdmin = fal
    * formData 초기화
    */
   const resetFormData = () => {
+    console.log(">>>>>", userData);
     initialValues = {
       id: isEmpty(userData) ? "" : userData.id,
       name: isEmpty(userData) ? "" : userData.name,
       email: isEmpty(userData) ? "" : userData.email,
       password: "",
+      role: isEmpty(userData) ? ["SUPER_ADMIN"] : userData.roleList?.[0],
     };
-    if (isAdmin) initialValues.role = isEmpty(userData) ? "NORMAL_ADMIN" : userData?.roleList?.[0]?.role;
+    if (isAdmin) initialValues.role = isEmpty(userData) ? "SUPER_ADMIN" : userData?.roleList?.[0];
 
     formData.resetFields();
     formData.setFieldsValue(initialValues);
@@ -65,8 +67,12 @@ const UserInfoEditorForm = ({ onSubmit, closeModal, userData = {}, isAdmin = fal
       </StyledFormItem>
 
       {isAdmin ? (
-        <StyledFormItem label='권한' name='role' value={formData.getFieldValue.role}>
-          <UserRoleSelect className='h-[35px]' />
+        <StyledFormItem label='권한' name='role'>
+          <UserRoleSelect
+            className='h-[35px]'
+            value={formData.getFieldValue("role")}
+            onChange={value => formData.setFieldsValue({ role: value })}
+          />
         </StyledFormItem>
       ) : null}
 
