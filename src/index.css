@@ -21,7 +21,7 @@ button {
   transform: translateX(-50%);
 }
 .custom-quill .ql-editor {
-  height: 400px;
+  /* height: 400px; */
   font-weight: normal;
   border-radius: 0px 0px 6px 6px;
 }

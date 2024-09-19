@@ -148,7 +148,9 @@ export default CommonForm;
 
 const StyledFormContainer = styled.div`
   margin-left: 45px;
-  width: calc(100% - 510px);
+  /* width: calc(100% - 510px); */
+  width: 70%;
+  overflow-y: auto;
   .ant-form-item {
     margin-bottom: 16px;
   }
@@ -160,6 +162,12 @@ const StyledFormContainer = styled.div`
 
 const StyledQuillContainer = styled.div`
   .custom-quill {
+    min-height: 150px;
+    /* max-height: 400px; */
+    max-height: 20%;
+    height: auto;
+    /* overflow-y: auto; */
+
     img {
       max-width: 100%;
       height: auto;

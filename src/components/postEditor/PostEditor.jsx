@@ -47,6 +47,7 @@ const PostEditor = () => {
         </div>
       </div>
       <FormDiv className='w-[1300px] mx-auto mt-[100px] relative'>
+        {/* <FormDiv className='w-full max-w-[1300px] mx-auto mt-[100px] relative'> */}
         <h2 className='text-2xl font-bold mb-6 absolute top-[40px] left-0'>의뢰 요청서</h2>
         <Form onFinish={handleSubmit} className='flex pt-24'>
           <div className='left-side'>
