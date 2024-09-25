@@ -56,8 +56,8 @@ const PostEditor = () => {
           <CommonForm
             formik={formik}
             editorRef={editorRef}
-            setPendingFiles={setPendingFiles} // 문서 첨부 파일 설정 함수 전달
-            mode={mode || "default"} // mode가 없을 경우 기본 값을 설정
+            setPendingFiles={setPendingFiles}
+            mode={mode || "default"}
           />
         </Form>
         <ConfirmModal title='제출 확인' visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
