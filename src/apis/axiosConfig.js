@@ -38,9 +38,6 @@ const getNewAccessToken = async userType => {
     const newAccessToken = response.data.data.payload.token.accessToken;
     const accessTokenExpiredAt = response.data.data.payload.token.accessTokenExpiredAt;
 
-    console.log("새로운 액세스 토큰을 발급받았습니다!", newAccessToken);
-    console.log("토큰 만료 시간을 업데이트했습니다!", accessTokenExpiredAt);
-
     store.dispatch(refreshAccessToken(newAccessToken));
     cookies.set("accessToken", newAccessToken, { path: "/" });
     cookies.set("expiresAt", accessTokenExpiredAt, { path: "/" });

@@ -30,8 +30,8 @@ const RequestSideMenu = () => {
     if (parentElement) {
       parentElement.classList.add("custom-arrow");
     }
-    dispatch(fetchMailsAction());
-  }, [dispatch]);
+    dispatch(fetchMailsAction(userType)); //userType 삽입 후 수정 완료
+  }, [dispatch, userType]);
 
   useEffect(() => {
     const arrowElement = document.querySelector(".ant-menu-sub .ant-menu-submenu-arrow");

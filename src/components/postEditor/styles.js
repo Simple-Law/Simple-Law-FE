@@ -14,14 +14,16 @@ export const FormDiv = styled.div`
     }
   }
   .left-side {
-    width: 461px; /* 너비를 고정 */
+    /* width: 461px;  */
+    width: 40%;
     height: calc(100vh - 100px);
     padding-bottom: 185px;
     overflow-y: auto; /* 세로 스크롤만 추가 */
     position: relative; /* 필요에 따라 위치 설정 */
   }
   .right-side {
-    width: calc(100% - 461px); /* 전체 너비에서 left-side 너비를 뺀 나머지 */
+    /* width: calc(100% - 461px);  */
+    width: 70%;
     height: calc(100vh - 100px);
     padding: 97px 0 20px 0;
     overflow-y: auto;
