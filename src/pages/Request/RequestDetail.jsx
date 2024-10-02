@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { fetchMails, getMailById, updateMail } from "apis/mailsApi";
+import { fetchMails, updateMail } from "apis/mailsApi";
 import moment from "moment";
 import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
@@ -18,36 +18,19 @@ const { Search } = Input;
 
 const DetailPage = () => {
   const { id } = useParams();
-
   const [modalInfo, setModalInfo] = useState({ isVisible: false, title: "", onOk: () => {} });
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.auth.user) || {};
+  const mail = useSelector(state => state.mail.mails.find(mail => mail.caseKey === Number(id)));
   const userType = user.type || "guest";
-  const [mailData, setMailData] = useState();
-
-  useEffect(() => {
-    moment.locale("ko");
-    if (!mailData) {
-      const fetchMail = async () => {
-        try {
-          const fetchedMail = await getMailById(userType, id);
-          console.log("fetchedMail", fetchedMail);
-          setMailData(fetchedMail);
-        } catch (error) {
-          console.error("Error fetching mail:", error);
-        }
-      };
-      fetchMail();
-    }
-  }, [id, mailData, userType]);
-  console.log("mailData", mailData);
 
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
     dispatch(toggleImportant(id));
   };
+
   const handleReject = async () => {
     setModalInfo({ ...modalInfo, isVisible: false });
     try {
@@ -84,16 +67,16 @@ const DetailPage = () => {
   };
 
   const handleDownloadAllFiles = async () => {
-    await downloadAllFiles(mailData.contentFileList);
+    if (mail?.contentFileList) {
+      await downloadAllFiles(mail.contentFileList);
+    }
   };
 
   const sortedReplies = useMemo(() => {
-    return mailData
-      ? (mailData.replies || []).slice().sort((a, b) => moment(b.requestAtDesc).diff(moment(a.requestAtDesc)))
-      : [];
-  }, [mailData]);
+    return (mail?.replies || []).slice().sort((a, b) => moment(b.requestAtDesc).diff(moment(a.requestAtDesc)));
+  }, [mail]);
 
-  if (!mailData) {
+  if (!mail) {
     return <div>Loading...</div>;
   }
 
@@ -127,25 +110,23 @@ const DetailPage = () => {
         </div>
         <div className='mx-8 mt-[20px]'>
           <div className='flex items-center gap-1'>
-            <span onClick={e => handleToggleImportant(mailData.caseKey, e)} className='cursor-pointer'>
-              {mailData.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
+            <span onClick={e => handleToggleImportant(mail.caseKey, e)} className='cursor-pointer'>
+              {mail.isImportant ? <FaStar style={{ color: "gold" }} /> : <FaRegStar style={{ color: "#CDD8E2" }} />}
             </span>
-            <div className='text-zinc-800 text-base font-medium  leading-normal'>{mailData.title}</div>
-            {mailData.detailStatus && <DetailStatusTag status={mailData.detailStatus} />}
+            <div className='text-zinc-800 text-base font-medium  leading-normal'>{mail.title}</div>
+            {mail.detailStatus && <DetailStatusTag status={mail.detailStatus} />}
           </div>
 
           <div className='justify-start items-center gap-2 flex pl-[20px] mb-[18px] mt-2'>
             <div className='text-gray-500 text-sm font-normal leading-tight'>
-              {mailData.anytime} ∙ {mailData.category}
+              {mail.anytime} ∙ {mail.category}
             </div>
             <div className='w-px h-2.5 bg-zinc-300'></div>
             <div className='justify-start items-center gap-1.5 flex'>
               <div className='text-gray-500 text-sm font-normal '>의뢰자 :</div>
               <div className='text-gray-500 text-sm font-semibold '>홍길동</div>
             </div>
-            {mailData.status === "contactRequest" && !mailData.isApproved && (
-              // TODO: DY - 답변 달리면 해결 완료로 이동 -> 추가질문 버튼 생성 :: 의뢰자가 의뢰에대한 종료 처리해야만 종료된 의뢰
-              // TODO: DY - 변호사 승인하면 승인완료 뱃지 달리기 거절하면 휴지통으로
+            {mail.status === "contactRequest" && !mail.isApproved && (
               <div className='flex gap-2'>
                 <p
                   className='cursor-pointer text-red-500'
@@ -161,7 +142,7 @@ const DetailPage = () => {
                 </p>
               </div>
             )}
-            {userType === "LAWYER" && mailData.status === "resolving" && (
+            {userType === "LAWYER" && mail.status === "resolving" && (
               <div>
                 <Button type='primary' onClick={handleReplyClick}>
                   답변
@@ -176,16 +157,16 @@ const DetailPage = () => {
                 의뢰 요청 시간
                 <span className='text-gray-500 text-sm font-normal px-1'>:</span>
                 <span className='text-gray-500 text-sm font-semibold leading-tight'>
-                  {moment(mailData.sentAt).format("YYYY년 MM월 DD일 (dd)")}
-                  {moment(mailData.sentAt).format("A h:mm").replace("AM", "오전").replace("PM", "오후")}
+                  {moment(mail.sentAt).format("YYYY년 MM월 DD일 (dd)")}
+                  {moment(mail.sentAt).format("A h:mm").replace("AM", "오전").replace("PM", "오후")}
                 </span>
               </div>
               <div className='text-gray-500 text-sm font-normal  leading-tight'>
                 배정 완료 후 작업 기한
                 <span className='text-gray-500 text-sm font-normal px-1'>:</span>
                 <span className='text-gray-500 text-sm font-semibold leading-tight'>
-                  {moment(mailData.sentAt)
-                    .add(mailData.time, "hours")
+                  {moment(mail.sentAt)
+                    .add(mail.time, "hours")
                     .format("YYYY년 MM월 DD일 (dd) A h:mm")
                     .replace("AM", "오전")
                     .replace("PM", "오후")}
@@ -193,13 +174,13 @@ const DetailPage = () => {
               </div>
             </div>
           </div>
-          {mailData && mailData.contentFileList.length > 0 && (
+          {mail.contentFileList && mail.contentFileList.length > 0 && (
             <div className='mt-4 mb-6 pl-[20px]'>
               <div className='justify-start items-center gap-3 flex mb-[10px]'>
                 <div className='text-gray-500 text-sm font-semibold leading-normal'>
-                  첨부파일 {mailData.contentFileList.length}개
+                  첨부파일 {mail.contentFileList.length}개
                   <span className='text-slate-400 text-sm font-normal leading-normal'>
-                    ({renderFileSize(mailData.contentFileList.reduce((acc, file) => acc + file.fileSize, 0))})
+                    ({renderFileSize(mail.contentFileList.reduce((acc, file) => acc + file.fileSize, 0))})
                   </span>
                 </div>
                 <div
@@ -210,7 +191,7 @@ const DetailPage = () => {
                 </div>
               </div>
               <div className='justify-start items-start gap-2 inline-flex'>
-                {mailData.contentFileList.map(file => (
+                {mail.contentFileList.map(file => (
                   <div
                     key={file.fileId}
                     className='px-2 py-1 bg-slate-100 bg-opacity-80 rounded justify-start items-start gap-1 flex cursor-pointer'
@@ -227,7 +208,7 @@ const DetailPage = () => {
           )}
 
           <div className='text-zinc-800 text-base font-normal pt-[24px] pl-[20px]  mt-[24px] border-t border-solid border-slate-100'>
-            <div dangerouslySetInnerHTML={{ __html: mailData.content }} />
+            <div dangerouslySetInnerHTML={{ __html: mail.content }} />
           </div>
 
           <div>
@@ -239,7 +220,7 @@ const DetailPage = () => {
                     <div className='text-gray-500 text-sm'>
                       {moment(reply.sentAt).format("YYYY년 MM월 DD일 A h:mm")}
                     </div>
-                    <Link to={`/requestion/${mailData.id}`}>
+                    <Link to={`/requestion/${mail.id}`}>
                       <Button type='link'>재질문하기</Button>
                     </Link>
                   </div>
