@@ -22,11 +22,12 @@ button {
 }
 .custom-quill .ql-editor {
   /* height: 400px; */
+  height: 40vh;
   font-weight: normal;
   border-radius: 0px 0px 6px 6px;
 }
 .custom-quill .ql-container {
-  height: 350px; /* 에디터의 컨테이너 높이 설정 */
+  /* height: 350px;  */
 }
 .ql-toolbar {
   border-radius: 6px 6px 0px 0px;

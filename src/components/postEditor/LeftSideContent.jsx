@@ -21,7 +21,7 @@ const LeftSideContent = ({ existingMail, formik }) => {
   }, []);
 
   return (
-    <div>
+    <div className='mr-16'>
       {existingMail ? (
         <div className='text-gray-700 mb-4'>
           <div className='mb-2'>

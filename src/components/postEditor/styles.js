@@ -15,7 +15,7 @@ export const FormDiv = styled.div`
   }
   .left-side {
     /* width: 461px;  */
-    width: 30%;
+    width: 40%;
     height: calc(100vh - 100px);
     padding-bottom: 185px;
     overflow-y: auto; /* 세로 스크롤만 추가 */
