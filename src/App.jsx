@@ -12,6 +12,7 @@ import FindPassword from "pages/Login/findUser/FindPassword";
 import RequestDetailPage from "pages/Request/RequestDetail";
 import PostEditor from "components/postEditor/PostEditor";
 import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
+import RequestList from "pages/Admin/Request/RequestList";
 import ManageAdminList from "pages/Admin/ManageAdmin/ManageAdminList";
 import ManageUserList from "pages/Admin/ManageUser/ManageUserList";
 import JoinRequestList from "pages/Admin/JoinRequest/JoinRequestList";
@@ -37,6 +38,7 @@ const App = () => {
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
                 <Route path='board' element={<MyQuestListPage />} />
+                <Route path='admin/board' element={<RequestList />} />
                 <Route path='admin/manage-admin' element={<ManageAdminList />} />
                 <Route path='admin/manage-user' element={<ManageUserList />} />
                 <Route path='admin/join-request' element={<JoinRequestList />} />
