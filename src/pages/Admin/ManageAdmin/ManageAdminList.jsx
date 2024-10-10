@@ -69,7 +69,7 @@ const ManageAdminList = () => {
   const { paginationConfig } = useCommonContext();
   const initialSearchParams = { pageNumber: 1, pageSize: paginationConfig.pageSize };
 
-  const pageTitle = "관리자 계정 관리";
+  const pageTitle = "관리자 계정 관리 배포테스트";
   const [data, setData] = useState([]);
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 

@@ -38,7 +38,7 @@ const App = () => {
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
                 <Route path='board' element={<MyQuestListPage />} />
-                <Route path='admin/board-test' element={<RequestList />} />
+                <Route path='admin/board' element={<RequestList />} />
                 <Route path='admin/manage-admin' element={<ManageAdminList />} />
                 <Route path='admin/manage-user' element={<ManageUserList />} />
                 <Route path='admin/join-request' element={<JoinRequestList />} />
