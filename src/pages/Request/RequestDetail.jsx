@@ -1,12 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { fetchMails, updateMail } from "apis/mailsApi";
+import { fetchMails, getMailById, updateMail } from "apis/mailsApi";
 import moment from "moment";
 import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setData, setMails, updateCounts, toggleImportant } from "../../redux/actions/mailActions";
+import { setMails, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import { DetailStatusTag } from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
@@ -18,31 +18,57 @@ const { Search } = Input;
 
 const DetailPage = () => {
   const { id } = useParams();
+  const [mail, setMail] = useState(null);
   const [modalInfo, setModalInfo] = useState({ isVisible: false, title: "", onOk: () => {} });
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.auth.user) || {};
-  const mail = useSelector(state => state.mail.mails.find(mail => mail.caseKey === Number(id)));
   const userType = user.type || "guest";
+
+  useEffect(() => {
+    const fetchMailDetail = async () => {
+      try {
+        const mailData = await getMailById(userType, id);
+        setMail(mailData);
+      } catch (error) {
+        console.error("Error fetching mail detail:", error);
+      }
+    };
+
+    fetchMailDetail();
+  }, [id, userType]);
+
+  console.log("mail", mail);
 
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
-    dispatch(toggleImportant(id));
+
+    const updatedMail = { ...mail, isImportant: !mail.isImportant };
+    setMail(updatedMail);
+
+    dispatch(toggleImportant(id))
+      .then(() => {
+        console.log("Successfully toggled important");
+      })
+      .catch(error => {
+        console.error("Error toggling important:", error);
+        setMail(mail);
+      });
   };
 
   const handleReject = async () => {
     setModalInfo({ ...modalInfo, isVisible: false });
-    try {
-      await updateMail(id, { status: "trash" });
-      const { data: mailData } = await fetchMails();
-      dispatch(setData(mailData));
-      dispatch(setMails(mailData.filter(mail => mail.status !== "trash")));
-      dispatch(updateCounts(mailData));
-      navigate("/board");
-    } catch (error) {
-      console.error("Error moving mail to trash:", error);
-    }
+    // try {
+    //   await updateMail(id, { status: "trash" });
+    //   const { data: mailData } = await fetchMails();
+    //   dispatch(setData(mailData));
+    //   dispatch(setMails(mailData.filter(mail => mail.status !== "trash")));
+    //   dispatch(updateCounts(mailData));
+    //   navigate("/board");
+    // } catch (error) {
+    //   console.error("Error moving mail to trash:", error);
+    // }
   };
 
   const handleApprove = async () => {
@@ -50,9 +76,9 @@ const DetailPage = () => {
     try {
       await updateMail(id, { isApproved: true, detailStatus: "approved" });
       const { data: mailData } = await fetchMails();
-      dispatch(setData(mailData));
+      // dispatch(setData(mailData));
       dispatch(setMails(mailData));
-      dispatch(updateCounts(mailData));
+      // dispatch(updateCounts(mailData));
     } catch (error) {
       console.error("Error updating mail status:", error);
     }

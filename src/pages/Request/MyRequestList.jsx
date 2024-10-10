@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { toggleImportant, setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { setMails, toggleImportant } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 import { useCommonContext } from "contexts/CommonContext";
 import { filterMails } from "utils/mailUtils";
@@ -22,32 +22,32 @@ const QuestPage = () => {
   const [timeHeaderTitle, setTimeHeaderTitle] = useState("의뢰 요청시간");
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useDispatch();
   const { paginationConfig } = useCommonContext();
 
-  const { data, tableData } = useSelector(state => state.mail);
+  const dispatch = useDispatch();
+  const { mails } = useSelector(state => state.mail);
+  const [mailLists, setMailLists] = useState(mails);
+
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
   const mailLoading = useSelector(state => state.loading.mailLoading);
 
   useEffect(() => {
-    dispatch(fetchMailsAction(userType));
-  }, [dispatch, userType]);
+    if (mails && mails.length > 0) {
+      const params = new URLSearchParams(location.search);
+      const statusKey = params.get("status") || "All_request";
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const statusKey = params.get("status") || "All_request";
-    const filteredMails = filterMails(data, statusKey);
-    dispatch(setMails(filteredMails));
-    dispatch(setTableData({ mails: filteredMails, statusKey }));
+      const filteredMails = filterMails(mails, statusKey);
+      setMailLists(filteredMails);
 
-    const userSpecificStatus = statusLabels[userType] || {};
-    if (userSpecificStatus[statusKey]) {
-      setHeaderTitle(`전체 의뢰함 (${userSpecificStatus[statusKey]})`);
-    } else {
-      setHeaderTitle(commonStatusLabels[statusKey] || "전체 의뢰함");
+      const userSpecificStatus = statusLabels[userType] || {};
+      if (userSpecificStatus[statusKey]) {
+        setHeaderTitle(`전체 의뢰함 (${userSpecificStatus[statusKey]})`);
+      } else {
+        setHeaderTitle(commonStatusLabels[statusKey] || "전체 의뢰함");
+      }
     }
-  }, [location, data, dispatch, userType]);
+  }, [location, mails, userType]);
 
   const handleTimeMenuClick = e => {
     const selectedItem = menuItems.find(item => item.key === e.key);
@@ -58,7 +58,24 @@ const QuestPage = () => {
 
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
-    dispatch(toggleImportant(id));
+
+    // 즉시 UI에 반영
+    const updatedMailLists = mailLists.map(mail =>
+      mail.caseKey === id ? { ...mail, isImportant: !mail.isImportant } : mail,
+    );
+    setMailLists(updatedMailLists); // UI 즉시 업데이트
+
+    // 서버에 변경사항 반영
+    dispatch(toggleImportant(id))
+      .then(() => {
+        // API 요청 후에 상태가 변경되면 필요한 후처리 가능
+        dispatch(setMails(updatedMailLists)); // 스토어 업데이트
+      })
+      .catch(error => {
+        console.error("Error toggling important:", error);
+        // 에러 처리 (예: 상태 롤백)
+        setMailLists(mailLists); // 이전 상태로 롤백
+      });
   };
 
   const menuItems = [
@@ -174,7 +191,8 @@ const QuestPage = () => {
 
   const getEmptyText = () => {
     const defaultText = "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
-    const statusKey = tableData.statusKey || "All_request";
+
+    const statusKey = mails.status || "All_request";
     const commonLabels = {
       important: "중요 의뢰함에 의뢰가 없습니다.",
       trash: "휴지통에 의뢰가 없습니다.",
@@ -214,7 +232,7 @@ const QuestPage = () => {
         />
       </div>
       <Table
-        dataSource={Array.isArray(tableData.mails) ? tableData.mails : []}
+        dataSource={mailLists}
         columns={columns}
         pagination={paginationConfig}
         locale={{

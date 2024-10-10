@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { styled } from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { addReply, createMail } from "../../redux/actions/mailActions";
+import { addReply, createMail } from "../redux/actions/mailActions";
 import CommonForm from "components/editor/ContentEditorForm";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { deleteFile, uploadFile } from "apis/commonAPI";
