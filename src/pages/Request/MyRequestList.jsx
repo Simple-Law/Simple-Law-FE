@@ -287,7 +287,7 @@ const BoardDiv = styled.div`
   }
 `;
 
-const PageSearch = styled(Search)`
+export const PageSearch = styled(Search)`
   width: 268px;
   & .ant-input {
     height: 40px;

@@ -7,9 +7,9 @@ const commonStatusLabels = {
 
 const statusLabels = {
   ADMIN: {
-    preparing: "컨택 예정",
-    pending: "컨텍 진행 중",
-    completed: "컨텍 완료",
+    waitContact: { label: "컨택 예정", value: "WAIT_CONTACT" },
+    inContact: { label: "컨택 진행 중", value: "IN_CONTACT" },
+    completed: { label: "컨택 완료", value: "IN_ASSIGN,ASSIGN" },
   },
   LAWYER: {
     IN_CONTACT: "컨택 요청 중",

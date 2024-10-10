@@ -194,9 +194,9 @@ export const AdminSideMenu = () => {
       key: "allRequest",
       icon: <SvgMailAll />,
       label: <Menulv2 id='allRequest'>{commonStatusLabels.All_request}</Menulv2>,
-      children: Object.keys(statusTypes).map(statusKey => ({
-        key: statusKey,
-        label: <span>{statusTypes[statusKey]}</span>,
+      children: Object.keys(statusTypes).map(type => ({
+        key: `board?displayStatus=${statusTypes[type].value}`,
+        label: <span>{statusTypes[type].label}</span>,
       })),
     },
 
