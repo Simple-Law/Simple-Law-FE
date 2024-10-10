@@ -4,7 +4,7 @@ import { FaPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useDispatch, useSelector } from "react-redux";
-import { setMails, setTableData, fetchMailsAction } from "../../redux/actions/mailActions";
+import { fetchMailsAction } from "../../redux/actions/mailActions";
 import SvgMailAll from "components/Icons/MailAll";
 import SvgMailStar from "components/Icons/MailStar";
 import SvgMail from "components/Icons/Mail";
@@ -13,16 +13,15 @@ import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
 import { commonStatusLabels, statusLabels, adminStatusLabels } from "utils/statusLabels";
-import { filterMails } from "utils/mailUtils";
 import { useState } from "react";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { data, counts } = useSelector(state => state.mail);
+  const { counts } = useSelector(state => state.mail);
+
   const user = useSelector(state => state.auth.user) || {};
   const userType = user.type || "guest";
-
   const [openKeys, setOpenKeys] = useState(["main"]);
 
   useEffect(() => {
@@ -30,7 +29,8 @@ const RequestSideMenu = () => {
     if (parentElement) {
       parentElement.classList.add("custom-arrow");
     }
-    dispatch(fetchMailsAction(userType)); //userType 삽입 후 수정 완료
+
+    dispatch(fetchMailsAction(userType));
   }, [dispatch, userType]);
 
   useEffect(() => {
@@ -57,10 +57,6 @@ const RequestSideMenu = () => {
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    const filteredMails = filterMails(data, statusKey);
-
-    dispatch(setMails(filteredMails));
-    dispatch(setTableData({ mails: filteredMails, statusKey }));
     navigate(`/board?status=${statusKey}`);
   };
 
@@ -77,12 +73,11 @@ const RequestSideMenu = () => {
       label: (
         <span className='ml-2 text-stone-950'>
           {commonStatusLabels.All_request}
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.total}</span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}> {counts.TOTAL}</span>
         </span>
       ),
       icon: <SvgMailAll />,
       onTitleClick: e => {
-        console.log("title click");
         if (e && e.domEvent) {
           e.domEvent.stopPropagation();
         }
@@ -113,14 +108,14 @@ const RequestSideMenu = () => {
       label: (
         <span className='text-stone-950'>
           {commonStatusLabels.important}
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.important}</span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.IMPORTANT}</span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("important"),
       icon: <SvgMailStar />,
     },
     {
-      key: "DONE", //TODO: 종료 의뢰함 보류중
+      key: "DONEE", //TODO: 종료 의뢰함 보류중
       label: (
         <span className='text-stone-950'>
           {commonStatusLabels.endRequest}
@@ -139,7 +134,7 @@ const RequestSideMenu = () => {
       label: (
         <span className='text-stone-950'>
           {commonStatusLabels.trash}
-          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}>{counts.trash}</span>
+          <span style={{ marginLeft: "8px", color: "#2E7FF8", fontSize: "14px" }}></span>
         </span>
       ),
       onTitleClick: () => handleMenuClick("trash"),

@@ -6,7 +6,8 @@ import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-import { setData, setMails, updateCounts, toggleImportant } from "../../redux/actions/mailActions";
+// import { setData, setMails, updateCounts, toggleImportant } from "../../redux/actions/mailActions";
+import { setMails, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import { DetailStatusTag } from "components/tags/StatusTag";
 import SvgSearch from "components/Icons/Search";
@@ -33,16 +34,16 @@ const DetailPage = () => {
 
   const handleReject = async () => {
     setModalInfo({ ...modalInfo, isVisible: false });
-    try {
-      await updateMail(id, { status: "trash" });
-      const { data: mailData } = await fetchMails();
-      dispatch(setData(mailData));
-      dispatch(setMails(mailData.filter(mail => mail.status !== "trash")));
-      dispatch(updateCounts(mailData));
-      navigate("/board");
-    } catch (error) {
-      console.error("Error moving mail to trash:", error);
-    }
+    // try {
+    //   await updateMail(id, { status: "trash" });
+    //   const { data: mailData } = await fetchMails();
+    //   dispatch(setData(mailData));
+    //   dispatch(setMails(mailData.filter(mail => mail.status !== "trash")));
+    //   dispatch(updateCounts(mailData));
+    //   navigate("/board");
+    // } catch (error) {
+    //   console.error("Error moving mail to trash:", error);
+    // }
   };
 
   const handleApprove = async () => {
@@ -50,9 +51,9 @@ const DetailPage = () => {
     try {
       await updateMail(id, { isApproved: true, detailStatus: "approved" });
       const { data: mailData } = await fetchMails();
-      dispatch(setData(mailData));
+      // dispatch(setData(mailData));
       dispatch(setMails(mailData));
-      dispatch(updateCounts(mailData));
+      // dispatch(updateCounts(mailData));
     } catch (error) {
       console.error("Error updating mail status:", error);
     }
