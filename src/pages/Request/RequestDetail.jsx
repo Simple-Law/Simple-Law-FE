@@ -43,7 +43,18 @@ const DetailPage = () => {
 
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
-    dispatch(toggleImportant(id));
+
+    const updatedMail = { ...mail, isImportant: !mail.isImportant };
+    setMail(updatedMail);
+
+    dispatch(toggleImportant(id))
+      .then(() => {
+        console.log("Successfully toggled important");
+      })
+      .catch(error => {
+        console.error("Error toggling important:", error);
+        setMail(mail);
+      });
   };
 
   const handleReject = async () => {
