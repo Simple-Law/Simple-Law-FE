@@ -151,3 +151,48 @@ export const unMarkAsImportant = async caseKey => {
     throw error;
   }
 };
+
+/**
+ * 의뢰를 휴지통으로 보내는 API
+ * @param {Number} caseKey - 삭제할 의뢰의 케이스 키
+ * @returns {Promise} 성공 여부
+ */
+export const deleteMail = async caseKey => {
+  try {
+    const response = await axiosInstance.post(`/api/v1/members/cases/${caseKey}/trash`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting mail:", error);
+    throw error;
+  }
+};
+
+/**
+ * 휴지통 목록 가져오는 API
+ * @param {Number} caseKey - 삭제할 의뢰의 케이스 키
+ * @returns {Promise<Array>} 휴지통 목록
+ */
+export const fetchTrashMails = async () => {
+  try {
+    const response = await axiosInstance.get("/api/v1/members/cases/trash");
+    return response.data.data.payload;
+  } catch (error) {
+    console.error("Error fetching trash mails:", error);
+    throw error;
+  }
+};
+
+/**
+ * 휴지통 영구 삭제 API
+ * @param {Number} caseKey - 삭제할 의뢰의 케이스 키
+ * @returns {Promise} 성공 여부
+ * */
+export const deleteTrashMails = async caseKey => {
+  try {
+    const response = await axiosInstance.delete(`/api/v1/members/cases/${caseKey}/trash`);
+    return response.data;
+  } catch (error) {
+    console.error("Error deleting trash mails:", error);
+    throw error;
+  }
+};

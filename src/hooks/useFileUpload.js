@@ -9,6 +9,11 @@ export const useFileUpload = () => {
   const messageApi = useMessageApi();
 
   const uploadFileToServer = async file => {
+    if (!file) {
+      messageApi.error("유효한 파일을 선택해주세요.");
+      return null;
+    }
+
     const formData = new FormData();
     formData.append("files", file);
 
