@@ -1,3 +1,5 @@
+import { useLayoutEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useCommonContext } from "contexts/CommonContext";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
 import SvgSearch from "components/Icons/Search";
@@ -5,10 +7,14 @@ import { PageSearch } from "pages/Request/MyRequestList";
 import { useSelector } from "react-redux";
 import { Table } from "antd";
 import { SkeletonLoading } from "components/layout/LoadingSpinner";
+import { statusLabels } from "utils/statusLabels";
 
 const ManageAdminList = () => {
-  const pageTitle = "컨텍 예정 의뢰함";
   const { paginationConfig } = useCommonContext();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+
+  const [pageTitle, setPageTitle] = useState("");
 
   const loading = useSelector(state => state.loading.SkeletonLoading);
 
@@ -47,6 +53,21 @@ const ManageAdminList = () => {
       render: <span></span>,
     },
   ];
+
+  useLayoutEffect(() => {
+    const pageTitles = statusLabels.ADMIN;
+    const statusArray = params.get("displayStatus") ? params.get("displayStatus").split(",") : [];
+
+    // 페이지 타이틀 설정
+    if (statusArray.length > 0) {
+      const matchedPage = Object.values(pageTitles).find(page => page.value.some(value => statusArray.includes(value)));
+      if (matchedPage) {
+        setPageTitle(matchedPage.label);
+      }
+    } else {
+      setPageTitle("전체 의뢰함");
+    }
+  }, [location]);
 
   return (
     <AdminPageWrap>
