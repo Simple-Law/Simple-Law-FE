@@ -1,12 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { fetchMails, updateMail } from "apis/mailsApi";
+import { fetchMails, getMailById, updateMail } from "apis/mailsApi";
 import moment from "moment";
 import "moment/locale/ko";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { Button, Input } from "antd";
 import { useDispatch, useSelector } from "react-redux";
-// import { setData, setMails, updateCounts, toggleImportant } from "../../redux/actions/mailActions";
 import { setMails, toggleImportant } from "../../redux/actions/mailActions";
 import styled from "styled-components";
 import { DetailStatusTag } from "components/tags/StatusTag";
@@ -19,13 +18,28 @@ const { Search } = Input;
 
 const DetailPage = () => {
   const { id } = useParams();
+  const [mail, setMail] = useState(null);
   const [modalInfo, setModalInfo] = useState({ isVisible: false, title: "", onOk: () => {} });
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const user = useSelector(state => state.auth.user) || {};
-  const mail = useSelector(state => state.mail.mails.find(mail => mail.caseKey === Number(id)));
   const userType = user.type || "guest";
+
+  useEffect(() => {
+    const fetchMailDetail = async () => {
+      try {
+        const mailData = await getMailById(userType, id);
+        setMail(mailData);
+      } catch (error) {
+        console.error("Error fetching mail detail:", error);
+      }
+    };
+
+    fetchMailDetail();
+  }, [id, userType]);
+
+  console.log("mail", mail);
 
   const handleToggleImportant = (id, event) => {
     event.stopPropagation();
