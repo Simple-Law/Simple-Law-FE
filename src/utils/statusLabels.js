@@ -2,7 +2,7 @@ const commonStatusLabels = {
   All_request: "전체 의뢰함",
   important: "중요 의뢰함",
   trash: "휴지통",
-  // endRequest: "종료된 의뢰함",
+  endRequest: "종료된 의뢰함",
 };
 
 const statusLabels = {
