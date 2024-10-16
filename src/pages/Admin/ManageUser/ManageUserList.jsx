@@ -139,8 +139,8 @@ const ManageUserList = () => {
       if (response.status === 200 && response.data.status === "success") {
         setData(response.data.data.payload);
       }
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      messageApi.error(err?.response?.data?.message);
     } finally {
       dispatch(hideSkeletonLoading());
     }
