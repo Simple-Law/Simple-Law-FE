@@ -2,14 +2,17 @@ const commonStatusLabels = {
   All_request: "전체 의뢰함",
   important: "중요 의뢰함",
   trash: "휴지통",
-  // endRequest: "종료된 의뢰함",
+  endRequest: "종료된 의뢰함",
 };
 
 const statusLabels = {
   ADMIN: {
-    waitContact: { label: "컨택 예정", value: "WAIT_CONTACT" },
-    inContact: { label: "컨택 진행 중", value: "IN_CONTACT" },
-    completed: { label: "컨택 완료", value: "IN_ASSIGN,ASSIGN" },
+    // all_request: { label: "전체 의뢰함", value: "" },
+    waitContact: { label: "컨택 예정", value: ["WAIT_CONTACT"] },
+    inContact: { label: "컨택 진행 중", value: ["IN_CONTACT", "IN_ASSIGN"] },
+    endContact: { label: "컨택 완료", value: ["ASSIGN"] },
+    // completed: { label: "중요한 의뢰함", value: "" },
+    // done: { label: "종료된 의뢰함", value: ["DONE"] },
   },
   LAWYER: {
     IN_CONTACT: "컨택 요청 중",

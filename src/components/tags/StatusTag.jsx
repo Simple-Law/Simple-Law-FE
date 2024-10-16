@@ -94,7 +94,7 @@ const StatusTag = ({ status, userType }) => {
 
 StatusTag.propTypes = {
   status: PropTypes.string.isRequired,
-  userType: PropTypes.oneOf(["LAWYER", "MEMBER", "guest"]).isRequired,
+  userType: PropTypes.oneOf(["ADMIN", "LAWYER", "MEMBER", "guest"]).isRequired,
 };
 
 const DetailStatusTag = ({ status }) => {

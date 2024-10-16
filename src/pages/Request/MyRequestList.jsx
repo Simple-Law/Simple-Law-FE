@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import SvgSearch from "components/Icons/Search";
 import SvgArrowUp from "components/Icons/ArrowUp";
 import SvgArrowDown from "components/Icons/ArrowDown";
-import { setMails, toggleImportant } from "../../redux/actions/mailActions";
+import { toggleImportant } from "../../redux/actions/mailActions";
 import { commonStatusLabels, statusLabels } from "utils/statusLabels";
 import { useCommonContext } from "contexts/CommonContext";
 import { filterMails } from "utils/mailUtils";
@@ -34,48 +34,47 @@ const QuestPage = () => {
 
   useEffect(() => {
     if (mails && mails.length > 0) {
-      const params = new URLSearchParams(location.search);
-      const statusKey = params.get("status") || "All_request";
-
-      const filteredMails = filterMails(mails, statusKey);
-      setMailLists(filteredMails);
-
-      const userSpecificStatus = statusLabels[userType] || {};
-      if (userSpecificStatus[statusKey]) {
-        setHeaderTitle(`전체 의뢰함 (${userSpecificStatus[statusKey]})`);
-      } else {
-        setHeaderTitle(commonStatusLabels[statusKey] || "전체 의뢰함");
-      }
+      updateMailLists();
     }
   }, [location, mails, userType]);
 
+  // 메일 목록 업데이트 함수
+  const updateMailLists = () => {
+    const params = new URLSearchParams(location.search);
+    const statusKey = params.get("status") || "All_request";
+    const filteredMails = filterMails(mails, statusKey);
+    setMailLists(filteredMails);
+    updateHeaderTitle(statusKey);
+  };
+
+  // 헤더 타이틀 업데이트 함수
+  const updateHeaderTitle = statusKey => {
+    const userSpecificStatus = statusLabels[userType] || {};
+    const title = userSpecificStatus[statusKey]
+      ? `전체 의뢰함 (${userSpecificStatus[statusKey]})`
+      : commonStatusLabels[statusKey] || "전체 의뢰함";
+    setHeaderTitle(title);
+  };
+
+  // 중요 표시 토글 함수
+  const handleToggleImportant = (id, event) => {
+    event.stopPropagation();
+    const updatedMailLists = toggleMailImportance(id);
+    setMailLists(updatedMailLists);
+
+    dispatch(toggleImportant(id)).catch(() => setMailLists(mailLists)); // 실패 시 롤백
+  };
+
+  // 메일 목록에서 중요 표시 토글
+  const toggleMailImportance = id =>
+    mailLists.map(mail => (mail.caseKey === id ? { ...mail, isImportant: !mail.isImportant } : mail));
+
+  // 시간 메뉴 클릭 핸들러
   const handleTimeMenuClick = e => {
     const selectedItem = menuItems.find(item => item.key === e.key);
     setTimeColumn(e.key);
     setTimeHeaderTitle(selectedItem.label);
     setDropdownOpen(false);
-  };
-
-  const handleToggleImportant = (id, event) => {
-    event.stopPropagation();
-
-    // 즉시 UI에 반영
-    const updatedMailLists = mailLists.map(mail =>
-      mail.caseKey === id ? { ...mail, isImportant: !mail.isImportant } : mail,
-    );
-    setMailLists(updatedMailLists); // UI 즉시 업데이트
-
-    // 서버에 변경사항 반영
-    dispatch(toggleImportant(id))
-      .then(() => {
-        // API 요청 후에 상태가 변경되면 필요한 후처리 가능
-        dispatch(setMails(updatedMailLists)); // 스토어 업데이트
-      })
-      .catch(error => {
-        console.error("Error toggling important:", error);
-        // 에러 처리 (예: 상태 롤백)
-        setMailLists(mailLists); // 이전 상태로 롤백
-      });
   };
 
   const menuItems = [
@@ -91,9 +90,7 @@ const QuestPage = () => {
       dataIndex: "important",
       width: 48,
       onCell: record => ({
-        onClick: e => {
-          handleToggleImportant(record.caseKey, e);
-        },
+        onClick: e => handleToggleImportant(record.caseKey, e),
       }),
       render: (_, record) => (
         <div
@@ -141,25 +138,7 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
-      render: (_, record) => (
-        // TODO: DY - 답변 표시 형식 check
-        <div>
-          {record.title}
-          {/* {record.parentTitle ? (
-            <div>
-              {record.parentTitle}
-              <div style={{ marginLeft: 20 }}>
-                <span style={{ color: "#aaa" }}>ㄴ</span> [재질문] {record.title}
-              </div>
-            </div>
-          ) : (
-            record.title
-          )} */}
-          {/* {record.replies && record.replies.length > 0 && (
-            <div style={{ color: "#1890ff", marginTop: 5 }}>(답변 {record.replies.length})</div>
-          )} */}
-        </div>
-      ),
+      render: (_, record) => <div>{record.title}</div>,
     },
     {
       title: (
@@ -173,7 +152,6 @@ const QuestPage = () => {
               display: "flex",
               alignItems: "center",
             }}
-            onClick={e => e.preventDefault()}
           >
             {timeHeaderTitle} {dropdownOpen ? <SvgArrowUp /> : <SvgArrowDown />}
           </button>
@@ -190,26 +168,22 @@ const QuestPage = () => {
   const onSearch = (value, _e, info) => console.log(info?.source, value);
 
   const getEmptyText = () => {
-    const defaultText = "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.";
-
     const statusKey = mails.status || "All_request";
     const commonLabels = {
       important: "중요 의뢰함에 의뢰가 없습니다.",
       trash: "휴지통에 의뢰가 없습니다.",
     };
-    if (commonLabels[statusKey]) {
-      return commonLabels[statusKey];
-    }
-    if (statusLabels[userType] && statusLabels[userType][statusKey]) {
-      return `${statusLabels[userType][statusKey]} 의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다.`;
-    }
-    return defaultText;
+    return (
+      commonLabels[statusKey] ||
+      statusLabels[userType]?.[statusKey] ||
+      "의뢰가 없습니다.<br>의뢰 요청 완료 시 요청 진행 중 의뢰함에 표시됩니다."
+    );
   };
 
   if (mailLoading) {
     return (
       <div>
-        {[...Array(10)].map((_, index) => (
+        {Array.from({ length: 10 }).map((_, index) => (
           <div key={index} className='mb-2'>
             <Skeleton active />
           </div>
@@ -221,14 +195,12 @@ const QuestPage = () => {
   return (
     <BoardDiv className='mt-6 mx-8 grow overflow-hidden'>
       <div className='flex justify-between items-end mb-3'>
-        <h2 className=' font-bold text-[20px]'>{headerTitle}</h2>
+        <h2 className='font-bold text-[20px]'>{headerTitle}</h2>
         <PageSearch
           placeholder='Placeholder'
           onSearch={onSearch}
           enterButton={<SvgSearch width='16px' height='16px' />}
-          style={{
-            width: 268,
-          }}
+          style={{ width: 268 }}
         />
       </div>
       <Table
@@ -242,14 +214,8 @@ const QuestPage = () => {
             </CustomEmpty>
           ),
         }}
-        style={{
-          cursor: "pointer",
-        }}
-        onRow={(record, rowIndex) => {
-          return {
-            onClick: () => navigate(`/detail/${record.caseKey}`),
-          };
-        }}
+        style={{ cursor: "pointer" }}
+        onRow={record => ({ onClick: () => navigate(`/detail/${record.caseKey}`) })}
       />
     </BoardDiv>
   );
@@ -318,15 +284,13 @@ export const PageSearch = styled(Search)`
       height: 16px;
     }
   }
-  &.ant-input-search {
-    .ant-input-group-addon {
-      background: none;
-      border: none;
-    }
-    .ant-input-wrapper {
-      background: #ffffff;
-      border-radius: 4px;
-    }
+  &.ant-input-search .ant-input-group-addon {
+    background: none;
+    border: none;
+  }
+  .ant-input-wrapper {
+    background: #ffffff;
+    border-radius: 4px;
   }
 `;
 
