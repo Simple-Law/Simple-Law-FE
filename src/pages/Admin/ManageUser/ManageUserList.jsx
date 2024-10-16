@@ -89,7 +89,7 @@ const ManageUserList = () => {
     // latestAccessStartAt: "",
     // latestAccessEndAt: "",
     pageNumber: 1,
-    pageSize: 5,
+    pageSize: paginationConfig.pageSize,
   };
   const [searchParams, setSearchParams] = useState(initialSearchParams);
 
@@ -117,7 +117,7 @@ const ManageUserList = () => {
   const getUserList = async () => {
     try {
       const text = document.getElementById("searchText");
-      console.log("text : ", text.value);
+
       if (searchParams.textType === "name") {
         searchParams.name = text.value;
         searchParams.email = "";
