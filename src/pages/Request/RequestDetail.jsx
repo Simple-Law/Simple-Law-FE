@@ -46,15 +46,10 @@ const DetailPage = () => {
 
     const updatedMail = { ...mail, isImportant: !mail.isImportant };
     setMail(updatedMail);
-
-    dispatch(toggleImportant(id))
-      .then(() => {
-        console.log("Successfully toggled important");
-      })
-      .catch(error => {
-        console.error("Error toggling important:", error);
-        setMail(mail);
-      });
+    dispatch(toggleImportant(id)).catch(error => {
+      console.error("Error toggling important:", error);
+      setMail(mail);
+    });
   };
 
   const handleReject = async () => {
