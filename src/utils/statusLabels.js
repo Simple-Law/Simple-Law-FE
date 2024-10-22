@@ -5,6 +5,14 @@ const commonStatusLabels = {
   endRequest: "종료된 의뢰함",
 };
 
+const adminStatusLabels = {
+  manageAdmin: "관리자 계정 관리",
+  manageUser: "회원 관리",
+  allUser: "전체 사용자",
+  requestSignup: "회원가입 요청",
+  manageEvent: "이벤트 관리",
+};
+
 const statusLabels = {
   ADMIN: {
     // all_request: { label: "전체 의뢰함", value: "" },
@@ -60,13 +68,7 @@ const menuStatusTypes = {
     resolved: ["resolved"],
   },
 };
-const adminStatusLabels = {
-  manageAdmin: "관리자 계정 관리",
-  manageUser: "회원 관리",
-  allUser: "전체 사용자",
-  requestSignup: "회원가입 요청",
-  manageEvent: "이벤트 관리",
-};
+
 const categoryLabels = [
   { value: "주주간 계약서", label: "주주간 계약서" },
   { value: "동업 계약서", label: "동업 계약서" },

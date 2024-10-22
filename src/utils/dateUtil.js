@@ -6,4 +6,8 @@ const formatDate = date => {
   return dayjs(date).format(dateFormat);
 };
 
-export { dateFormat, formatDate };
+const formatTime = date => {
+  return dayjs(date).format("HH:mm:ss");
+};
+
+export { dateFormat, formatDate, formatTime };
