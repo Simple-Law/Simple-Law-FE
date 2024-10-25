@@ -22,13 +22,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: ".nvmrc"
+          node-version: "20.12.2"
 
       - name: Install dependencies
-        run: npm install
+        run: yarn install
 
       - name: Run tests
-        run: npm test
+        run: yarn test
 
       - name: Deploy to Vercel if tests pass
         if: github.ref == 'refs/heads/main' && success()
