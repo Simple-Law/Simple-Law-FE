@@ -194,9 +194,11 @@ export const AdminSideMenu = () => {
       key: "allRequest",
       icon: <SvgMailAll />,
       label: <Menulv2 id='allRequest'>{commonStatusLabels.All_request}</Menulv2>,
+      onTitleClick: () => onClickMenu({ key: "board" }),
       children: Object.keys(statusTypes).map(type => ({
         key: `board?displayStatus=${statusTypes[type].value}`,
         label: <span>{statusTypes[type].label}</span>,
+        onTitleClick: () => onClickMenu({ key: `board?displayStatus=${statusTypes[type].value}` }),
       })),
     },
 
@@ -204,11 +206,13 @@ export const AdminSideMenu = () => {
       key: "important",
       icon: <SvgMailStar />,
       label: <Menulv2>{commonStatusLabels.important}</Menulv2>,
+      onTitleClick: () => onClickMenu({ key: "board?displayStatus=important" }),
     },
     {
       key: "endRequest",
       icon: <SvgMail />,
       label: <Menulv2>{commonStatusLabels.endRequest}</Menulv2>,
+      onTitleClick: () => onClickMenu({ key: "board?displayStatus=DONEE" }),
     },
   ];
   const accountMenuItems = [
@@ -216,19 +220,22 @@ export const AdminSideMenu = () => {
       key: "manage-admin",
       icon: <SvgManageAdmin />,
       label: <Menulv2 className='menulv2'>{adminStatusLabels.manageAdmin}</Menulv2>,
+      onTitleClick: () => onClickMenu({ key: "manage-admin" }),
     },
     {
-      key: "",
+      key: "manageUser",
       label: <Menulv2 id='manageUser'>{adminStatusLabels.manageUser}</Menulv2>,
       icon: <SvgManageUser />,
       children: [
         {
           key: "manage-user",
           label: <Menulv3>{adminStatusLabels.allUser}</Menulv3>,
+          onTitleClick: () => onClickMenu({ key: "manage-user" }),
         },
         {
           key: "join-request",
           label: <Menulv3>{adminStatusLabels.requestSignup}</Menulv3>,
+          onTitleClick: () => onClickMenu({ key: "join-request" }),
         },
       ],
     },
@@ -252,7 +259,9 @@ export const AdminSideMenu = () => {
   }, []);
 
   const onClickMenu = e => {
-    navigate(`/admin/${e.key}`);
+    const url = `/admin/${e.key}`;
+    console.log("url :", url);
+    navigate(url);
   };
 
   return (
@@ -260,7 +269,7 @@ export const AdminSideMenu = () => {
       <Menu
         onClick={onClickMenu}
         defaultOpenKeys={["questMain", "allRequest", "accountMain"]}
-        // defaultSelectedKeys={["preparing", "manage-admin", "manage-user"]}
+        // defaultSelectedKeys={["allRequest", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[

@@ -14,7 +14,7 @@ const Home = () => {
           <Button block onClick={() => navigate("/login/admin")}>
             로그인 test
           </Button>
-          <Button block className='mt-1' onClick={() => navigate("admin/join-request")}>
+          <Button block className='mt-1' onClick={() => navigate("admin/board")}>
             전체 의뢰함: 컨텍 예정
           </Button>
           <Button block className='mt-1' onClick={() => navigate("/admin/manage-admin")}>
