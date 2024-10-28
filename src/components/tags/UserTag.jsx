@@ -65,7 +65,7 @@ SelectAdminTag.propTypes = {
 
 export default UserTag;
 
-const StyledTag = styled(Tag)`
+export const StyledTag = styled(Tag)`
   &.user-tag {
     display: flex;
     gap: 10px;
