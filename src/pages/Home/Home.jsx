@@ -12,18 +12,18 @@ const Home = () => {
       <>
         <LoginForm>
           <Button block onClick={() => navigate("/login/admin")}>
-            로그인 test
+            로그인
           </Button>
-          <Button block className='mt-1' onClick={() => navigate("admin/board")}>
-            전체 의뢰함: 컨텍 예정
+          <Button block className='mt-1' onClick={() => navigate("admin/request?status=allRequest")}>
+            전체 의뢰함
           </Button>
           <Button block className='mt-1' onClick={() => navigate("/admin/manage-admin")}>
             관리자 계정 관리
           </Button>
-          <Button block className='mt-1' onClick={() => navigate("/admin/manage-user")}>
+          <Button block className='mt-1' onClick={() => navigate("/admin/manage-user/all")}>
             회원 관리: 전체 사용자
           </Button>
-          <Button block className='mt-1' onClick={() => navigate("admin/join-request")}>
+          <Button block className='mt-1' onClick={() => navigate("admin/manage-user/pending")}>
             회원 관리: 회원가입 요청
           </Button>
         </LoginForm>

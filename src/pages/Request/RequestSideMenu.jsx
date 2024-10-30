@@ -12,8 +12,9 @@ import SvgTrash from "components/Icons/Trash";
 import SvgManageAdmin from "components/Icons/ManageAdmin";
 import SvgManageUser from "components/Icons/ManageUser";
 import SvgEvent from "components/Icons/Event";
-import { commonStatusLabels, statusLabels, adminStatusLabels } from "utils/statusLabels";
+import { commonStatusLabels, statusLabels, adminMenuLabels } from "utils/statusLabels";
 import { useState } from "react";
+import { kebabCase } from "lodash";
 
 const RequestSideMenu = () => {
   const navigate = useNavigate();
@@ -183,68 +184,10 @@ const RequestSideMenu = () => {
 };
 
 export const AdminSideMenu = () => {
-  const user = useSelector(state => state.auth.user) || {};
-  const userType = user.type;
-  const statusTypes = statusLabels[userType];
+  const requestMenus = adminMenuLabels.request;
+  const accountMenus = adminMenuLabels.account;
 
   const navigate = useNavigate();
-
-  const questMenuItems = [
-    {
-      key: "allRequest",
-      icon: <SvgMailAll />,
-      label: <Menulv2 id='allRequest'>{commonStatusLabels.All_request}</Menulv2>,
-      onTitleClick: () => onClickMenu({ key: "board" }),
-      children: Object.keys(statusTypes).map(type => ({
-        key: `board?displayStatus=${statusTypes[type].value}`,
-        label: <span>{statusTypes[type].label}</span>,
-        onTitleClick: () => onClickMenu({ key: `board?displayStatus=${statusTypes[type].value}` }),
-      })),
-    },
-
-    {
-      key: "important",
-      icon: <SvgMailStar />,
-      label: <Menulv2>{commonStatusLabels.important}</Menulv2>,
-      onTitleClick: () => onClickMenu({ key: "board?displayStatus=important" }),
-    },
-    {
-      key: "endRequest",
-      icon: <SvgMail />,
-      label: <Menulv2>{commonStatusLabels.endRequest}</Menulv2>,
-      onTitleClick: () => onClickMenu({ key: "board?displayStatus=DONEE" }),
-    },
-  ];
-  const accountMenuItems = [
-    {
-      key: "manage-admin",
-      icon: <SvgManageAdmin />,
-      label: <Menulv2 className='menulv2'>{adminStatusLabels.manageAdmin}</Menulv2>,
-      onTitleClick: () => onClickMenu({ key: "manage-admin" }),
-    },
-    {
-      key: "manageUser",
-      label: <Menulv2 id='manageUser'>{adminStatusLabels.manageUser}</Menulv2>,
-      icon: <SvgManageUser />,
-      children: [
-        {
-          key: "manage-user",
-          label: <Menulv3>{adminStatusLabels.allUser}</Menulv3>,
-          onTitleClick: () => onClickMenu({ key: "manage-user" }),
-        },
-        {
-          key: "join-request",
-          label: <Menulv3>{adminStatusLabels.requestSignup}</Menulv3>,
-          onTitleClick: () => onClickMenu({ key: "join-request" }),
-        },
-      ],
-    },
-    {
-      key: "manage-event",
-      icon: <SvgEvent />,
-      label: <Menulv2>{adminStatusLabels.manageEvent}</Menulv2>,
-    },
-  ];
 
   useEffect(() => {
     const questMain = document.querySelector("#questMain").closest(".ant-menu-title-content");
@@ -258,9 +201,21 @@ export const AdminSideMenu = () => {
     manageUser.classList.add("menulv2-arrow");
   }, []);
 
+  /**
+   * 메뉴 클릭 이벤트
+   * @param {*} e event
+   */
   const onClickMenu = e => {
-    const url = `/admin/${e.key}`;
-    console.log("url :", url);
+    let url;
+
+    if (e.key.includes("_")) {
+      url = `/admin/request?status=${e.key.split("_")[1]}`;
+    } else if (e.key.includes("=")) {
+      url = `/admin/manage-user/${e.key.split("=")[1]}`;
+    } else {
+      url = `/admin/${kebabCase(e.key)}`;
+    }
+
     navigate(url);
   };
 
@@ -276,7 +231,38 @@ export const AdminSideMenu = () => {
           {
             key: "questMain",
             label: <Menulv1 id='questMain'>의뢰함</Menulv1>,
-            children: questMenuItems,
+            children: [
+              {
+                key: "_allRequest",
+                icon: <SvgMailAll />,
+                label: <Menulv2 id='allRequest'>{requestMenus.allRequest.this}</Menulv2>,
+                children: [
+                  {
+                    key: "_waitContact",
+                    label: <Menulv3>{requestMenus.allRequest.waitContact}</Menulv3>,
+                  },
+                  {
+                    key: "_inContact",
+                    label: <Menulv3>{requestMenus.allRequest.inContact}</Menulv3>,
+                  },
+                  {
+                    key: "_endContact",
+                    label: <Menulv3>{requestMenus.allRequest.endContact}</Menulv3>,
+                  },
+                ],
+              },
+
+              {
+                key: "_important",
+                icon: <SvgMailStar />,
+                label: <Menulv2>{requestMenus.important}</Menulv2>,
+              },
+              {
+                key: "_endRequest",
+                icon: <SvgMail />,
+                label: <Menulv2>{requestMenus.endRequest}</Menulv2>,
+              },
+            ],
           },
           {
             type: "divider",
@@ -284,7 +270,33 @@ export const AdminSideMenu = () => {
           {
             key: "accountMain",
             label: <Menulv1 id='accountMain'>계정</Menulv1>,
-            children: accountMenuItems,
+            children: [
+              {
+                key: "manageAdmin",
+                icon: <SvgManageAdmin />,
+                label: <Menulv2 className='menulv2'>{accountMenus.manageAdmin}</Menulv2>,
+              },
+              {
+                key: "manageUser",
+                label: <Menulv2 id='manageUser'>{accountMenus.manageUser.this}</Menulv2>,
+                icon: <SvgManageUser />,
+                children: [
+                  {
+                    key: "=all",
+                    label: <Menulv3>{accountMenus.manageUser.all}</Menulv3>,
+                  },
+                  {
+                    key: "=pending",
+                    label: <Menulv3>{accountMenus.manageUser.pending}</Menulv3>,
+                  },
+                ],
+              },
+              {
+                key: "manageEvent",
+                icon: <SvgEvent />,
+                label: <Menulv2>{accountMenus.manageEvent}</Menulv2>,
+              },
+            ],
           },
         ]}
       />

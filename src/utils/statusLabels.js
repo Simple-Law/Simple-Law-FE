@@ -1,3 +1,27 @@
+import { all } from "axios";
+
+const adminMenuLabels = {
+  request: {
+    allRequest: {
+      this: "전체의뢰함",
+      waitContact: "컨택 예정",
+      inContact: "컨택 진행 중",
+      endContact: "컨택 완료",
+    },
+    important: "중요 의뢰함",
+    endRequest: "종료된 의뢰함",
+  },
+  account: {
+    manageAdmin: "관리자 계정 관리",
+    manageUser: {
+      this: "회원관리",
+      all: "전체 회원",
+      pending: "회원가입 요청",
+    },
+    manageEvent: "이벤트 관리",
+  },
+};
+
 const commonStatusLabels = {
   All_request: "전체 의뢰함",
   important: "중요 의뢰함",
@@ -5,23 +29,7 @@ const commonStatusLabels = {
   endRequest: "종료된 의뢰함",
 };
 
-const adminStatusLabels = {
-  manageAdmin: "관리자 계정 관리",
-  manageUser: "회원 관리",
-  allUser: "전체 사용자",
-  requestSignup: "회원가입 요청",
-  manageEvent: "이벤트 관리",
-};
-
 const statusLabels = {
-  ADMIN: {
-    // all_request: { label: "전체 의뢰함", value: "" },
-    waitContact: { label: "컨택 예정", value: ["WAIT_CONTACT"] },
-    inContact: { label: "컨택 진행 중", value: ["IN_CONTACT", "IN_ASSIGN"] },
-    endContact: { label: "컨택 완료", value: ["ASSIGN"] },
-    // completed: { label: "중요한 의뢰함", value: "" },
-    // done: { label: "종료된 의뢰함", value: ["DONE"] },
-  },
   LAWYER: {
     IN_CONTACT: "컨택 요청 중",
     IN_PROGRESS: "해결 진행 중",
@@ -50,6 +58,14 @@ const subStatusLabels = {
 };
 
 const menuStatusTypes = {
+  ADMIN: {
+    allRequest: ["WAIT_CONTACT", "IN_CONTACT", "IN_ASSIGN"],
+    waitContact: ["WAIT_CONTACT"],
+    inContact: ["IN_CONTACT", "IN_ASSIGN"],
+    endContact: ["ASSIGN"],
+    important: ["IMPORTANT"],
+    done: ["DONE"],
+  },
   LAWYER: {
     IN_CONTACT: ["IN_CONTACT"],
     IN_PROGRESS: ["IN_PROGRESS"],
@@ -97,7 +113,7 @@ export {
   anytimeLabels,
   commonStatusLabels,
   statusLabels,
-  adminStatusLabels,
   subStatusLabels,
   menuStatusTypes,
+  adminMenuLabels,
 };

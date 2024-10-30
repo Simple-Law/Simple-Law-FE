@@ -37,11 +37,11 @@ const App = () => {
               <Route path='my-page' element={<MyPage />} />
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
-                <Route path='board' element={<MyQuestListPage />} />
-                <Route path='admin/board' element={<RequestList />} />
+                <Route path='request' element={<MyQuestListPage />} />
+                <Route path='admin/request' element={<RequestList />} />
                 <Route path='admin/manage-admin' element={<ManageAdminList />} />
-                <Route path='admin/manage-user' element={<ManageUserList />} />
-                <Route path='admin/join-request' element={<JoinRequestList />} />
+                <Route path='admin/manage-user/all' element={<ManageUserList />} />
+                <Route path='admin/manage-user/pending' element={<JoinRequestList />} />
               </Route>
             </Route>
           </Route>
