@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from "react";
+import { createContext, useContext, useReducer, useEffect } from "react";
 import PropTypes from "prop-types";
 import { fetchMails } from "apis/mailsApi";
 
