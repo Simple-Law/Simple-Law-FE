@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useCommonContext } from "contexts/CommonContext";
 import { AdminBoard, AdminPageWrap, TableEmptyDiv } from "components/styled/StyledComponents";
@@ -6,7 +6,7 @@ import SvgSearch from "components/Icons/Search";
 import { PageSearch } from "pages/Request/MyRequestList";
 import { useDispatch, useSelector } from "react-redux";
 import { Table } from "antd";
-import { statusLabels } from "utils/statusLabels";
+import { adminMenuLabels, menuStatusTypes } from "utils/statusLabels";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { StatusTag } from "components/tags/StatusTag";
 import { getRequestList } from "apis/adminRequestAPI";
@@ -94,16 +94,16 @@ const ManageAdminList = () => {
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const statusArray = params.get("displayStatus") ? params.get("displayStatus").split(",") : [];
+  const pageStatus = params.get("pageStatus");
 
-  const [pageTitle, setPageTitle] = useState("");
+  const pageTitle = adminMenuLabels.request?.[pageStatus];
   const { paginationConfig } = useCommonContext();
 
   const initialSearchParams = {
     keyword: "",
     startRequestedAt: "",
     endRequestedAt: "",
-    displayStatus: statusArray,
+    displayStatus: menuStatusTypes.ADMIN[pageStatus],
     mainCategoryKey: "",
     subCategoryKey: "",
     pageNumber: 1,
@@ -115,20 +115,6 @@ const ManageAdminList = () => {
   const messageApi = useMessageApi();
   const dispatch = useDispatch();
   const loading = useSelector(state => state.loading.SkeletonLoading);
-
-  useLayoutEffect(() => {
-    const pageTitles = statusLabels.ADMIN;
-
-    // 페이지 타이틀 설정
-    if (statusArray.length > 0) {
-      const matchedPage = Object.values(pageTitles).find(page => page.value.some(value => statusArray.includes(value)));
-      if (matchedPage) {
-        setPageTitle(matchedPage.label);
-      }
-    } else {
-      setPageTitle("전체 의뢰함");
-    }
-  }, [location]);
 
   useEffect(() => {
     selectRequestList();

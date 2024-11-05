@@ -209,7 +209,7 @@ export const AdminSideMenu = () => {
     let url;
 
     if (e.key.includes("_")) {
-      url = `/admin/request?status=${e.key.split("_")[1]}`;
+      url = `/admin/request?pageStatus=${e.key.split("_")[1]}`;
     } else if (e.key.includes("=")) {
       url = `/admin/manage-user/${e.key.split("=")[1]}`;
     } else {
@@ -235,19 +235,19 @@ export const AdminSideMenu = () => {
               {
                 key: "_allRequest",
                 icon: <SvgMailAll />,
-                label: <Menulv2 id='allRequest'>{requestMenus.allRequest.this}</Menulv2>,
+                label: <Menulv2 id='allRequest'>{requestMenus.allRequest}</Menulv2>,
                 children: [
                   {
                     key: "_waitContact",
-                    label: <Menulv3>{requestMenus.allRequest.waitContact}</Menulv3>,
+                    label: <Menulv3>{requestMenus.waitContact}</Menulv3>,
                   },
                   {
                     key: "_inContact",
-                    label: <Menulv3>{requestMenus.allRequest.inContact}</Menulv3>,
+                    label: <Menulv3>{requestMenus.inContact}</Menulv3>,
                   },
                   {
                     key: "_endContact",
-                    label: <Menulv3>{requestMenus.allRequest.endContact}</Menulv3>,
+                    label: <Menulv3>{requestMenus.endContact}</Menulv3>,
                   },
                 ],
               },
@@ -278,16 +278,16 @@ export const AdminSideMenu = () => {
               },
               {
                 key: "manageUser",
-                label: <Menulv2 id='manageUser'>{accountMenus.manageUser.this}</Menulv2>,
+                label: <Menulv2 id='manageUser'>{accountMenus.manageUser}</Menulv2>,
                 icon: <SvgManageUser />,
                 children: [
                   {
                     key: "=all",
-                    label: <Menulv3>{accountMenus.manageUser.all}</Menulv3>,
+                    label: <Menulv3>{accountMenus.all}</Menulv3>,
                   },
                   {
                     key: "=pending",
-                    label: <Menulv3>{accountMenus.manageUser.pending}</Menulv3>,
+                    label: <Menulv3>{accountMenus.pending}</Menulv3>,
                   },
                 ],
               },
