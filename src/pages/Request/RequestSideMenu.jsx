@@ -183,24 +183,35 @@ const RequestSideMenu = () => {
   );
 };
 
+/**
+ * 관리자 사이드 메뉴
+ */
 export const AdminSideMenu = () => {
   const requestMenus = adminMenuLabels.request;
   const accountMenus = adminMenuLabels.account;
+  const [openKeys, setOpenKeys] = useState(["questMain", "_allRequest", "accountMain", "manageUser"]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const questMain = document.querySelector("#questMain").closest(".ant-menu-title-content");
     const accountMain = document.querySelector("#accountMain").closest(".ant-menu-title-content");
-    const allRequest = document.querySelector("#allRequest").closest(".ant-menu-title-content");
-    const manageUser = document.querySelector("#manageUser").closest(".ant-menu-title-content");
+    const allRequestElement = document.getElementById("allRequest");
+    if (allRequestElement) {
+      const arrowElement = allRequestElement.closest(".ant-menu-title-content").nextElementSibling;
+      if (arrowElement && arrowElement.classList.contains("ant-menu-submenu-arrow")) {
+        arrowElement.remove();
+      }
+    }
 
     questMain.classList.add("menulv1-arrow");
     accountMain.classList.add("menulv1-arrow");
-    // allRequest.classList.add("menulv2-arrow");
-    // manageUser.classList.add("menulv2-arrow");
   }, []);
 
+  /**
+   * 페이지 이동 이벤트
+   * @param {*} key
+   */
   const navigatePage = key => {
     let url;
 
@@ -219,32 +230,36 @@ export const AdminSideMenu = () => {
    * @param {*} e event
    */
   const onClickMenu = e => {
-    if (e.key === "_allRequest") e.stopPropagation();
     navigatePage(e.key);
+  };
+
+  const changeOpenKeys = keys => {
+    setOpenKeys(prevKeys =>
+      keys.some(key => !prevKeys.includes(key)) ? [...prevKeys, ...keys] : prevKeys.filter(key => !keys.includes(key)),
+    );
   };
 
   return (
     <AdminMenuWrap className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultOpenKeys={["questMain", "_allRequest", "accountMain"]}
         defaultSelectedKeys={["allRequest", "manage-user"]}
+        openKeys={openKeys}
         mode='inline'
         className='w-full border-e-0'
         items={[
           {
             key: "questMain",
             label: <Menulv1 id='questMain'>의뢰함</Menulv1>,
+            onTitleClick: () => {
+              changeOpenKeys(["questMain"]);
+            },
             children: [
               {
                 key: "_allRequest",
                 icon: <SvgMailAll />,
                 label: <Menulv2 id='allRequest'>{requestMenus.allRequest}</Menulv2>,
-                onTitleClick: e => {
-                  if (e && e.domEvent) {
-                    e.domEvent.stopPropagation();
-                  }
-                  // setOpenKeys([]);
+                onTitleClick: () => {
                   navigatePage("_allRequest");
                 },
                 children: [
@@ -281,6 +296,9 @@ export const AdminSideMenu = () => {
           {
             key: "accountMain",
             label: <Menulv1 id='accountMain'>계정</Menulv1>,
+            onTitleClick: () => {
+              changeOpenKeys(["accountMain"]);
+            },
             children: [
               {
                 key: "manageAdmin",
@@ -291,6 +309,9 @@ export const AdminSideMenu = () => {
                 key: "manageUser",
                 label: <Menulv2 id='manageUser'>{accountMenus.manageUser}</Menulv2>,
                 icon: <SvgManageUser />,
+                onTitleClick: () => {
+                  changeOpenKeys(["manageUser"]);
+                },
                 children: [
                   {
                     key: "=all",
@@ -368,9 +389,6 @@ const AdminMenuWrap = styled(Board)`
   }
   .menulv1-arrow + .ant-menu-submenu-arrow {
     left: 50px;
-  }
-  .menulv2-arrow + .ant-menu-submenu-arrow {
-    left: 190px;
   }
 `;
 
