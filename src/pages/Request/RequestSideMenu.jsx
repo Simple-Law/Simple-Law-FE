@@ -197,34 +197,38 @@ export const AdminSideMenu = () => {
 
     questMain.classList.add("menulv1-arrow");
     accountMain.classList.add("menulv1-arrow");
-    allRequest.classList.add("menulv2-arrow");
-    manageUser.classList.add("menulv2-arrow");
+    // allRequest.classList.add("menulv2-arrow");
+    // manageUser.classList.add("menulv2-arrow");
   }, []);
+
+  const navigatePage = key => {
+    let url;
+
+    if (key.startsWith("_")) {
+      url = `/admin/request?pageStatus=${key.split("_")[1]}`;
+    } else if (key.startsWith("=")) {
+      url = `/admin/manage-user/${key.split("=")[1]}`;
+    } else {
+      url = `/admin/${kebabCase(key)}`;
+    }
+    navigate(url);
+  };
 
   /**
    * 메뉴 클릭 이벤트
    * @param {*} e event
    */
   const onClickMenu = e => {
-    let url;
-
-    if (e.key.includes("_")) {
-      url = `/admin/request?pageStatus=${e.key.split("_")[1]}`;
-    } else if (e.key.includes("=")) {
-      url = `/admin/manage-user/${e.key.split("=")[1]}`;
-    } else {
-      url = `/admin/${kebabCase(e.key)}`;
-    }
-
-    navigate(url);
+    if (e.key === "_allRequest") e.stopPropagation();
+    navigatePage(e.key);
   };
 
   return (
     <AdminMenuWrap className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultOpenKeys={["questMain", "allRequest", "accountMain"]}
-        // defaultSelectedKeys={["allRequest", "manage-user"]}
+        defaultOpenKeys={["questMain", "_allRequest", "accountMain"]}
+        defaultSelectedKeys={["allRequest", "manage-user"]}
         mode='inline'
         className='w-full border-e-0'
         items={[
@@ -236,6 +240,13 @@ export const AdminSideMenu = () => {
                 key: "_allRequest",
                 icon: <SvgMailAll />,
                 label: <Menulv2 id='allRequest'>{requestMenus.allRequest}</Menulv2>,
+                onTitleClick: e => {
+                  if (e && e.domEvent) {
+                    e.domEvent.stopPropagation();
+                  }
+                  // setOpenKeys([]);
+                  navigatePage("_allRequest");
+                },
                 children: [
                   {
                     key: "_waitContact",
