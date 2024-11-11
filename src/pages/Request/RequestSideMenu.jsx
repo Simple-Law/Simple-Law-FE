@@ -196,6 +196,10 @@ export const AdminSideMenu = () => {
   useEffect(() => {
     const questMain = document.querySelector("#questMain").closest(".ant-menu-title-content");
     const accountMain = document.querySelector("#accountMain").closest(".ant-menu-title-content");
+    questMain.classList.add("menulv1-arrow");
+    accountMain.classList.add("menulv1-arrow");
+
+    //전체의뢰함 화살표 제거
     const allRequestElement = document.getElementById("allRequest");
     if (allRequestElement) {
       const arrowElement = allRequestElement.closest(".ant-menu-title-content").nextElementSibling;
@@ -203,14 +207,11 @@ export const AdminSideMenu = () => {
         arrowElement.remove();
       }
     }
-
-    questMain.classList.add("menulv1-arrow");
-    accountMain.classList.add("menulv1-arrow");
   }, []);
 
   /**
    * 페이지 이동 이벤트
-   * @param {*} key
+   * @param {string} key
    */
   const navigatePage = key => {
     let url;
@@ -233,6 +234,10 @@ export const AdminSideMenu = () => {
     navigatePage(e.key);
   };
 
+  /**
+   * 서브메뉴 열기 이벤트
+   * @param {string} keys
+   */
   const changeOpenKeys = keys => {
     setOpenKeys(prevKeys =>
       keys.some(key => !prevKeys.includes(key)) ? [...prevKeys, ...keys] : prevKeys.filter(key => !keys.includes(key)),
@@ -258,22 +263,42 @@ export const AdminSideMenu = () => {
               {
                 key: "_allRequest",
                 icon: <SvgMailAll />,
-                label: <Menulv2 id='allRequest'>{requestMenus.allRequest}</Menulv2>,
+                label: (
+                  <Menulv2 id='allRequest'>
+                    {requestMenus.allRequest}
+                    <Count>999+</Count>
+                  </Menulv2>
+                ),
                 onTitleClick: () => {
                   navigatePage("_allRequest");
                 },
                 children: [
                   {
                     key: "_waitContact",
-                    label: <Menulv3>{requestMenus.waitContact}</Menulv3>,
+                    label: (
+                      <Menulv3>
+                        {requestMenus.waitContact}
+                        <Count>1</Count>
+                      </Menulv3>
+                    ),
                   },
                   {
                     key: "_inContact",
-                    label: <Menulv3>{requestMenus.inContact}</Menulv3>,
+                    label: (
+                      <Menulv3>
+                        {requestMenus.inContact}
+                        <Count>1</Count>
+                      </Menulv3>
+                    ),
                   },
                   {
                     key: "_endContact",
-                    label: <Menulv3>{requestMenus.endContact}</Menulv3>,
+                    label: (
+                      <Menulv3>
+                        {requestMenus.endContact}
+                        <Count>1</Count>
+                      </Menulv3>
+                    ),
                   },
                 ],
               },
@@ -281,12 +306,22 @@ export const AdminSideMenu = () => {
               {
                 key: "_important",
                 icon: <SvgMailStar />,
-                label: <Menulv2>{requestMenus.important}</Menulv2>,
+                label: (
+                  <Menulv2>
+                    {requestMenus.important}
+                    <Count>1</Count>
+                  </Menulv2>
+                ),
               },
               {
                 key: "_endRequest",
                 icon: <SvgMail />,
-                label: <Menulv2>{requestMenus.endRequest}</Menulv2>,
+                label: (
+                  <Menulv2>
+                    {requestMenus.endRequest}
+                    <Count>1</Count>
+                  </Menulv2>
+                ),
               },
             ],
           },
@@ -415,4 +450,10 @@ const Menulv3 = styled.span`
   font-weight: 500;
   line-height: 18px;
   letter-spacing: -0.28px;
+`;
+
+const Count = styled.span`
+  margin-left: 8px;
+  color: #2e7ff8;
+  font-size: 14px;
 `;
