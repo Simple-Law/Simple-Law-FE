@@ -183,71 +183,122 @@ const RequestSideMenu = () => {
   );
 };
 
+/**
+ * 관리자 사이드 메뉴
+ */
 export const AdminSideMenu = () => {
   const requestMenus = adminMenuLabels.request;
   const accountMenus = adminMenuLabels.account;
+  const [openKeys, setOpenKeys] = useState(["questMain", "_allRequest", "accountMain", "manageUser"]);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const questMain = document.querySelector("#questMain").closest(".ant-menu-title-content");
     const accountMain = document.querySelector("#accountMain").closest(".ant-menu-title-content");
-    const allRequest = document.querySelector("#allRequest").closest(".ant-menu-title-content");
-    const manageUser = document.querySelector("#manageUser").closest(".ant-menu-title-content");
-
     questMain.classList.add("menulv1-arrow");
     accountMain.classList.add("menulv1-arrow");
-    allRequest.classList.add("menulv2-arrow");
-    manageUser.classList.add("menulv2-arrow");
+
+    //전체의뢰함 화살표 제거
+    const allRequestElement = document.getElementById("allRequest");
+    if (allRequestElement) {
+      const arrowElement = allRequestElement.closest(".ant-menu-title-content").nextElementSibling;
+      if (arrowElement && arrowElement.classList.contains("ant-menu-submenu-arrow")) {
+        arrowElement.remove();
+      }
+    }
   }, []);
+
+  /**
+   * 페이지 이동 이벤트
+   * @param {string} key
+   */
+  const navigatePage = key => {
+    let url;
+
+    if (key.startsWith("_")) {
+      url = `/admin/request?pageStatus=${key.split("_")[1]}`;
+    } else if (key.startsWith("=")) {
+      url = `/admin/manage-user/${key.split("=")[1]}`;
+    } else {
+      url = `/admin/${kebabCase(key)}`;
+    }
+    navigate(url);
+  };
 
   /**
    * 메뉴 클릭 이벤트
    * @param {*} e event
    */
   const onClickMenu = e => {
-    let url;
+    navigatePage(e.key);
+  };
 
-    if (e.key.includes("_")) {
-      url = `/admin/request?status=${e.key.split("_")[1]}`;
-    } else if (e.key.includes("=")) {
-      url = `/admin/manage-user/${e.key.split("=")[1]}`;
-    } else {
-      url = `/admin/${kebabCase(e.key)}`;
-    }
-
-    navigate(url);
+  /**
+   * 서브메뉴 열기 이벤트
+   * @param {string} keys
+   */
+  const changeOpenKeys = keys => {
+    setOpenKeys(prevKeys =>
+      keys.some(key => !prevKeys.includes(key)) ? [...prevKeys, ...keys] : prevKeys.filter(key => !keys.includes(key)),
+    );
   };
 
   return (
     <AdminMenuWrap className='w-[245px] px-4 border-e-[1px] shrink-0 '>
       <Menu
         onClick={onClickMenu}
-        defaultOpenKeys={["questMain", "allRequest", "accountMain"]}
-        // defaultSelectedKeys={["allRequest", "manage-user"]}
+        defaultSelectedKeys={["allRequest", "manage-user"]}
+        openKeys={openKeys}
         mode='inline'
         className='w-full border-e-0'
         items={[
           {
             key: "questMain",
             label: <Menulv1 id='questMain'>의뢰함</Menulv1>,
+            onTitleClick: () => {
+              changeOpenKeys(["questMain"]);
+            },
             children: [
               {
                 key: "_allRequest",
                 icon: <SvgMailAll />,
-                label: <Menulv2 id='allRequest'>{requestMenus.allRequest.this}</Menulv2>,
+                label: (
+                  <Menulv2 id='allRequest'>
+                    {requestMenus.allRequest}
+                    <Count>999+</Count>
+                  </Menulv2>
+                ),
+                onTitleClick: () => {
+                  navigatePage("_allRequest");
+                },
                 children: [
                   {
                     key: "_waitContact",
-                    label: <Menulv3>{requestMenus.allRequest.waitContact}</Menulv3>,
+                    label: (
+                      <Menulv3>
+                        {requestMenus.waitContact}
+                        <Count>1</Count>
+                      </Menulv3>
+                    ),
                   },
                   {
                     key: "_inContact",
-                    label: <Menulv3>{requestMenus.allRequest.inContact}</Menulv3>,
+                    label: (
+                      <Menulv3>
+                        {requestMenus.inContact}
+                        <Count>1</Count>
+                      </Menulv3>
+                    ),
                   },
                   {
                     key: "_endContact",
-                    label: <Menulv3>{requestMenus.allRequest.endContact}</Menulv3>,
+                    label: (
+                      <Menulv3>
+                        {requestMenus.endContact}
+                        <Count>1</Count>
+                      </Menulv3>
+                    ),
                   },
                 ],
               },
@@ -255,12 +306,22 @@ export const AdminSideMenu = () => {
               {
                 key: "_important",
                 icon: <SvgMailStar />,
-                label: <Menulv2>{requestMenus.important}</Menulv2>,
+                label: (
+                  <Menulv2>
+                    {requestMenus.important}
+                    <Count>1</Count>
+                  </Menulv2>
+                ),
               },
               {
                 key: "_endRequest",
                 icon: <SvgMail />,
-                label: <Menulv2>{requestMenus.endRequest}</Menulv2>,
+                label: (
+                  <Menulv2>
+                    {requestMenus.endRequest}
+                    <Count>1</Count>
+                  </Menulv2>
+                ),
               },
             ],
           },
@@ -270,6 +331,9 @@ export const AdminSideMenu = () => {
           {
             key: "accountMain",
             label: <Menulv1 id='accountMain'>계정</Menulv1>,
+            onTitleClick: () => {
+              changeOpenKeys(["accountMain"]);
+            },
             children: [
               {
                 key: "manageAdmin",
@@ -278,16 +342,19 @@ export const AdminSideMenu = () => {
               },
               {
                 key: "manageUser",
-                label: <Menulv2 id='manageUser'>{accountMenus.manageUser.this}</Menulv2>,
+                label: <Menulv2 id='manageUser'>{accountMenus.manageUser}</Menulv2>,
                 icon: <SvgManageUser />,
+                onTitleClick: () => {
+                  changeOpenKeys(["manageUser"]);
+                },
                 children: [
                   {
                     key: "=all",
-                    label: <Menulv3>{accountMenus.manageUser.all}</Menulv3>,
+                    label: <Menulv3>{accountMenus.all}</Menulv3>,
                   },
                   {
                     key: "=pending",
-                    label: <Menulv3>{accountMenus.manageUser.pending}</Menulv3>,
+                    label: <Menulv3>{accountMenus.pending}</Menulv3>,
                   },
                 ],
               },
@@ -358,9 +425,6 @@ const AdminMenuWrap = styled(Board)`
   .menulv1-arrow + .ant-menu-submenu-arrow {
     left: 50px;
   }
-  .menulv2-arrow + .ant-menu-submenu-arrow {
-    left: 190px;
-  }
 `;
 
 const Menulv1 = styled.span`
@@ -386,4 +450,10 @@ const Menulv3 = styled.span`
   font-weight: 500;
   line-height: 18px;
   letter-spacing: -0.28px;
+`;
+
+const Count = styled.span`
+  margin-left: 8px;
+  color: #2e7ff8;
+  font-size: 14px;
 `;
