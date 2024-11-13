@@ -1,14 +1,13 @@
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Input, Button, Form } from "antd";
+import { Input, Button, Form, Modal } from "antd";
 import { useDispatch } from "react-redux";
 import LoginForm from "components/layout/AuthFormLayout";
 import SvgEye from "components/Icons/Eye";
 import SvgEyeclose from "components/Icons/Eyeclose";
 import SvgKakao from "components/Icons/Kakao";
-import SvgNaver from "components/Icons/Naver";
-import SvgGoogle from "components/Icons/Google";
 import { loginUserAction } from "../../redux/actions/authActions";
 import { useMessageApi } from "components/messaging/MessageProvider";
+import { useState } from "react";
 
 const Login = () => {
   const { type } = useParams();
@@ -16,7 +15,12 @@ const Login = () => {
   const dispatch = useDispatch();
   const messageApi = useMessageApi();
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [shouldNavigateToMyPage, setShouldNavigateToMyPage] = useState(false);
+
   let { typeName, toggleType, toggleText } = "";
+
   switch (type) {
     case "admin":
       typeName = "관리자";
@@ -38,14 +42,23 @@ const Login = () => {
     try {
       const { success, message } = await dispatch(loginUserAction(values, type));
       const successUrl = type === "admin" ? "/admin/manage-admin" : "/request?status=All_request";
-
       if (success) {
         messageApi.success("로그인 성공!");
-        navigate(successUrl); // 로그인 성공 시 이동
+        if (shouldNavigateToMyPage) {
+          navigate("/my-page");
+        } else {
+          navigate(successUrl); // 로그인 성공 시 기본 이동
+        }
       } else {
-        messageApi.error(message || "로그인 실패!");
-        if (message === "pending-approval") {
-          messageApi.warning("가입 승인 중입니다.");
+        if (message === "rejected") {
+          const userInfo = "거절사유";
+          // const userInfo = await getMemberInfo(type);
+          // setRejectionReason(userInfo.rejectionReason);
+          setRejectionReason(userInfo);
+          setIsModalVisible(true); // 모달 표시
+          setShouldNavigateToMyPage(true); // 마이페이지로 이동 설정
+        } else {
+          messageApi.error(message || "로그인 실패!");
         }
       }
     } catch (error) {
@@ -53,6 +66,10 @@ const Login = () => {
     }
   };
 
+  const handleModalClose = () => {
+    setIsModalVisible(false);
+    navigate("/my-page");
+  };
   return (
     <LoginForm title={title}>
       <Form onFinish={handleLogin}>
@@ -107,15 +124,10 @@ const Login = () => {
                 </div>
                 <div className='grow shrink basis-0 h-px bg-zinc-200'></div>
               </div>
-              <div className='w-full flex gap-6 justify-center'>
-                <div className='flex justify-center items-center rounded-[50px] bg-kakaoYellow w-[54px] h-[54px]'>
+              <div className='w-full'>
+                <div className='flex justify-center items-center bg-kakaoYellow w-full h-[54px] gap-2'>
                   <SvgKakao width='24px' height='24px' />
-                </div>
-                <div className='flex justify-center items-center rounded-[50px] bg-naverGreen w-[54px] h-[54px]'>
-                  <SvgNaver width='20px' height='20px' />
-                </div>
-                <div className='flex justify-center items-center rounded-[50px] border-[1px] w-[54px] h-[54px]'>
-                  <SvgGoogle width='24px' height='24px' fill='#FFF' />
+                  <span>카카오 로그인</span>
                 </div>
               </div>
               <Link to={`/login/${toggleType}`} className='text-base font-normal text-center text-Base-Blue underline'>
@@ -125,6 +137,15 @@ const Login = () => {
           )}
         </div>
       </Form>
+      {/* 거절 사유 모달 */}
+      <Modal
+        title='가입 거절 안내'
+        visible={isModalVisible}
+        onOk={handleModalClose}
+        cancelButtonProps={{ style: { display: "none" } }}
+      >
+        <p>{rejectionReason}</p>
+      </Modal>
     </LoginForm>
   );
 };
