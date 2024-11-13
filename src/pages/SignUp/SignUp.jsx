@@ -88,9 +88,9 @@ const SignUp = () => {
     <Agreement key='agreement' handleData={handleData} nextStep={nextStep} />,
     <JoinForm key='joinForm' handleData={handleData} nextStep={nextStep} type={type} handleSubmit={handleSubmit} />,
     type === "lawyer" && <Detail key='detail' handleData={handleData} nextStep={nextStep} />,
-    type === "lawyer" && (
-      <Choice key='choice' handleData={handleData} nextStep={nextStep} handleSubmit={handleSubmit} />
-    ),
+    // type === "lawyer" && (
+    //   <Choice key='choice' handleData={handleData} nextStep={nextStep} handleSubmit={handleSubmit} />
+    // ),
     <FinalStep key='finalStep' type={type} />, // FinalStep 추가
   ].filter(Boolean); // 조건부 렌더링으로 undefined 요소 제거
 
