@@ -106,33 +106,61 @@ const MyPage = () => {
     setImageSrc(null); // 이미지만 초기화하고 모달은 유지
   };
   return (
-    <div>
-      <h2>계정 관리</h2>
-      <p>가입 정보</p>
+    <div className='w-[600px] mx-auto'>
+      <h2 className='text-2xl font-bold leading-10 p-5'>계정 관리</h2>
 
-      <div style={{ cursor: "pointer", color: "blue" }} onClick={handleProfileClick}>
-        프로필
+      <p className='font-semibold text-lg border-b border-gray-300'>가입 정보</p>
+      <div className='flex w-[600px] p-4 items-center gap-2 border-b border-gray-300'>
+        <div className='text-gray-700'>이름</div>
+        <div className='flex-1'>{user.name}</div>
+      </div>
+      <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+        <div className='text-gray-700'>아이디</div>
+        <div className='text-gray-900'>{user.id}</div>
+      </div>
+      {user.type !== "MEMBER" && (
+        <>
+          <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+            <div className='text-gray-700'>소속</div>
+            <div>{user.name}</div>
+          </div>
+          <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+            <div className='text-gray-700'>담당 의뢰분야</div>
+            <div>{user.name}</div>
+          </div>
+        </>
+      )}
+
+      <p className='font-semibold text-lg border-b border-gray-300 mt-4'>계정</p>
+      <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+        <div className='text-gray-700'>이메일</div>
+        <div className='text-gray-900'>{user.email}</div>
+      </div>
+      <div className='flex w-[600px] p-4 justify-between items-start border-b border-gray-300'>
+        <div className='text-gray-700'>비밀번호</div>
+        <div>미등록</div>
+      </div>
+      <p className='text-sm text-gray-500 p-4'>SNS로 간편 가입한 경우 비밀번호 없이 로그인이 가능합니다.</p>
+      <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+        <div className='text-gray-700'>휴대폰 번호</div>
+        <div>{formattedPhone}</div>
       </div>
 
-      <div>이름 {user.name}</div>
-      <div>아이디 {user.id}</div>
+      <p className='font-semibold text-lg border-b border-gray-300 mt-4'>알림 설정</p>
+      <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+        <div className='text-gray-700'>마케팅 수신 설정</div>
+        <Switch checked={isMarketingConsent} onChange={onToggleMarketingConsent} />
+      </div>
       {user.type !== "MEMBER" && (
-        <div>
-          <div>소속 {user.name}</div>
-          <div>담당 의뢰분야 {user.name}</div>
+        <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+          <div className='text-gray-700'>의뢰 안내 설정</div>
         </div>
       )}
-      <p>계정</p>
-      <div>이메일 {user.email}</div>
-      <div>비밀번호 </div>
-      <p>SNS로 간편 가입한 경우 비밀번호 없이 로그인이 가능합니다.</p>
-      <div>휴대폰 번호 {formattedPhone}</div>
-      <p>알림 설정</p>
-      <div>
-        마케팅 수신 설정 <Switch checked={isMarketingConsent} onChange={onToggleMarketingConsent} />
+      <div className='flex justify-center mt-4'>
+        <Button>회원탈퇴</Button>
       </div>
-      {user.type !== "MEMBER" && <div>의뢰 안내 설정</div>}
-      <Button>회원탈퇴</Button>
+
+      {/* Confirm Modal */}
       <ConfirmModal
         title='프로필 사진'
         open={isModalVisible}
@@ -147,22 +175,20 @@ const MyPage = () => {
           </Button>,
         ]}
       >
-        <div style={{ textAlign: "center" }}>
+        <div className='text-center'>
           {imageSrc ? (
-            <>
-              <div style={{ position: "relative", height: 400, background: "#333" }}>
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  cropShape='round'
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
-              </div>
-            </>
+            <div className='relative h-[400px] bg-gray-800'>
+              <Cropper
+                image={imageSrc}
+                crop={crop}
+                cropShape='round'
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+              />
+            </div>
           ) : (
             <input type='file' accept='image/*' onChange={handleImageChange} />
           )}

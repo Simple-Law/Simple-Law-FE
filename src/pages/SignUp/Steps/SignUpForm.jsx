@@ -30,32 +30,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     setValue,
   );
 
-  // const [idMessage, setIdMessage] = useState("");
-  // const [idValidateStatus, setIdValidateStatus] = useState("");
-
-  // const handleBlur = async field => {
-  //   const value = watch(field);
-  //   if (!value) return;
-
-  //   const fieldNames = {
-  //     id: "아이디",
-  //     email: "이메일",
-  //   };
-
-  //   try {
-  //     const isDuplicate = await checkDuplicate(field, value);
-  //     if (isDuplicate) {
-  //       setIdMessage(`이미 사용 중인 ${fieldNames[field]}입니다.`);
-  //       setIdValidateStatus("error");
-  //     } else {
-  //       setIdMessage(`사용 가능한 ${fieldNames[field]}입니다.`);
-  //       setIdValidateStatus("success");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error in handleBlur:", error);
-  //   }
-  // };
-
   // 생년월일 처리
   const handleBirthdayChange = e => {
     const formattedValue = formatBirthday(e.target.value); // 생년월일 포맷팅 적용

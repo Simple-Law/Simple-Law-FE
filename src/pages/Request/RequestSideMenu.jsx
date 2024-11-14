@@ -58,7 +58,7 @@ const RequestSideMenu = () => {
   const statusTypes = statusLabels[userType] || statusLabels["guest"];
 
   const handleMenuClick = statusKey => {
-    navigate(`/board?status=${statusKey}`);
+    navigate(`/request?status=${statusKey}`);
   };
 
   const handleSubMenuOpenChange = keys => {
