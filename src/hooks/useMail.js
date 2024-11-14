@@ -47,7 +47,7 @@ export const useMail = (id, mode) => {
           messageApi.success("게시글이 등록되었습니다!");
         }
         formik.resetForm();
-        navigate("/board");
+        navigate("/request");
       } catch (error) {
         messageApi.error("작업에 실패했습니다!");
         console.error("Error sending mail:", error);

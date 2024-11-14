@@ -51,6 +51,11 @@ const LeftSideContent = ({ existingMail, formik }) => {
               />
             </Form.Item>
             <Form.Item>
+              <p>세부분야 선택</p>
+              <Select name='categoryDetailKey' placeholder='세부분야 선택' />
+              <Select name='addDetailKey' placeholder='추가 선택' />
+            </Form.Item>
+            <Form.Item>
               <p>의뢰 작업 기한</p>
               <Select name='time' placeholder='의뢰 작업 기한' onChange={value => formik.setFieldValue("time", value)}>
                 <Select.Option value='12'>12시간</Select.Option>

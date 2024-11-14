@@ -7,33 +7,38 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/actions/authActions";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import UserTag from "components/tags/UserTag";
+import SvgLogOut from "components/Icons/LogOut";
+import SvgPayment from "components/Icons/Payment";
+import SvgMyPage from "components/Icons/MyPage";
 const Header = () => {
   const dispatch = useDispatch();
   const useMessage = useMessageApi();
 
   const user = useSelector(state => state.auth.user);
+
   const isAdmin = user?.type === "ADMIN";
   const loginUrl = isAdmin ? "/admin/login" : "/login";
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
+  const profileRef = useRef(null);
 
   const handleClickOutside = event => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target) &&
+      profileRef.current &&
+      !profileRef.current.contains(event.target)
+    ) {
       setIsDropdownVisible(false);
     }
   };
 
   useEffect(() => {
-    if (isDropdownVisible) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-
-    // Cleanup function to remove event listener
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -74,9 +79,9 @@ const Header = () => {
         </Link>
         <div className='flex items-center pr-[32px] gap-[10px] cursor-pointer'>
           {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to={loginUrl}>로그인</Link>}
-          {/* 로그인한 사용자의 이름 표시 */}
-          <div onClick={toggleDropdown}>
+          <div ref={profileRef} onClick={toggleDropdown}>
             <SvgProfile />
+            <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
           </div>
           {isDropdownVisible && (
             <div
@@ -87,15 +92,22 @@ const Header = () => {
               <div className='flex items-center gap-2'>
                 <SvgProfile />
                 <p className='text-sm font-medium'>{user.name}</p>
+                <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
               </div>
-              <div className='p-2 cursor-pointer hover:bg-gray-100' onClick={handleAccountManagement}>
-                계정 관리
+              <div
+                className='flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100'
+                onClick={handleAccountManagement}
+              >
+                <SvgMyPage /> 계정 관리
               </div>
-              <div className='p-2 cursor-pointer hover:bg-gray-100' onClick={handlePaymentManagement}>
-                결제 관리
+              <div
+                className='flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100'
+                onClick={handlePaymentManagement}
+              >
+                <SvgPayment width='24px' height='24px' /> 결제 관리
               </div>
-              <div className='p-2 cursor-pointer hover:bg-gray-100' onClick={showLogoutModal}>
-                로그아웃
+              <div className='flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100' onClick={showLogoutModal}>
+                <SvgLogOut width='24px' height='24px' /> 로그아웃
               </div>
             </div>
           )}
