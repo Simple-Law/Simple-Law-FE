@@ -1,7 +1,7 @@
 import { useState } from "react";
 import JoinForm from "./Steps/SignUpForm";
 import Detail from "./Steps/Detail";
-import Choice from "./Steps/Choice";
+// import Choice from "./Steps/Choice";
 import Agreement from "./Steps/Agreement";
 import FinalStep from "./Steps/FinalStep";
 import { useParams } from "react-router-dom";

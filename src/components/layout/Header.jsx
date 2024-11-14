@@ -79,7 +79,6 @@ const Header = () => {
         </Link>
         <div className='flex items-center pr-[32px] gap-[10px] cursor-pointer'>
           {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to={loginUrl}>로그인</Link>}
-          {/* 로그인한 사용자의 이름 표시 */}
           <div ref={profileRef} onClick={toggleDropdown}>
             <SvgProfile />
             <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
@@ -92,8 +91,8 @@ const Header = () => {
             >
               <div className='flex items-center gap-2'>
                 <SvgProfile />
-                <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
                 <p className='text-sm font-medium'>{user.name}</p>
+                <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
               </div>
               <div
                 className='flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100'
