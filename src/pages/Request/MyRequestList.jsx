@@ -138,7 +138,12 @@ const QuestPage = () => {
       dataIndex: "title",
       key: "title",
       className: "title-column",
-      render: (_, record) => <div>{record.title}</div>,
+      render: (_, record) => (
+        // TODO: 댓글 수 표시 (임시)
+        <div>
+          {record.title} {record.commentCount > 0 && <span>({record.commentCount})</span>}
+        </div>
+      ),
     },
     {
       title: (
