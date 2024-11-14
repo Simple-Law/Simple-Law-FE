@@ -52,6 +52,7 @@ const Login = () => {
       } else {
         if (message === "rejected") {
           const userInfo = "거절사유";
+          //TODO: 로그인 실패 시 거절 사유 가져오기
           // const userInfo = await getMemberInfo(type);
           // setRejectionReason(userInfo.rejectionReason);
           setRejectionReason(userInfo);
