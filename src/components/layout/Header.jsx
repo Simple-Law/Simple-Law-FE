@@ -81,7 +81,6 @@ const Header = () => {
           {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to={loginUrl}>로그인</Link>}
           <div ref={profileRef} onClick={toggleDropdown}>
             <SvgProfile />
-            <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
           </div>
           {isDropdownVisible && (
             <div
