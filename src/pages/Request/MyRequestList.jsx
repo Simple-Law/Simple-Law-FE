@@ -69,6 +69,9 @@ const QuestPage = () => {
   const toggleMailImportance = id =>
     mailLists.map(mail => (mail.caseKey === id ? { ...mail, isImportant: !mail.isImportant } : mail));
 
+  //TODO: 메일 목록에서 읽음 상태 토글 : isRead 상태를 서버에서 받아오는 것으로 변경 필요
+  const toggleMailReadStatus = id => mailLists.map(mail => (mail.caseKey === id ? { ...mail, isRead: true } : mail));
+
   // 시간 메뉴 클릭 핸들러
   const handleTimeMenuClick = e => {
     const selectedItem = menuItems.find(item => item.key === e.key);
@@ -140,7 +143,7 @@ const QuestPage = () => {
       className: "title-column",
       render: (_, record) => (
         // TODO: 댓글 수 표시 (임시)
-        <div>
+        <div style={{ color: record.isRead ? "#ccc" : "#000" }}>
           {record.title} {record.commentCount > 0 && <span>({record.commentCount})</span>}
         </div>
       ),
@@ -220,7 +223,12 @@ const QuestPage = () => {
           ),
         }}
         style={{ cursor: "pointer" }}
-        onRow={record => ({ onClick: () => navigate(`/detail/${record.caseKey}`) })}
+        onRow={record => ({
+          onClick: () => {
+            navigate(`/detail/${record.caseKey}`);
+            setMailLists(toggleMailReadStatus(record.caseKey));
+          },
+        })}
       />
     </BoardDiv>
   );
