@@ -85,13 +85,13 @@ const Header = () => {
           {isDropdownVisible && (
             <div
               ref={dropdownRef}
-              className='absolute right-0 mt-2 w-[200px] h-[150px] bg-white border shadow-lg rounded'
+              className='absolute shadow-custom right-0 mt-2 w-[260px] h-auto bg-white border p-5 rounded-xl'
               style={{ top: "100%" }}
             >
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 pb-4 border-b'>
                 <SvgProfile />
-                <p className='text-sm font-medium'>{user.name}</p>
-                <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
+                <p className='text-base font-semibold ml-1'>{user.name}</p>
+                <UserTag userType={user.type} />
               </div>
               <div
                 className='flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100'
