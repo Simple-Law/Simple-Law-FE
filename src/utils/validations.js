@@ -2,10 +2,10 @@ import * as yup from "yup";
 import moment from "moment";
 
 export const validationSchema = yup.object().shape({
-  id: yup
-    .string()
-    .matches(/^[a-z0-9]{3,20}$/, "아이디는 영문 소문자와 숫자로 이루어진 3~20자로 입력해야 합니다!")
-    .required("아이디는 필수로 입력해야 합니다!"),
+  // id: yup
+  //   .string()
+  //   .matches(/^[a-z0-9]{3,20}$/, "아이디는 영문 소문자와 숫자로 이루어진 3~20자로 입력해야 합니다!")
+  //   .required("아이디는 필수로 입력해야 합니다!"),
   password: yup
     .string()
     .matches(
@@ -37,15 +37,6 @@ export const validationSchema = yup.object().shape({
       value => moment().diff(moment(value, "YYYYMMDD"), "years") >= 14,
     )
     .required("생년월일을 입력하세요."),
-  phoneNumber: yup
-    .string()
-    .transform(value => value.replace(/\D/g, "").replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3"))
-    .matches(/^010-\d{4}-\d{4}$/, "올바른 전화번호 형식이 아닙니다.")
-    .required("전화번호는 필수로 입력해야 합니다."),
-  verificationCode: yup
-    .string()
-    .matches(/^\d{6}$/, "인증번호는 6자리 숫자여야 합니다.")
-    .required("인증번호를 입력하세요!"),
 });
 
 export const detailFormSchema = yup.object().shape({
@@ -79,6 +70,17 @@ export const findUserIdSchema = yup.object().shape({
 export const findUserPWSchema = yup.object().shape({
   id: yup.string().required("아이디는 필수로 입력해야 합니다."),
   name: yup.string().required("이름은 필수로 입력해야 합니다."),
+  phoneNumber: yup
+    .string()
+    .transform(value => value.replace(/\D/g, "").replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3"))
+    .matches(/^010-\d{4}-\d{4}$/, "올바른 전화번호 형식이 아닙니다.")
+    .required("전화번호는 필수로 입력해야 합니다."),
+  verificationCode: yup
+    .string()
+    .matches(/^\d{6}$/, "인증번호는 6자리 숫자여야 합니다.")
+    .required("인증번호를 입력하세요!"),
+});
+export const userPhoneChangeSchema = yup.object().shape({
   phoneNumber: yup
     .string()
     .transform(value => value.replace(/\D/g, "").replace(/(\d{3})(\d{4})(\d{4})/, "$1-$2-$3"))

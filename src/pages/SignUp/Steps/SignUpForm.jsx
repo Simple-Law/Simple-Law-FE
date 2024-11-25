@@ -1,34 +1,26 @@
-import { useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
 import PropTypes from "prop-types";
 import { validationSchema } from "utils/validations";
-import { useAuthCode } from "utils/verification";
+
 import SvgEye from "components/Icons/Eye";
 import SvgEyeclose from "components/Icons/Eyeclose";
-// import { checkDuplicate } from "apis/usersApi";
-import { formatBirthday, formatPhoneNumber } from "utils/formatters";
+
+import { formatBirthday } from "utils/formatters";
 
 const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   const {
     control,
     handleSubmit: onSubmit,
     formState: { errors, isValid },
-    watch,
+
     setValue,
   } = useForm({
     resolver: yupResolver(validationSchema),
     mode: "onBlur",
   });
-
-  const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false);
-  const { handleSendAuthCode, handleVerifyAuthCode, handleAuthCodeChange, formatTime, timer } = useAuthCode(
-    watch,
-    setShowAuthenticationCodeField,
-    setValue,
-  );
 
   // 생년월일 처리
   const handleBirthdayChange = e => {
@@ -36,16 +28,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     setValue("birthDay", formattedValue);
   };
 
-  // 전화번호 처리
-  const handlePhoneNumberChange = e => {
-    const formattedValue = formatPhoneNumber(e.target.value); // 전화번호 포맷팅 적용
-    setValue("phoneNumber", formattedValue);
-  };
-
   const onFinish = async values => {
-    const isVerified = await handleVerifyAuthCode(type);
-    if (!isVerified) return;
-
     handleData(values);
     if (type !== "lawyer") {
       await handleSubmit(values);
@@ -58,14 +41,16 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
     <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
       <Form onFinish={onSubmit(onFinish)}>
         <div className='flex gap-2 flex-col'>
+          {/* 이메일 입력하며 중복검사 하나? */}
+          {/* 이미 가입된 이메일입니다. 다른 이메일을 입력해 주세요. */}
           <Form.Item
-            validateStatus={errors.id ? "error" : "success"}
-            help={errors.id?.message || ""} // 에러 메시지를 표시
+            validateStatus={errors.email ? "error" : "success"}
+            help={errors.email?.message || ""} // 에러 메시지를 표시
           >
             <Controller
-              name='id'
+              name='email'
               control={control}
-              render={({ field }) => <Input placeholder='아이디 입력' {...field} />}
+              render={({ field }) => <Input placeholder='이메일 입력' {...field} />}
             />
           </Form.Item>
 
@@ -99,17 +84,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               )}
             />
             {errors.passwordConfirm && <p style={{ color: "red" }}>{errors.passwordConfirm.message}</p>}
-          </Form.Item>
-
-          <Form.Item
-            validateStatus={errors.email ? "error" : "success"}
-            help={errors.email?.message || ""} // 에러 메시지를 표시
-          >
-            <Controller
-              name='email'
-              control={control}
-              render={({ field }) => <Input placeholder='이메일 입력' {...field} />}
-            />
           </Form.Item>
         </div>
 
@@ -155,51 +129,6 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
             />
             {errors.gender && <p style={{ color: "red" }}>{errors.gender.message}</p>}
           </Form.Item>
-
-          <Form.Item>
-            <Controller
-              name='phoneNumber'
-              control={control}
-              render={({ field }) => (
-                <Input
-                  style={{ width: "100%" }}
-                  placeholder="휴대전화번호('-' 제외하고 입력)"
-                  {...field}
-                  maxLength='13'
-                  onChange={handlePhoneNumberChange} // 전화번호 포맷팅 적용
-                  suffix={
-                    <p
-                      onClick={handleSendAuthCode}
-                      disabled={!watch("phoneNumber")}
-                      style={{ color: "#287fff", cursor: "pointer" }}
-                    >
-                      {showAuthenticationCodeField ? "재전송" : "인증 요청"}
-                    </p>
-                  }
-                />
-              )}
-            />
-            {errors.phoneNumber && <p style={{ color: "red" }}>{errors.phoneNumber.message}</p>}
-          </Form.Item>
-
-          {showAuthenticationCodeField && (
-            <Form.Item>
-              <Controller
-                name='verificationCode'
-                control={control}
-                render={({ field }) => (
-                  <Input
-                    placeholder='인증번호 입력'
-                    {...field}
-                    maxLength='4'
-                    onChange={handleAuthCodeChange}
-                    suffix={<span style={{ color: "#287fff" }}>{timer > 0 ? formatTime(timer) : "0:00"}</span>}
-                  />
-                )}
-              />
-              {errors.verificationCode && <p style={{ color: "red" }}>{errors.verificationCode.message}</p>}
-            </Form.Item>
-          )}
         </div>
 
         <Form.Item className='mt-8'>

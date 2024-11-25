@@ -43,7 +43,7 @@ const SignUp = () => {
       barExamCount = "",
       yearOfPassing = "",
       fileUploadId = "",
-      caseCategoryKeyList = [],
+      // caseCategoryKeyList = [],
       isMarketingConsent = false,
     } = mergedData;
 
@@ -70,7 +70,7 @@ const SignUp = () => {
         barExamCount: String(barExamCount),
         yearOfPassing: String(yearOfPassing),
         fileUploadId: String(fileUploadId),
-        caseCategoryKeyList: caseCategoryKeyList.map(Number),
+        // caseCategoryKeyList: caseCategoryKeyList.map(Number),
       });
     }
 
