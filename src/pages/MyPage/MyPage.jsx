@@ -1,14 +1,16 @@
 import { useState, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { Button, Switch, Input, Modal, Form } from "antd";
+// import { Button, Switch, Input, Modal, Form } from "antd";
+import { Button, Input, Modal, Form } from "antd";
 import Cropper from "react-easy-crop";
 import { useFileUpload } from "hooks/useFileUpload";
 import ConfirmModal from "components/modal/ConfirmModal";
 import { useForm, Controller } from "react-hook-form"; // 추가
 import { yupResolver } from "@hookform/resolvers/yup"; // 추가
-import { userPhoneChangeSchema } from "utils/validations"; // 추가
+import { userPhoneChangeSchema, passwordChangeSchema } from "utils/validations"; // 추가
 import { useAuthCode } from "utils/verification"; // 인증 훅 임포트
 import { formatPhoneNumber } from "utils/formatters";
+import SvgArrowUp from "components/Icons/ArrowUp";
 
 // 이미지 크롭 관련 함수
 export const getCroppedImg = async (imageSrc, pixelCrop) => {
@@ -53,13 +55,13 @@ const MyPage = () => {
   const user = useSelector(state => state.auth.user);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAuthModalVisible, setIsAuthModalVisible] = useState(false); // 인증 모달 상태
-  // const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false); // 비밀번호 변경 모달 상태 추가
+  const [isPasswordModalVisible, setIsPasswordModalVisible] = useState(false); // 비밀번호 변경 모달 상태 추가
   const [imageSrc, setImageSrc] = useState(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const [showAuthenticationCodeField, setShowAuthenticationCodeField] = useState(false); // 인증 필드 상태 - 수정
-  const [isMarketingConsent, setIsMarketingConsent] = useState(user.isMarketingConsent); // 체크박스 상태 관리 함수
+  // const [isMarketingConsent, setIsMarketingConsent] = useState(user.isMarketingConsent); // 체크박스 상태 관리 함수
   const { handleFileChange } = useFileUpload();
 
   const formattedPhone = user.phone ? formatPhoneNumber(user.phone) : "";
@@ -88,34 +90,36 @@ const MyPage = () => {
     user,
   );
   // TODO: 비밀번호 변경 모달 관리
-  // const {
-  //   control: passwordControl,
-  //   handleSubmit: handlePasswordSubmit,
-  //   formState: { errors: passwordErrors },
-  //   reset,
-  // } = useForm({
-  //   resolver: yupResolver(passwordChangeSchema),
-  //   mode: "onBlur",
-  // });
+  const {
+    control: passwordControl,
+    handleSubmit: handlePasswordSubmit,
+    formState: { errors: passwordErrors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(passwordChangeSchema),
+    mode: "onBlur",
+  });
 
-  // const onChangePassword = async ({ currentPassword, newPassword }) => {
-  //   try {
-  //     await updatePassword({ currentPassword, newPassword });
-  //     message.success("비밀번호가 성공적으로 변경되었습니다.");
-  //     setIsPasswordModalVisible(false);
-  //     reset();
-  //   } catch (error) {
-  //     console.error("Error updating password:", error);
-  //     message.error("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
-  //   }
-  // };
+  const onChangePassword = async ({ currentPassword, newPassword }) => {
+    console.log(currentPassword, newPassword);
+
+    // try {
+    //   await updatePassword({ currentPassword, newPassword });
+    //   message.success("비밀번호가 성공적으로 변경되었습니다.");
+    //   setIsPasswordModalVisible(false);
+    //   reset();
+    // } catch (error) {
+    //   console.error("Error updating password:", error);
+    //   message.error("비밀번호 변경에 실패했습니다. 다시 시도해주세요.");
+    // }
+  };
 
   // 마케팅 수신 설정 함수
-  const onToggleMarketingConsent = checked => {
-    setIsMarketingConsent(checked);
-    console.log(`마케팅 수신 설정: ${checked}`);
-    // TODO: DY - 마케팅 수신 동의 상태를 업데이트 API 추가.
-  };
+  // const onToggleMarketingConsent = checked => {
+  //   setIsMarketingConsent(checked);
+  //   console.log(`마케팅 수신 설정: ${checked}`);
+  //   // TODO: DY - 마케팅 수신 동의 상태를 업데이트 API 추가.
+  // };
 
   // 이미지 크롭 관련 함수
   const onCropComplete = useCallback((croppedArea, croppedAreaPixels) => {
@@ -189,14 +193,14 @@ const MyPage = () => {
   const handleVerificationCodeChange = e => {
     handleAuthCodeChange(e);
   };
-  // const handlePasswordModalOpen = () => {
-  //   setIsPasswordModalVisible(true);
-  // }; // 비밀번호 변경 모달 열기 함수
+  const handlePasswordModalOpen = () => {
+    setIsPasswordModalVisible(true);
+  }; // 비밀번호 변경 모달 열기 함수
 
-  // const handlePasswordModalCancel = () => {
-  //   setIsPasswordModalVisible(false);
-  //   reset();
-  // }; // 비밀번호 변경 모달 닫기 함수 및 폼 리셋
+  const handlePasswordModalCancel = () => {
+    setIsPasswordModalVisible(false);
+    reset();
+  }; // 비밀번호 변경 모달 닫기 함수 및 폼 리셋
   return (
     <div className='w-[600px] mx-auto'>
       <h2 className='text-2xl font-bold leading-10 p-5'>계정 관리</h2>
@@ -206,19 +210,25 @@ const MyPage = () => {
         <div className='text-gray-700'>이름</div>
         <div className='flex-1'>{user.name}</div>
       </div>
-      <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
+      {/* <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
         <div className='text-gray-700'>아이디</div>
         <div className='text-gray-900'>{user.id}</div>
-      </div>
+      </div> */}
       {user.type !== "MEMBER" && (
         <>
           <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
             <div className='text-gray-700'>소속</div>
-            <div>{user.company}</div>
+            <div>
+              {user.company}
+              <SvgArrowUp />
+            </div>
           </div>
           <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
             <div className='text-gray-700'>담당 의뢰분야</div>
-            <div>{user.specialty}</div>
+            <div>
+              {user.specialty}
+              <SvgArrowUp />
+            </div>
           </div>
         </>
       )}
@@ -228,9 +238,15 @@ const MyPage = () => {
         <div className='text-gray-700'>이메일</div>
         <div className='text-gray-900'>{user.email}</div>
       </div>
-      <div className='flex w-[600px] p-4 justify-between items-start border-b border-gray-300'>
+      <div
+        className='cursor-pointer flex w-[600px] p-4 justify-between items-start border-b border-gray-300'
+        onClick={handlePasswordModalOpen}
+      >
         <div className='text-gray-700'>비밀번호</div>
-        <div>비밀번호 변경</div>
+        <div>
+          <SvgArrowUp className='rotate-90' />
+        </div>
+        {/* <div>비밀번호 변경</div> */}
       </div>
       <p className='text-sm text-gray-500 p-4'>SNS로 간편 가입한 경우 비밀번호 없이 로그인이 가능합니다.</p>
 
@@ -240,17 +256,22 @@ const MyPage = () => {
         onClick={handlePhoneNumberClick}
       >
         <div className='text-gray-700'>휴대폰 번호</div>
-        <div>{watch("phoneNumber")}</div>
+        <div className='flex'>
+          {watch("phoneNumber")}
+          <SvgArrowUp className='rotate-90' />
+        </div>
       </div>
 
       <p className='font-semibold text-lg border-b border-gray-300 mt-4'>알림 설정</p>
       <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
         <div className='text-gray-700'>마케팅 수신 설정</div>
-        <Switch checked={isMarketingConsent} onChange={onToggleMarketingConsent} />
+        <SvgArrowUp className='rotate-90' />
+        {/* <Switch checked={isMarketingConsent} onChange={onToggleMarketingConsent} /> */}
       </div>
       {user.type !== "MEMBER" && (
         <div className='flex w-[600px] p-4 justify-between items-center border-b border-gray-300'>
           <div className='text-gray-700'>의뢰 안내 설정</div>
+          <SvgArrowUp className='rotate-90' />
         </div>
       )}
       <div className='flex justify-center mt-4'>
@@ -410,33 +431,31 @@ const MyPage = () => {
         </Form>
       </Modal>
 
-      {/* <Modal title='비밀번호 변경' visible={isPasswordModalVisible} onCancel={handlePasswordModalCancel} footer={null}> 
+      <Modal title='비밀번호 변경' visible={isPasswordModalVisible} onCancel={handlePasswordModalCancel} footer={null}>
         <Form layout='vertical' onFinish={handlePasswordSubmit(onChangePassword)}>
           <Form.Item label='현재 비밀번호'>
             <Controller
               name='currentPassword'
               control={passwordControl}
-              render={({ field }) => (
-                <Input.Password {...field} placeholder='현재 비밀번호 입력' />
-              )}
+              render={({ field }) => <Input.Password {...field} placeholder='현재 비밀번호 입력' />}
             />
             {passwordErrors.currentPassword && <p style={{ color: "red" }}>{passwordErrors.currentPassword.message}</p>}
           </Form.Item>
-          <Form.Item label='새 비밀번호'> 
+          <Form.Item label='새 비밀번호'>
             <Controller
               name='newPassword'
               control={passwordControl}
-              render={({ field }) => (
-                <Input.Password {...field} placeholder='새 비밀번호 입력' />
-              )}
+              render={({ field }) => <Input.Password {...field} placeholder='새 비밀번호 입력' />}
             />
             {passwordErrors.newPassword && <p style={{ color: "red" }}>{passwordErrors.newPassword.message}</p>}
           </Form.Item>
           <Form.Item>
-            <Button type='primary' htmlType='submit' block>변경하기</Button>
+            <Button type='primary' htmlType='submit' block>
+              변경하기
+            </Button>
           </Form.Item>
         </Form>
-      </Modal> */}
+      </Modal>
     </div>
   );
 };
