@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import SvgLogo from "components/Icons/Logo";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Modal } from "antd";
 import SvgProfile from "components/Icons/Profile";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,11 +10,13 @@ import UserTag from "components/tags/UserTag";
 import SvgLogOut from "components/Icons/LogOut";
 import SvgPayment from "components/Icons/Payment";
 import SvgMyPage from "components/Icons/MyPage";
+
 const Header = () => {
   const dispatch = useDispatch();
   const useMessage = useMessageApi();
 
   const user = useSelector(state => state.auth.user);
+  const isLoggedIn = Boolean(user); // 로그인 여부를 명확하게 확인하기 위해 추가된 변수
 
   const isAdmin = user?.type === "ADMIN";
   const loginUrl = isAdmin ? "/admin/login" : "/login";
@@ -23,6 +25,10 @@ const Header = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    setIsDropdownVisible(false);
+  }, [location]); // 페이지 이동 시 드롭다운이 접히도록 수정
   const dropdownRef = useRef(null);
   const profileRef = useRef(null);
 
@@ -42,7 +48,7 @@ const Header = () => {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isDropdownVisible]);
+  }, []);
 
   const showLogoutModal = () => {
     if (user) setIsModalVisible(true);
@@ -68,6 +74,7 @@ const Header = () => {
   const handlePaymentManagement = () => {
     navigate("/my-page");
   };
+
   return (
     <div className='h-16 border-b-[1px] w-full fixed top-0 left-0 bg-white z-[1000000] '>
       <div className='flex justify-between items-center h-16 w-full'>
@@ -78,21 +85,24 @@ const Header = () => {
           </div>
         </Link>
         <div className='flex items-center pr-[32px] gap-[10px] cursor-pointer'>
-          {user ? <p className='text-sm font-medium'>{user.name}</p> : <Link to={loginUrl}>로그인</Link>}
+          {isLoggedIn ? (
+            <p className='text-sm font-medium'>{user.name}</p>
+          ) : (
+            <Link to={loginUrl}>로그인</Link> // 로그인되지 않은 상태에서 로그인 링크를 표시
+          )}
           <div ref={profileRef} onClick={toggleDropdown}>
             <SvgProfile />
-            <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
           </div>
           {isDropdownVisible && (
             <div
               ref={dropdownRef}
-              className='absolute right-0 mt-2 w-[200px] h-[150px] bg-white border shadow-lg rounded'
+              className='absolute shadow-custom right-0 mt-2 w-[260px] h-auto bg-white border p-5 rounded-xl'
               style={{ top: "100%" }}
             >
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 pb-4 border-b'>
                 <SvgProfile />
-                <p className='text-sm font-medium'>{user.name}</p>
-                <UserTag userType={user.type} className='mt-[5px] ml-[7px]' />
+                <p className='text-base font-semibold ml-1'>{user.name}</p>
+                <UserTag userType={user.type} />
               </div>
               <div
                 className='flex items-center gap-2 p-2 cursor-pointer hover:bg-gray-100'

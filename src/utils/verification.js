@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { useState, useEffect } from "react";
 
-export const useAuthCode = (watch, setShowAuthenticationCodeField, setValue) => {
+export const useAuthCode = (watch, setShowAuthenticationCodeField, setValue, user) => {
   const messageApi = useMessageApi();
   const dispatch = useDispatch();
   const [countdown, setCountdown] = useState(null);
@@ -37,7 +37,8 @@ export const useAuthCode = (watch, setShowAuthenticationCodeField, setValue) => 
   // 인증번호 전송
   const handleSendAuthCode = async type => {
     const phoneNumber = watch("phoneNumber");
-    const name = watch("name");
+    // const name = watch("name");
+    const name = user.name; // user 객체에서 직접 이름을 가져옵니다.
     if (!phoneNumber || !name) {
       messageApi.error("이름과 휴대전화 번호를 입력하세요.");
       return;
