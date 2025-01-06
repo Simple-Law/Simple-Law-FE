@@ -5,14 +5,14 @@ FROM node:22 AS build
 WORKDIR /app
 
 # Install dependencies
-COPY package.json package-lock.json ./
-RUN npm ci
+COPY package.json yarn.lock ./
+RUN yarn install
 
 # Copy the rest of the application code
 COPY . .
 
 # Build the React app
-RUN npm run build
+RUN yarn build
 
 # Step 2: Serve the React app using Nginx
 FROM nginx:alpine
