@@ -42,6 +42,8 @@
     "yup": "^1.4.0"
   },
   "scripts": {
+    "ssh": "./ssh.sh",
+    "deploy": "./deploy.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
