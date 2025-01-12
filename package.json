@@ -42,8 +42,9 @@
     "yup": "^1.4.0"
   },
   "scripts": {
+    "deploy:dev": "./cf.sh",
+    "deploy:prod": "./cf.sh prod",
     "ssh": "./ssh.sh",
-    "deploy": "./deploy.sh",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
