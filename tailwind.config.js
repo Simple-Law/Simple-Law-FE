@@ -16,6 +16,9 @@ module.exports = {
         kakaoYellow: "#FEE502",
         naverGreen: "#03C75A;",
       }),
+      boxShadow: {
+        custom: "0px 0px 15px 0px rgba(0, 0, 0, 0.06)",
+      },
     },
   },
   plugins: [],

@@ -63,7 +63,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      messageApi.error("로그인 중 오류가 발생했습니다.");
+      messageApi.error("로그인 중 오류가 발생했습니다.", error);
     }
   };
 
@@ -76,8 +76,9 @@ const Login = () => {
       <Form onFinish={handleLogin}>
         <div className='gap-10 flex justify-center flex-col'>
           <div>
-            <Form.Item name='id' rules={[{ required: true, message: "아이디를 입력하세요!" }]}>
-              <Input placeholder='아이디 입력' className=' px-4 py-3' />
+            {/* 로그인 실패 메시지 회원가입이 안된 이메일입니다 */}
+            <Form.Item name='id' rules={[{ required: true, message: "이메일을 입력하세요!" }]}>
+              <Input placeholder='이메일 입력' className=' px-4 py-3' />
             </Form.Item>
             <Form.Item name='password' rules={[{ required: true, message: "비밀번호를 입력하세요!" }]}>
               <Input.Password
@@ -106,7 +107,7 @@ const Login = () => {
                   to={`/find-id/${type}`}
                   className="text-stone-500 text-base font-normal font-['Pretendard'] leading-tight"
                 >
-                  아이디 찾기
+                  이메일 찾기
                 </Link>
                 <div className='w-px h-3 bg-zinc-300'></div>
                 <Link
