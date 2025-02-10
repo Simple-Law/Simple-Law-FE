@@ -30,11 +30,12 @@ const App = () => {
           <Route path='find-id/:type' element={<FindUserIdPage />} />
           <Route path='find-pw/:type' element={<FindPassword />} />
           <Route path='sign-up/:type' element={<SignUpPage />} />
+          <Route path='my-page' element={<MyPage />} />
           <Route element={<PrivateRoute />}>
             <Route path='mail/quest' element={<PostEditor />} />
             <Route path='mail/quest/:id/:mode' element={<PostEditor />} />
             <Route element={<LayoutWithHeader />}>
-              <Route path='my-page' element={<MyPage />} />
+              {/* <Route path='my-page' element={<MyPage />} /> */}
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
                 <Route path='request' element={<MyQuestListPage />} />

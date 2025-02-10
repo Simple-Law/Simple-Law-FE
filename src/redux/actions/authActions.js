@@ -1,4 +1,4 @@
-import { loginUser as apiLoginUser, sendAuthCode as apiSendAuthCode, getMemberInfo } from "apis/usersApi";
+import { loginUser as apiLoginUser, sendAuthCode as apiSendAuthCode, getClientProfile } from "apis/usersApi";
 import { LOGIN, LOGOUT, REFRESH_ACCESS_TOKEN } from "../types";
 import { showUserLoading, hideUserLoading } from "../../redux/actions/loadingAction";
 import Cookies from "universal-cookie";
@@ -36,23 +36,33 @@ export const refreshAccessToken = newAccessToken => {
 };
 
 // 비동기 Thunk 함수
+
 export const loginUserAction = (values, userType) => async dispatch => {
   dispatch(showUserLoading());
   try {
     const response = await apiLoginUser(values, userType);
-    const { token: tokens, user } = response.data.payload;
+    const { content } = response;
+
+    // 토큰 정보 생성: accessTokenExpiredAt을 ISO 문자열로 변환
+    const tokens = {
+      accessToken: content.accessToken,
+      refreshToken: cookies.get("refreshToken"),
+      accessTokenExpiredAt: new Date(Date.now() + content.expiredIn * 1000).toISOString(),
+    };
+
+    let user;
+    if (userType === "member" || userType === "client") {
+      user = await getClientProfile();
+    } else {
+      // 다른 유형의 경우 추가 처리
+      user = {};
+    }
 
     // 쿠키에 토큰 저장
     cookies.set("accessToken", tokens.accessToken, { path: "/" });
-    cookies.set("refreshToken", tokens.refreshToken, { path: "/" });
-    cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" }); // 액세스 토큰 만료 시간 저장
+    cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" });
 
-    // 로그인 후 사용자 정보 가져오기
-    const userInfo = await getMemberInfo(userType);
-
-    // 상태에 토큰과 사용자 정보 저장
-    dispatch(login(tokens, { ...user, ...userInfo }));
-    // dispatch(login(tokens, user));
+    dispatch(login(tokens, user));
     dispatch(hideUserLoading());
 
     return { success: true };
@@ -60,7 +70,7 @@ export const loginUserAction = (values, userType) => async dispatch => {
     dispatch(hideUserLoading());
     const message = error.response?.data?.message || "로그인 실패!";
     console.error("Error during login process:", error.response?.data || error);
-    return { success: false, message: message };
+    return { success: false, message };
   }
 };
 

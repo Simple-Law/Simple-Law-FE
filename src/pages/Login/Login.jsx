@@ -8,12 +8,15 @@ import SvgKakao from "components/Icons/Kakao";
 import { loginUserAction } from "../../redux/actions/authActions";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import { useState } from "react";
+import useKakao from "hooks/useKakao";
 
 const Login = () => {
   const { type } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const messageApi = useMessageApi();
+
+  useKakao();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -66,6 +69,46 @@ const Login = () => {
       messageApi.error("로그인 중 오류가 발생했습니다.", error);
     }
   };
+  // 카카오 로그인
+  const handleKakaoLogin = () => {
+    if (window.Kakao) {
+      window.Kakao.Auth.login({
+        success: authObj => {
+          console.log("Kakao login success:", authObj);
+
+          // 사용자 정보 요청
+          window.Kakao.API.request({
+            url: "/v2/user/me",
+            success: res => {
+              console.log("Kakao user info:", res);
+
+              // 예: 사용자 정보를 서버로 전송
+              const userData = {
+                id: res.id,
+                email: res.kakao_account.email,
+                nickname: res.properties.nickname,
+              };
+
+              console.log("User data:", userData);
+
+              // TODO: Redux 또는 서버로 전송하여 처리
+              // dispatch(loginWithKakao(userData));
+              messageApi.success("카카오 로그인 성공!");
+              navigate("/my-page"); // 로그인 성공 시 이동할 경로
+            },
+            fail: error => {
+              console.error("Kakao user info request failed:", error);
+              messageApi.error("사용자 정보를 가져오는 데 실패했습니다.");
+            },
+          });
+        },
+        fail: err => {
+          console.error("Kakao login failed:", err);
+          messageApi.error("카카오 로그인 실패!");
+        },
+      });
+    }
+  };
 
   const handleModalClose = () => {
     setIsModalVisible(false);
@@ -77,7 +120,7 @@ const Login = () => {
         <div className='gap-10 flex justify-center flex-col'>
           <div>
             {/* 로그인 실패 메시지 회원가입이 안된 이메일입니다 */}
-            <Form.Item name='id' rules={[{ required: true, message: "이메일을 입력하세요!" }]}>
+            <Form.Item name='email' rules={[{ required: true, message: "이메일을 입력하세요!" }]}>
               <Input placeholder='이메일 입력' className=' px-4 py-3' />
             </Form.Item>
             <Form.Item name='password' rules={[{ required: true, message: "비밀번호를 입력하세요!" }]}>
@@ -127,7 +170,10 @@ const Login = () => {
                 <div className='grow shrink basis-0 h-px bg-zinc-200'></div>
               </div>
               <div className='w-full'>
-                <div className='flex justify-center items-center bg-kakaoYellow w-full h-[54px] gap-2'>
+                <div
+                  className='flex justify-center items-center bg-kakaoYellow w-full h-[54px] gap-2'
+                  onClick={handleKakaoLogin}
+                >
                   <SvgKakao width='24px' height='24px' />
                   <span>카카오 로그인</span>
                 </div>

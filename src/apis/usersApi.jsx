@@ -51,10 +51,10 @@ export const registerUser = async userData => {
  * @param {String} userType - 사용자 유형 (admin, lawyer, member)
  * @returns {Promise} 응답 데이터
  */
-export const loginUser = async (credentials, userType) => {
+
+export const loginUser = async credentials => {
   try {
-    const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
-    const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-in/email`, credentials);
+    const response = await axiosInstance.post(`/api/v1/auth/login`, credentials);
     console.log("loginUser response:", response.data); // 응답 데이터 확인
     return response.data; // 실제 서버에서 반환하는 데이터를 그대로 반환
   } catch (error) {
@@ -62,12 +62,25 @@ export const loginUser = async (credentials, userType) => {
     throw error;
   }
 };
-
+// {
+//   "email":"simple-law-client-admin@simplelaw.co.kr",
+//   "password":"Simp1eLaw!@#"
+// }
 /**
  * 사용자 정보 가져오기 API 함수
  * @param {String} userType - 사용자 유형 (admin, lawyer, member)
  * @returns {Promise} 응답 데이터
  */
+export const getClientProfile = async () => {
+  try {
+    const response = await axiosInstance.get("/api/v1/clients/profile");
+    // API 문서에 따르면, 실제 데이터는 response.data.content에 들어있음
+    return response.data.content;
+  } catch (error) {
+    console.error("Error fetching client profile:", error.response?.data || error);
+    throw error;
+  }
+};
 export const getMemberInfo = async userType => {
   const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
   try {
