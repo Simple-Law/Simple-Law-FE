@@ -34,10 +34,41 @@ export const putAdminAPI = (adminKey, adminData) => {
  * @param {Object} userData - 사용자의 데이터 객체
  * @returns {Promise} 응답 데이터
  */
+
 export const registerUser = async userData => {
   try {
-    const endpoint = userData.type === "lawyer" ? "lawyers" : "members";
-    const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-up/email`, userData);
+    // 1. 프론트엔드에서 전달받은 데이터 중 birthDay를 백엔드가 요구하는 birth로 변환
+    const transformedData = { ...userData };
+    if (transformedData.birthDay) {
+      transformedData.birth = transformedData.birthDay;
+      delete transformedData.birthDay;
+    }
+
+    // 2. 약관 동의 데이터는 백엔드가 nested object로 기대하므로 생성
+    //    (필수 약관은 모두 true인 상태로, 마케팅 동의는 프론트엔드 값에 따라 결정)
+    if (userData.type === "lawyer") {
+      transformedData.terms = {
+        serviceAgreement: true,
+        privacyPolicyAgreement: true,
+        marketingAgreement: !!userData.isMarketingConsent,
+      };
+    } else {
+      // 의뢰인 (client)
+      transformedData.terms = {
+        serviceAgreement: true,
+        privacyPolicyAgreement: true,
+        marketingAgreement: !!userData.isMarketingConsent,
+        ageOverAgreement: true,
+      };
+    }
+    // 만약 개별 약관 관련 플래그가 root에 존재한다면 제거
+    delete transformedData.isMarketingConsent;
+
+    // 3. 회원가입 엔드포인트 결정: 변호사는 lawyers, 의뢰인은 clients 사용
+    const endpoint = userData.type === "lawyer" ? "lawyers" : "clients";
+    const url = `/api/v1/auth/${endpoint}/sign-up`;
+
+    const response = await axiosInstance.post(url, transformedData);
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error.response?.data || error);
@@ -68,25 +99,17 @@ export const loginUser = async credentials => {
 // }
 /**
  * 사용자 정보 가져오기 API 함수
- * @param {String} userType - 사용자 유형 (admin, lawyer, member)
+ * @param {String} userType - 사용자 유형 (admin, lawyer, clients)
  * @returns {Promise} 응답 데이터
  */
-export const getClientProfile = async () => {
-  try {
-    const response = await axiosInstance.get("/api/v1/clients/profile");
-    // API 문서에 따르면, 실제 데이터는 response.data.content에 들어있음
-    return response.data.content;
-  } catch (error) {
-    console.error("Error fetching client profile:", error.response?.data || error);
-    throw error;
-  }
-};
-export const getMemberInfo = async userType => {
-  const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
-  try {
-    const response = await axiosInstance.get(`/api/v1/${endpoint}/me`);
 
-    return response.data.data.payload;
+export const getMemberInfo = async userType => {
+  const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "clients"; // 일반 회원(의뢰인)의 경우 "clients"로 설정
+  console.log("endpoint", endpoint);
+
+  try {
+    const response = await axiosInstance.get(`/api/v1/${endpoint}/profile`);
+    return response.data.content;
   } catch (error) {
     console.error("Error fetching member info:", error.response?.data || error);
     throw error;

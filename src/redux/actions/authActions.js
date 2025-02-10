@@ -1,4 +1,4 @@
-import { loginUser as apiLoginUser, sendAuthCode as apiSendAuthCode, getClientProfile } from "apis/usersApi";
+import { loginUser as apiLoginUser, sendAuthCode as apiSendAuthCode, getMemberInfo } from "apis/usersApi";
 import { LOGIN, LOGOUT, REFRESH_ACCESS_TOKEN } from "../types";
 import { showUserLoading, hideUserLoading } from "../../redux/actions/loadingAction";
 import Cookies from "universal-cookie";
@@ -40,7 +40,7 @@ export const refreshAccessToken = newAccessToken => {
 export const loginUserAction = (values, userType) => async dispatch => {
   dispatch(showUserLoading());
   try {
-    const response = await apiLoginUser(values, userType);
+    const response = await apiLoginUser(values);
     const { content } = response;
 
     // 토큰 정보 생성: accessTokenExpiredAt을 ISO 문자열로 변환
@@ -49,18 +49,20 @@ export const loginUserAction = (values, userType) => async dispatch => {
       refreshToken: cookies.get("refreshToken"),
       accessTokenExpiredAt: new Date(Date.now() + content.expiredIn * 1000).toISOString(),
     };
-
-    let user;
-    if (userType === "member" || userType === "client") {
-      user = await getClientProfile();
-    } else {
-      // 다른 유형의 경우 추가 처리
-      user = {};
-    }
-
+    const tokenPayload = JSON.parse(atob(tokens.accessToken.split(".")[1]));
+    console.log("Token payload:", tokenPayload);
     // 쿠키에 토큰 저장
     cookies.set("accessToken", tokens.accessToken, { path: "/" });
     cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" });
+
+    // getMemberInfo 호출 시 에러 발생하면 빈 객체로 처리
+    let user;
+    try {
+      user = await getMemberInfo(userType);
+    } catch (err) {
+      console.error("Error fetching member info, defaulting to empty object:", err);
+      user = {};
+    }
 
     dispatch(login(tokens, user));
     dispatch(hideUserLoading());

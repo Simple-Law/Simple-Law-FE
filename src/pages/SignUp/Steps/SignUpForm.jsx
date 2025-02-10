@@ -97,7 +97,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
           <Form.Item>
             <Controller
-              name='birthDay'
+              name='birth'
               control={control}
               render={({ field }) => (
                 <Input
@@ -108,7 +108,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
                 />
               )}
             />
-            {errors.birthDay && <p style={{ color: "red" }}>{errors.birthDay.message}</p>}
+            {errors.birth && <p style={{ color: "red" }}>{errors.birth.message}</p>}
           </Form.Item>
 
           <Form.Item>
