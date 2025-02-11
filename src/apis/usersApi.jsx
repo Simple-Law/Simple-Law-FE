@@ -44,8 +44,7 @@ export const registerUser = async userData => {
       delete transformedData.birthDay;
     }
 
-    // 2. 약관 동의 데이터는 백엔드가 nested object로 기대하므로 생성
-    //    (필수 약관은 모두 true인 상태로, 마케팅 동의는 프론트엔드 값에 따라 결정)
+    // 2. 약관 동의 데이터 생성 (필수 약관은 모두 true, 마케팅 동의는 프론트엔드 값에 따라 결정)
     if (userData.type === "lawyer") {
       transformedData.terms = {
         serviceAgreement: true,
@@ -66,8 +65,11 @@ export const registerUser = async userData => {
 
     // 3. 회원가입 엔드포인트 결정: 변호사는 lawyers, 의뢰인은 clients 사용
     const endpoint = userData.type === "lawyer" ? "lawyers" : "clients";
-    const url = `/api/v1/auth/${endpoint}/sign-up`;
 
+    // 4. 백엔드 명세에 없는 type 필드는 전송 전에 제거합니다.
+    delete transformedData.type;
+
+    const url = `/api/v1/auth/${endpoint}/sign-up`;
     const response = await axiosInstance.post(url, transformedData);
     return response.data;
   } catch (error) {
@@ -152,16 +154,18 @@ export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
   }
 };
 
-// 임시 중복 검사 API (특정 값만 중복)
-const duplicateIds = ["didi123", "quest1", "lawyer123"];
-const duplicateEmails = ["didi123@naver.com", "quest1@naver.com", "lawyer123@naver.com"];
-
-export const checkDuplicate = async (type, value) => {
-  if (type === "id") {
-    return duplicateIds.includes(value);
+/**
+ * 이메일 중복 검사 API 함수
+ * @param {String} email - 검사할 이메일
+ * @returns {Promise<Boolean>} 가입된 이메일이면 true, 아니면 false
+ */
+export const checkEmailExist = async email => {
+  try {
+    const response = await axiosInstance.post("/api/v1/auth/exist/email", { email });
+    // response.data.content.exist 가 true/false를 반환
+    return response.data.content.exist;
+  } catch (error) {
+    console.error("Error checking email duplicate:", error.response?.data || error);
+    throw error;
   }
-  if (type === "email") {
-    return duplicateEmails.includes(value);
-  }
-  return false;
 };

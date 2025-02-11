@@ -1,6 +1,5 @@
 import { useState } from "react";
 import JoinForm from "./Steps/SignUpForm";
-// import Choice from "./Steps/Choice";
 import Agreement from "./Steps/Agreement";
 import FinalStep from "./Steps/FinalStep";
 import { useParams } from "react-router-dom";
@@ -33,25 +32,27 @@ const SignUp = () => {
       gender = "",
       isMarketingConsent = false,
     } = mergedData;
+    const formattedBirth = birth.replace(/(\d{4})(\d{2})(\d{2})/, "$1.$2.$3");
 
     let userData = {
       email: String(email),
       name: String(name),
       password: String(password),
-      birth: String(birth), // "YYYY.MM.DD" 형식이어야 함
+      birth: formattedBirth,
       gender: gender ? String(gender).toUpperCase() : undefined,
       terms: {
         serviceAgreement: true,
         privacyPolicyAgreement: true,
-        // 마케팅 동의는 프론트엔드에서 입력받은 값을 사용
+
         marketingAgreement: Boolean(isMarketingConsent),
-        ageOverAgreement: true,
+        ...(type !== "lawyer" ? { ageOverAgreement: true } : {}),
       },
+      type: type,
     };
 
     try {
       const response = await registerUser(userData);
-      console.log("Saved data", response);
+      console.log("회원가입 응답:", response);
       nextStep(); // 가입 완료 후 다음 단계로 이동
     } catch (error) {
       messageApi.error("가입에 실패했습니다.");
@@ -61,7 +62,7 @@ const SignUp = () => {
   const steps = [
     <Agreement key='agreement' handleData={handleData} nextStep={nextStep} />,
     <JoinForm key='joinForm' handleData={handleData} nextStep={nextStep} type={type} handleSubmit={handleSubmit} />,
-    <FinalStep key='finalStep' type={type} />, // 최종 단계
+    <FinalStep key='finalStep' type={type} />,
   ].filter(Boolean);
 
   return <div>{steps[currentStep]}</div>;

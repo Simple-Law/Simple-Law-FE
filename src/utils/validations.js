@@ -2,10 +2,12 @@ import * as yup from "yup";
 import moment from "moment";
 
 export const validationSchema = yup.object().shape({
-  // id: yup
-  //   .string()
-  //   .matches(/^[a-z0-9]{3,20}$/, "아이디는 영문 소문자와 숫자로 이루어진 3~20자로 입력해야 합니다!")
-  //   .required("아이디는 필수로 입력해야 합니다!"),
+  email: yup
+    .string()
+    .email("올바른 이메일 양식이 아닙니다.")
+    .min(5, "이메일은 최소 5자 이상이어야 합니다.")
+    .max(50, "이메일은 최대 50자까지 가능합니다.")
+    .required("이메일은 필수로 입력해야 합니다!"),
   password: yup
     .string()
     .matches(
@@ -17,17 +19,11 @@ export const validationSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref("password"), null], "비밀번호가 일치하지 않습니다.")
     .required("비밀번호를 재확인해주세요"),
-  email: yup
-    .string()
-    .email("올바른 이메일 양식이 아닙니다.")
-    .min(5, "이메일은 최소 5자 이상이어야 합니다.")
-    .max(50, "이메일은 최대 50자까지 가능합니다.")
-    .required("이메일은 필수로 입력해야 합니다!"),
   name: yup
     .string()
     .matches(/^[가-힣a-zA-Z]{1,10}$/, "이름은 한글 또는 영문으로 1~10자로 입력해야 합니다.")
     .required("이름은 필수로 입력해야 합니다."),
-  birthDay: yup
+  birth: yup
     .string()
     .transform(value => value.replace(/\D/g, ""))
     .matches(/^\d{8}$/, "올바른 생년월일 형식(YYYYMMDD)이 아닙니다.")
