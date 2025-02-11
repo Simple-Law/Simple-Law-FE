@@ -10,7 +10,7 @@ import { formatBirthday } from "utils/formatters";
 import { checkEmailExist } from "apis/usersApi"; // 이메일 중복 검사 API 함수
 import { useState } from "react";
 
-const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
+const JoinForm = ({ handleData, type, handleSubmit }) => {
   const [emailAvailable, setEmailAvailable] = useState(null);
 
   const {
@@ -60,7 +60,7 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
   };
 
   return (
-    <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
+    <LoginForm title={type === "clients" ? "회원가입" : "변호사 회원가입"}>
       <Form onFinish={onSubmit(onFinish)}>
         <div className='flex gap-2 flex-col'>
           <Form.Item
