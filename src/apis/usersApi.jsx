@@ -37,12 +37,10 @@ export const putAdminAPI = (adminKey, adminData) => {
 
 export const registerUser = async userData => {
   try {
-    // 백엔드 명세에 없는 type 필드는 제거합니다.
     const transformedData = { ...userData };
     delete transformedData.type;
 
-    const endpoint = userData.type === "lawyer" ? "lawyers" : "clients";
-    const url = `/api/v1/auth/${endpoint}/sign-up`;
+    const url = `/api/v1/auth/${userData.type}/sign-up`;
     const response = await axiosInstance.post(url, transformedData);
     return response.data;
   } catch (error) {
@@ -54,7 +52,6 @@ export const registerUser = async userData => {
 /**
  * 사용자 인증 API 함수 - 로그인
  * @param {Object} credentials - 로그인 자격 증명 객체
- * @param {String} userType - 사용자 유형 (admin, lawyer, member)
  * @returns {Promise} 응답 데이터
  */
 
@@ -76,50 +73,11 @@ export const loginUser = async credentials => {
  */
 
 export const getMemberInfo = async userType => {
-  const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "clients"; // 일반 회원(의뢰인)의 경우 "clients"로 설정
-  console.log("endpoint", endpoint);
-
   try {
-    const response = await axiosInstance.get(`/api/v1/${endpoint}/profile`);
-    return response.data.content;
+    const response = await axiosInstance.get(`/api/v1/${userType}/profile`);
+    return { ...response.data.content, type: userType };
   } catch (error) {
     console.error("Error fetching member info:", error.response?.data || error);
-    throw error;
-  }
-};
-
-/**
- * 인증번호 발송 API 함수
- * @param {String} phoneNumber - 사용자의 전화번호
- * @param {String} type - 사용자 유형 (lawyer, member)
- * @returns {Promise} 응답 객체
- */
-export const sendAuthCode = async (phoneNumber, type) => {
-  const endpoint = type === "lawyer" ? "lawyers" : "members";
-  try {
-    await axiosInstance.post(`/api/v1/${endpoint}/sign-up/send-sms`, { phoneNumber });
-  } catch (error) {
-    console.error("Error sending auth code:", error.response?.data || error);
-    throw error;
-  }
-};
-
-/**
- * 인증번호 확인 API 함수
- * @param {String} phoneNumber - 사용자의 전화번호
- * @param {String} verificationCode - 인증번호
- * @param {String} type - 사용자 유형 (lawyer, member)
- * @returns {Promise} 응답 객체
- */
-export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
-  const endpoint = type === "lawyer" ? "lawyers" : "members";
-  try {
-    await axiosInstance.post(`/api/v1/${endpoint}/sign-up/verify-sms`, {
-      phoneNumber,
-      verificationCode,
-    });
-  } catch (error) {
-    console.error("Error verifying auth code:", error.response?.data || error);
     throw error;
   }
 };

@@ -45,7 +45,7 @@ const SignUp = () => {
         privacyPolicyAgreement: true,
 
         marketingAgreement: Boolean(isMarketingConsent),
-        ...(type !== "lawyer" ? { ageOverAgreement: true } : {}),
+        ...(type !== "lawyers" ? { ageOverAgreement: true } : {}),
       },
       type: type,
     };

@@ -37,7 +37,7 @@ export const refreshAccessToken = newAccessToken => {
 
 // 비동기 Thunk 함수
 
-export const loginUserAction = (values, userType) => async dispatch => {
+export const loginUserAction = values => async dispatch => {
   dispatch(showUserLoading());
   try {
     const response = await apiLoginUser(values);
@@ -54,11 +54,12 @@ export const loginUserAction = (values, userType) => async dispatch => {
     // 쿠키에 토큰 저장
     cookies.set("accessToken", tokens.accessToken, { path: "/" });
     cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" });
-
+    // 타입 전송
+    const computedUserType = tokenPayload.role.toLowerCase() + "s";
     // getMemberInfo 호출 시 에러 발생하면 빈 객체로 처리
     let user;
     try {
-      user = await getMemberInfo(userType);
+      user = await getMemberInfo(computedUserType);
     } catch (err) {
       console.error("Error fetching member info, defaulting to empty object:", err);
       user = {};

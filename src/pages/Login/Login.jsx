@@ -28,14 +28,14 @@ const Login = () => {
     case "admin":
       typeName = "관리자";
       break;
-    case "lawyer":
+    case "lawyers":
       typeName = "변호사";
-      toggleType = "quest";
+      toggleType = "clients";
       toggleText = "의뢰인이신가요?";
       break;
     default:
       typeName = "의뢰인";
-      toggleType = "lawyer";
+      toggleType = "lawyers";
       toggleText = "변호사이신가요?";
       break;
   }
@@ -43,7 +43,7 @@ const Login = () => {
 
   const handleLogin = async values => {
     try {
-      const { success, message } = await dispatch(loginUserAction(values, type));
+      const { success, message } = await dispatch(loginUserAction(values));
       const successUrl = type === "admin" ? "/admin/manage-admin" : "/request?status=All_request";
       if (success) {
         messageApi.success("로그인 성공!");
