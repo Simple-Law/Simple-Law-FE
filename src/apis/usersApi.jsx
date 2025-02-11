@@ -37,38 +37,11 @@ export const putAdminAPI = (adminKey, adminData) => {
 
 export const registerUser = async userData => {
   try {
-    // 1. 프론트엔드에서 전달받은 데이터 중 birthDay를 백엔드가 요구하는 birth로 변환
+    // 백엔드 명세에 없는 type 필드는 제거합니다.
     const transformedData = { ...userData };
-    if (transformedData.birthDay) {
-      transformedData.birth = transformedData.birthDay;
-      delete transformedData.birthDay;
-    }
-
-    // 2. 약관 동의 데이터 생성 (필수 약관은 모두 true, 마케팅 동의는 프론트엔드 값에 따라 결정)
-    if (userData.type === "lawyer") {
-      transformedData.terms = {
-        serviceAgreement: true,
-        privacyPolicyAgreement: true,
-        marketingAgreement: !!userData.isMarketingConsent,
-      };
-    } else {
-      // 의뢰인 (client)
-      transformedData.terms = {
-        serviceAgreement: true,
-        privacyPolicyAgreement: true,
-        marketingAgreement: !!userData.isMarketingConsent,
-        ageOverAgreement: true,
-      };
-    }
-    // 만약 개별 약관 관련 플래그가 root에 존재한다면 제거
-    delete transformedData.isMarketingConsent;
-
-    // 3. 회원가입 엔드포인트 결정: 변호사는 lawyers, 의뢰인은 clients 사용
-    const endpoint = userData.type === "lawyer" ? "lawyers" : "clients";
-
-    // 4. 백엔드 명세에 없는 type 필드는 전송 전에 제거합니다.
     delete transformedData.type;
 
+    const endpoint = userData.type === "lawyer" ? "lawyers" : "clients";
     const url = `/api/v1/auth/${endpoint}/sign-up`;
     const response = await axiosInstance.post(url, transformedData);
     return response.data;
@@ -95,10 +68,7 @@ export const loginUser = async credentials => {
     throw error;
   }
 };
-// {
-//   "email":"simple-law-client-admin@simplelaw.co.kr",
-//   "password":"Simp1eLaw!@#"
-// }
+
 /**
  * 사용자 정보 가져오기 API 함수
  * @param {String} userType - 사용자 유형 (admin, lawyer, clients)
