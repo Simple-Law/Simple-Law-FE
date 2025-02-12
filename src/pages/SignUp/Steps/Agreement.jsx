@@ -58,7 +58,7 @@ const Agreement = ({ handleData, nextStep }) => {
   };
   return (
     //TODO: DY - 이용약관 추가
-    <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
+    <LoginForm title={type === "clients" ? "회원가입" : "변호사 회원가입"}>
       <Form form={form} name='validateOnly' autoComplete='off' onFinish={onFinish}>
         <Checkbox
           checked={allChecked}
@@ -105,7 +105,7 @@ const Agreement = ({ handleData, nextStep }) => {
           <button className='text-xs text-Btn-Text-Disabled'>보기</button>
         </div>
         <div className='w-full h-px bg-zinc-200 my-[10px]'></div>
-        {type === "quest" && (
+        {type === "clients" && (
           <>
             <p className='text-Color-gray-900 text-base font-medium py-[10px]'>이용자 연령 확인</p>
             <div className='w-full items-center justify-center flex flex-col rounded-md bg-primary px-4 py-4 my-[6px]'>
