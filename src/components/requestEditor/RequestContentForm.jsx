@@ -7,7 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
 
-const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
+const RequestContentForm = ({ formik, editorRef, setPendingFiles, mode }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const messageApi = useMessageApi();
@@ -125,7 +125,7 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
   );
 };
 
-CommonForm.propTypes = {
+RequestContentForm.propTypes = {
   formik: PropTypes.shape({
     setFieldValue: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
@@ -144,7 +144,7 @@ CommonForm.propTypes = {
   mode: PropTypes.string.isRequired,
 };
 
-export default CommonForm;
+export default RequestContentForm;
 
 const StyledFormContainer = styled.div`
   margin-left: 45px;

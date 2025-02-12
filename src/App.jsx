@@ -10,13 +10,13 @@ import MyQuestListPage from "pages/Request/MyRequestList";
 import FindUserIdPage from "pages/Login/findUser/FindUserId";
 import FindPassword from "pages/Login/findUser/FindPassword";
 import RequestDetailPage from "pages/Request/RequestDetail";
-import PostEditor from "components/postEditor/PostEditor";
 import RequestSideMenu, { AdminSideMenu } from "pages/Request/RequestSideMenu";
 import RequestList from "pages/Admin/Request/RequestList";
 import ManageAdminList from "pages/Admin/ManageAdmin/ManageAdminList";
 import ManageUserList from "pages/Admin/ManageUser/ManageUserList";
 import JoinRequestList from "pages/Admin/JoinRequest/JoinRequestList";
 import MyPage from "pages/MyPage/MyPage";
+import RequestForm from "pages/Request/RequestForm";
 
 const App = () => {
   return (
@@ -30,12 +30,12 @@ const App = () => {
           <Route path='find-id/:type' element={<FindUserIdPage />} />
           <Route path='find-pw/:type' element={<FindPassword />} />
           <Route path='sign-up/:type' element={<SignUpPage />} />
-          <Route path='my-page' element={<MyPage />} />
+          {/* <Route path='my-page' element={<MyPage />} /> */}
           <Route element={<PrivateRoute />}>
-            <Route path='mail/quest' element={<PostEditor />} />
-            <Route path='mail/quest/:id/:mode' element={<PostEditor />} />
+            <Route path='mail/quest' element={<RequestForm />} />
+            <Route path='mail/quest/:id/:mode' element={<RequestForm />} />
             <Route element={<LayoutWithHeader />}>
-              {/* <Route path='my-page' element={<MyPage />} /> */}
+              <Route path='my-page' element={<MyPage />} />
               <Route element={<LayoutWithSidebar />}>
                 <Route path='detail/:id' element={<RequestDetailPage />} />
                 <Route path='request' element={<MyQuestListPage />} />

@@ -112,8 +112,8 @@ export const addReply = async (caseKey, additionData) => {
  */
 export const fetchCaseCategories = async () => {
   try {
-    const response = await axiosInstance.get("/api/v1/categories/case");
-    return response.data.data.payload;
+    const response = await axiosInstance.get("/common/categories");
+    return response.data.content;
   } catch (error) {
     console.error("Error fetching case categories:", error);
     throw error;

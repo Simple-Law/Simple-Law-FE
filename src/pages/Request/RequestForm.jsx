@@ -5,11 +5,12 @@ import SvgLogo from "components/Icons/Logo";
 import ConfirmModal from "components/modal/ConfirmModal";
 import { useSelector } from "react-redux";
 import { useMail } from "hooks/useMail";
-import CommonForm from "./CommonForm";
-import LeftSideContent from "./LeftSideContent";
-import { FormDiv } from "./styles";
 
-const PostEditor = () => {
+import LeftSideContent from "components/requestEditor/CategorySelectionPanel";
+import CommonForm from "components/editor/ContentEditorForm";
+import { FormDiv } from "components/requestEditor/styles";
+
+const RequestForm = () => {
   const { id, mode } = useParams();
   const editorRef = useRef();
   const user = useSelector(state => state.auth.user);
@@ -46,6 +47,7 @@ const PostEditor = () => {
           </div>
         </div>
       </div>
+
       <FormDiv className='w-[1300px] mx-auto mt-[100px] relative'>
         {/* <FormDiv className='w-full max-w-[1300px] mx-auto mt-[100px] relative'> */}
         <h2 className='text-2xl font-bold mb-6 absolute top-[40px] left-0'>의뢰 요청서</h2>
@@ -68,4 +70,4 @@ const PostEditor = () => {
   );
 };
 
-export default PostEditor;
+export default RequestForm;

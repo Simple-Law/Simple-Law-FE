@@ -4,13 +4,15 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { fetchCaseCategories } from "apis/mailsApi";
 
-const LeftSideContent = ({ existingMail, formik }) => {
+const CategorySelectionPanel = ({ existingMail, formik }) => {
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const categoriesData = await fetchCaseCategories();
+
         setCategories(categoriesData);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -43,18 +45,35 @@ const LeftSideContent = ({ existingMail, formik }) => {
               <Select
                 name='categoryKey'
                 placeholder='분야 선택'
-                onChange={value => formik.setFieldValue("categoryKey", value)}
+                onChange={value => {
+                  formik.setFieldValue("categoryKey", value);
+                  const selectedCategory = categories.find(category => category.mainCategory === value);
+                  if (selectedCategory) {
+                    setSubCategories(selectedCategory.subCategoryList);
+                  } else {
+                    setSubCategories([]);
+                  }
+                }}
                 options={categories.map(category => ({
-                  value: category.caseCategoryKey,
-                  label: category.name,
+                  value: category.mainCategory,
+                  label: category.description,
                 }))}
               />
             </Form.Item>
+
             <Form.Item>
               <p>세부분야 선택</p>
-              <Select name='categoryDetailKey' placeholder='세부분야 선택' />
-              <Select name='addDetailKey' placeholder='추가 선택' />
+              <Select
+                name='categoryDetailKey'
+                placeholder='세부분야 선택'
+                onChange={value => formik.setFieldValue("categoryDetailKey", value)}
+                options={subCategories.map(sub => ({
+                  value: sub.subCategory,
+                  label: sub.description,
+                }))}
+              />
             </Form.Item>
+
             <Form.Item>
               <p>의뢰 작업 기한</p>
               <Select name='time' placeholder='의뢰 작업 기한' onChange={value => formik.setFieldValue("time", value)}>
@@ -113,7 +132,7 @@ const LeftSideContent = ({ existingMail, formik }) => {
   );
 };
 
-LeftSideContent.propTypes = {
+CategorySelectionPanel.propTypes = {
   existingMail: PropTypes.shape({
     title: PropTypes.string,
     category: PropTypes.string,
@@ -128,4 +147,4 @@ LeftSideContent.propTypes = {
   }).isRequired,
 };
 
-export default LeftSideContent;
+export default CategorySelectionPanel;
