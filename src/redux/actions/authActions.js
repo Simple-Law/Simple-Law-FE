@@ -78,16 +78,17 @@ export const loginUserAction = values => async dispatch => {
 };
 
 // 인증번호 발송 Thunk 함수
-export const sendAuthCodeAction = (phoneNumber, type) => async dispatch => {
-  dispatch(showUserLoading());
-  try {
-    await apiSendAuthCode(phoneNumber, type);
-    dispatch(hideUserLoading());
-    return { success: true };
-  } catch (error) {
-    dispatch(hideUserLoading());
-    const message = error.response?.data?.message || "인증번호 발송 실패!";
-    console.error("Error during sending auth code:", error.response?.data || error);
-    return { success: false, message: message };
-  }
+export const sendAuthCodeAction = (phoneNumber, type) => {
+  console.log("sendAuthCodeAction", phoneNumber, type);
+  // dispatch(showUserLoading());
+  // try {
+  //   await apiSendAuthCode(phoneNumber, type);
+  //   dispatch(hideUserLoading());
+  //   return { success: true };
+  // } catch (error) {
+  //   dispatch(hideUserLoading());
+  //   const message = error.response?.data?.message || "인증번호 발송 실패!";
+  //   console.error("Error during sending auth code:", error.response?.data || error);
+  //   return { success: false, message: message };
+  // }
 };
