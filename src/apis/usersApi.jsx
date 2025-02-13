@@ -34,10 +34,14 @@ export const putAdminAPI = (adminKey, adminData) => {
  * @param {Object} userData - 사용자의 데이터 객체
  * @returns {Promise} 응답 데이터
  */
+
 export const registerUser = async userData => {
   try {
-    const endpoint = userData.type === "lawyer" ? "lawyers" : "members";
-    const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-up/email`, userData);
+    const transformedData = { ...userData };
+    delete transformedData.type;
+
+    const url = `/api/v1/auth/${userData.type}/sign-up`;
+    const response = await axiosInstance.post(url, transformedData);
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error.response?.data || error);
@@ -48,13 +52,12 @@ export const registerUser = async userData => {
 /**
  * 사용자 인증 API 함수 - 로그인
  * @param {Object} credentials - 로그인 자격 증명 객체
- * @param {String} userType - 사용자 유형 (admin, lawyer, member)
  * @returns {Promise} 응답 데이터
  */
-export const loginUser = async (credentials, userType) => {
+
+export const loginUser = async credentials => {
   try {
-    const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
-    const response = await axiosInstance.post(`/api/v1/${endpoint}/sign-in/email`, credentials);
+    const response = await axiosInstance.post(`/api/v1/auth/login`, credentials);
     console.log("loginUser response:", response.data); // 응답 데이터 확인
     return response.data; // 실제 서버에서 반환하는 데이터를 그대로 반환
   } catch (error) {
@@ -65,15 +68,14 @@ export const loginUser = async (credentials, userType) => {
 
 /**
  * 사용자 정보 가져오기 API 함수
- * @param {String} userType - 사용자 유형 (admin, lawyer, member)
+ * @param {String} userType - 사용자 유형 (admin, lawyer, clients)
  * @returns {Promise} 응답 데이터
  */
-export const getMemberInfo = async userType => {
-  const endpoint = userType === "admin" ? "admins" : userType === "lawyer" ? "lawyers" : "members";
-  try {
-    const response = await axiosInstance.get(`/api/v1/${endpoint}/me`);
 
-    return response.data.data.payload;
+export const getMemberInfo = async userType => {
+  try {
+    const response = await axiosInstance.get(`/api/v1/${userType}/profile`);
+    return { ...response.data.content, type: userType };
   } catch (error) {
     console.error("Error fetching member info:", error.response?.data || error);
     throw error;
@@ -81,51 +83,17 @@ export const getMemberInfo = async userType => {
 };
 
 /**
- * 인증번호 발송 API 함수
- * @param {String} phoneNumber - 사용자의 전화번호
- * @param {String} type - 사용자 유형 (lawyer, member)
- * @returns {Promise} 응답 객체
+ * 이메일 중복 검사 API 함수
+ * @param {String} email - 검사할 이메일
+ * @returns {Promise<Boolean>} 가입된 이메일이면 true, 아니면 false
  */
-export const sendAuthCode = async (phoneNumber, type) => {
-  const endpoint = type === "lawyer" ? "lawyers" : "members";
+export const checkEmailExist = async email => {
   try {
-    await axiosInstance.post(`/api/v1/${endpoint}/sign-up/send-sms`, { phoneNumber });
+    const response = await axiosInstance.post("/api/v1/auth/exist/email", { email });
+    // response.data.content.exist 가 true/false를 반환
+    return response.data.content.exist;
   } catch (error) {
-    console.error("Error sending auth code:", error.response?.data || error);
+    console.error("Error checking email duplicate:", error.response?.data || error);
     throw error;
   }
-};
-
-/**
- * 인증번호 확인 API 함수
- * @param {String} phoneNumber - 사용자의 전화번호
- * @param {String} verificationCode - 인증번호
- * @param {String} type - 사용자 유형 (lawyer, member)
- * @returns {Promise} 응답 객체
- */
-export const verifyAuthCode = async (phoneNumber, verificationCode, type) => {
-  const endpoint = type === "lawyer" ? "lawyers" : "members";
-  try {
-    await axiosInstance.post(`/api/v1/${endpoint}/sign-up/verify-sms`, {
-      phoneNumber,
-      verificationCode,
-    });
-  } catch (error) {
-    console.error("Error verifying auth code:", error.response?.data || error);
-    throw error;
-  }
-};
-
-// 임시 중복 검사 API (특정 값만 중복)
-const duplicateIds = ["didi123", "quest1", "lawyer123"];
-const duplicateEmails = ["didi123@naver.com", "quest1@naver.com", "lawyer123@naver.com"];
-
-export const checkDuplicate = async (type, value) => {
-  if (type === "id") {
-    return duplicateIds.includes(value);
-  }
-  if (type === "email") {
-    return duplicateEmails.includes(value);
-  }
-  return false;
 };

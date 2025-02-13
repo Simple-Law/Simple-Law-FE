@@ -36,7 +36,7 @@ const Home = () => {
           <Button block onClick={() => navigate("/login/admin")}>
             관리자 로그인
           </Button>
-          <Button block onClick={() => navigate("/login/quest")}>
+          <Button block onClick={() => navigate("/login/clients")}>
             로그인
           </Button>
           <Button block className='mt-1' onClick={() => navigate("/board")}>

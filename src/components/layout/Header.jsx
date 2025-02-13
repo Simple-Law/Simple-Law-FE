@@ -16,6 +16,7 @@ const Header = () => {
   const useMessage = useMessageApi();
 
   const user = useSelector(state => state.auth.user);
+  console.log("user", user);
   const isLoggedIn = Boolean(user); // 로그인 여부를 명확하게 확인하기 위해 추가된 변수
 
   const isAdmin = user?.type === "ADMIN";

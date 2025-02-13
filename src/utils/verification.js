@@ -59,22 +59,24 @@ export const useAuthCode = (watch, setShowAuthenticationCodeField, setValue, use
   };
 
   // 인증번호 검증
-  const handleVerifyAuthCode = async type => {
-    const phoneNumber = watch("phoneNumber").replace(/-/g, "");
-    const verificationCode = watch("verificationCode");
-    if (!phoneNumber || !verificationCode) {
-      messageApi.error("휴대전화 번호와 인증번호를 입력하세요.");
-      return false;
-    }
+  const handleVerifyAuthCode = () => {
+    console.log("handleVerifyAuthCode");
+    // const phoneNumber = watch("phoneNumber").replace(/-/g, "");
+    // const verificationCode = watch("verificationCode");
+    // if (!phoneNumber || !verificationCode) {
+    //   messageApi.error("휴대전화 번호와 인증번호를 입력하세요.");
+    //   return false;
+    // }
 
-    try {
-      await verifyAuthCode(phoneNumber, verificationCode, type);
-      return true;
-    } catch (error) {
-      console.error("Error in handleVerifyAuthCode:", error);
-      messageApi.error("인증번호가 올바르지 않습니다. 확인 후 다시 입력해 주세요.");
-      return false;
-    }
+    // try {
+
+    //   await verifyAuthCode(phoneNumber, verificationCode, type);
+    //   return true;
+    // } catch (error) {
+    //   console.error("Error in handleVerifyAuthCode:", error);
+    //   messageApi.error("인증번호가 올바르지 않습니다. 확인 후 다시 입력해 주세요.");
+    //   return false;
+    // }
   };
 
   // 인증번호 입력 핸들러

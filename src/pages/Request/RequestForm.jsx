@@ -5,11 +5,12 @@ import SvgLogo from "components/Icons/Logo";
 import ConfirmModal from "components/modal/ConfirmModal";
 import { useSelector } from "react-redux";
 import { useMail } from "hooks/useMail";
-import CommonForm from "./CommonForm";
-import LeftSideContent from "./LeftSideContent";
-import { FormDiv } from "./styles";
 
-const PostEditor = () => {
+import CategorySelectionPanel from "components/requestEditor/CategorySelectionPanel";
+import { FormDiv } from "components/requestEditor/styles";
+import RequestContentForm from "components/requestEditor/RequestContentForm";
+
+const RequestForm = () => {
   const { id, mode } = useParams();
   const editorRef = useRef();
   const user = useSelector(state => state.auth.user);
@@ -46,14 +47,16 @@ const PostEditor = () => {
           </div>
         </div>
       </div>
+
       <FormDiv className='w-[1300px] mx-auto mt-[100px] relative'>
         {/* <FormDiv className='w-full max-w-[1300px] mx-auto mt-[100px] relative'> */}
         <h2 className='text-2xl font-bold mb-6 absolute top-[40px] left-0'>의뢰 요청서</h2>
         <Form onFinish={handleSubmit} className='flex pt-24'>
           <div className='left-side'>
-            {loading ? <Spin /> : <LeftSideContent existingMail={existingMail} formik={formik} />}
+            {loading ? <Spin /> : <CategorySelectionPanel existingMail={existingMail} formik={formik} />}
           </div>
-          <CommonForm
+
+          <RequestContentForm
             formik={formik}
             editorRef={editorRef}
             setPendingFiles={setPendingFiles}
@@ -68,4 +71,4 @@ const PostEditor = () => {
   );
 };
 
-export default PostEditor;
+export default RequestForm;

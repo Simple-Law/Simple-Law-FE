@@ -8,36 +8,41 @@ const cookies = new Cookies();
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
+  withCredentials: true,
 });
 
 // 새로운 액세스 토큰을 리프레시 토큰을 통해 얻는 함수
 const getNewAccessToken = async userType => {
-  const refreshToken = cookies.get("refreshToken");
+  const refreshToken = cookies.get("refresh");
   if (!refreshToken) {
     console.error("리프레시 토큰이 없습니다. 로그아웃 처리합니다.");
     store.dispatch(logout());
     return null;
   }
 
-  const userPath = userType.toLowerCase() + "s";
-  const url = `/api/v1/${userPath}/refresh-token`;
-  console.log(userType);
-  console.log(url);
+  // accessToken이 유효한지 확인
+  const currentAccessToken = cookies.get("accessToken");
+  if (!currentAccessToken || currentAccessToken.trim() === "") {
+    console.error("유효한 액세스 토큰이 없습니다. 로그아웃 처리합니다.");
+    store.dispatch(logout());
+    return null;
+  }
+
+  const url = `/api/v1/auth/token/refresh`;
+  console.log("UserType:", userType);
+  console.log("Refresh URL:", url);
 
   try {
-    const response = await axiosInstance.post(
-      url,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      },
-    );
+    // 요청 본문에 현재 accessToken 전송
+    const response = await axiosInstance.post(url, { accessToken: currentAccessToken });
 
-    const newAccessToken = response.data.data.payload.token.accessToken;
-    const accessTokenExpiredAt = response.data.data.payload.token.accessTokenExpiredAt;
+    const { content } = response.data;
+    const newAccessToken = content.accessToken;
+    const expiredIn = content.expiredIn;
 
+    const accessTokenExpiredAt = new Date(Date.now() + expiredIn * 1000).toISOString();
+
+    // Redux 스토어와 쿠키에 갱신된 토큰 정보 저장
     store.dispatch(refreshAccessToken(newAccessToken));
     cookies.set("accessToken", newAccessToken, { path: "/" });
     cookies.set("expiresAt", accessTokenExpiredAt, { path: "/" });
@@ -45,46 +50,45 @@ const getNewAccessToken = async userType => {
     return newAccessToken;
   } catch (error) {
     console.error("액세스 토큰 갱신에 실패했습니다. 로그아웃 처리합니다.", error);
-    cookies.remove("refreshToken", { path: "/" });
+    cookies.remove("accessToken", { path: "/" });
+    cookies.remove("refresh", { path: "/" });
     store.dispatch(logout());
     return null;
   }
 };
+
 axiosInstance.interceptors.request.use(
   config => {
     const token = cookies.get("accessToken");
     const expiresAt = cookies.get("expiresAt");
 
+    // 토큰이 존재하고 아직 만료되지 않았다면 헤더에 추가
     if (token && expiresAt && moment().isBefore(moment(expiresAt))) {
-      // 토큰이 유효하다면 기존 토큰을 사용
       config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  },
+  error => Promise.reject(error),
 );
 
-// 응답 인터셉터: 401 오류를 처리하여 새로운 액세스 토큰을 발급받음
 axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
 
-    // 401 Unauthorized 오류가 발생한 경우 새로운 액세스 토큰을 발급받음
+    // 401 오류 발생 시 (토큰 만료 등) 단 한 번만 재시도하도록 처리
     if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const state = store.getState();
       const userType = state.auth.user?.type;
-      console.log(userType);
+      console.log("User type for token refresh:", userType);
       if (!userType) {
         console.error("사용자 유형이 정의되지 않았습니다. 로그아웃 처리합니다.");
         store.dispatch(logout());
         cookies.remove("accessToken", { path: "/" });
-        cookies.remove("refreshToken", { path: "/" });
+        cookies.remove("refresh", { path: "/" });
         return Promise.reject(error);
       }
 
@@ -97,17 +101,17 @@ axiosInstance.interceptors.response.use(
         console.error("액세스 토큰 갱신에 실패했습니다. 로그아웃 처리합니다.");
         store.dispatch(logout());
         cookies.remove("accessToken", { path: "/" });
-        cookies.remove("refreshToken", { path: "/" });
+        cookies.remove("refresh", { path: "/" });
         return Promise.reject(error);
       }
     }
 
-    // 액세스 토큰 갱신 시도 후에도 401 오류가 발생한 경우 로그아웃 처리
+    // 토큰 갱신 시도 후에도 401 오류가 발생하면 로그아웃 처리
     if (error.response && error.response.status === 401 && originalRequest._retry) {
       console.error("토큰 갱신 실패로 로그아웃 처리합니다.");
       store.dispatch(logout());
       cookies.remove("accessToken", { path: "/" });
-      cookies.remove("refreshToken", { path: "/" });
+      cookies.remove("refresh", { path: "/" });
     }
 
     return Promise.reject(error);

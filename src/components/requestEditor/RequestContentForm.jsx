@@ -6,18 +6,24 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useMessageApi } from "components/messaging/MessageProvider";
 import styled from "styled-components";
+import { useFileUpload } from "hooks/useFileUpload";
 
-const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
+const RequestContentForm = ({ formik, editorRef, setPendingFiles, mode }) => {
   const quillRef = useRef(null);
   const [fileList, setFileList] = useState([]);
   const messageApi = useMessageApi();
+  // 별도 모듈에서 제공하는 파일 업로드 함수 사용
+  const { uploadFileToServer } = useFileUpload();
 
+  // 파일 선택 시 antd Upload의 onChange 핸들러
   const handleFileChange = info => {
-    let newFileList = [...info.fileList];
+    const newFileList = [...info.fileList];
     setFileList(newFileList);
-    setPendingFiles(newFileList.map(file => file.originFileObj)); // 문서 첨부 파일 설정
+    // 부모 컴포넌트에 파일 객체 배열을 전달 (필요에 따라 조정)
+    setPendingFiles(newFileList.map(file => file.originFileObj));
   };
 
+  // ReactQuill 에디터 변경 시 값 업데이트
   const handleChange = (content, delta, source, editor) => {
     formik.setFieldValue("content", editor.getHTML());
   };
@@ -31,12 +37,8 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
         [{ list: "ordered" }, { list: "bullet" }, { align: [] }],
       ],
     },
-    clipboard: {
-      matchVisual: false,
-    },
-    history: {
-      userOnly: true,
-    },
+    clipboard: { matchVisual: false },
+    history: { userOnly: true },
   };
 
   const formats = [
@@ -93,20 +95,29 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
           <StyledUploadContent>
             <Upload
               fileList={fileList}
-              accept='.pdf,.doc,.docx,.hwp'
+              accept='.pdf,.doc,.docx,.hwp,image/*'
               beforeUpload={file => {
-                const isSizeValid = file.size / 1024 / 1024 < 1024;
+                console.log("업로드 파일 타입:", file.type);
+                const isSizeValid = file.size / 1024 / 1024 < 1024; // 1GB 이하
                 if (!isSizeValid) {
                   messageApi.error("파일 크기는 1GB 이하이어야 합니다.");
                   return Upload.LIST_IGNORE;
                 }
-                return false;
+                return false; // 실제 업로드는 customRequest로 진행
               }}
               onChange={handleFileChange}
-              customRequest={({ file, onSuccess }) => {
-                setTimeout(() => {
-                  onSuccess("ok");
-                }, 0);
+              customRequest={async ({ file, onSuccess, onError }) => {
+                try {
+                  // 파일 업로드 로직을 별도 모듈에서 제공하는 함수로 처리
+                  const result = await uploadFileToServer(file);
+                  if (result && result.fileId) {
+                    onSuccess({ fileId: result.fileId }, file);
+                  } else {
+                    throw new Error("파일 업로드 ID를 가져오지 못했습니다.");
+                  }
+                } catch (error) {
+                  onError(error);
+                }
               }}
               multiple
             >
@@ -125,7 +136,7 @@ const CommonForm = ({ formik, editorRef, setPendingFiles, mode }) => {
   );
 };
 
-CommonForm.propTypes = {
+RequestContentForm.propTypes = {
   formik: PropTypes.shape({
     setFieldValue: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
@@ -135,26 +146,20 @@ CommonForm.propTypes = {
       isCheckboxChecked: PropTypes.bool,
     }).isRequired,
   }).isRequired,
-  editorRef: PropTypes.shape({
-    current: PropTypes.object,
-  }).isRequired,
-
-  setPendingFiles: PropTypes.func.isRequired, // 문서 첨부 파일 설정 함수 추가
-
+  editorRef: PropTypes.shape({ current: PropTypes.object }).isRequired,
+  setPendingFiles: PropTypes.func.isRequired,
   mode: PropTypes.string.isRequired,
 };
 
-export default CommonForm;
+export default RequestContentForm;
 
 const StyledFormContainer = styled.div`
   margin-left: 45px;
-  /* width: calc(100% - 510px); */
   width: 70%;
   overflow-y: auto;
   .ant-form-item {
     margin-bottom: 16px;
   }
-
   p {
     font-weight: bold;
   }
@@ -163,11 +168,8 @@ const StyledFormContainer = styled.div`
 const StyledQuillContainer = styled.div`
   .custom-quill {
     min-height: 150px;
-    /* max-height: 400px; */
     max-height: 20%;
     height: auto;
-    /* overflow-y: auto; */
-
     img {
       max-width: 100%;
       height: auto;

@@ -4,19 +4,22 @@ import LoginForm from "components/layout/AuthFormLayout";
 import { Input, Button, Radio, Form } from "antd";
 import PropTypes from "prop-types";
 import { validationSchema } from "utils/validations";
-
 import SvgEye from "components/Icons/Eye";
 import SvgEyeclose from "components/Icons/Eyeclose";
-
 import { formatBirthday } from "utils/formatters";
+import { checkEmailExist } from "apis/usersApi"; // 이메일 중복 검사 API 함수
+import { useState } from "react";
 
-const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
+const JoinForm = ({ handleData, type, handleSubmit }) => {
+  const [emailAvailable, setEmailAvailable] = useState(null);
+
   const {
     control,
     handleSubmit: onSubmit,
     formState: { errors, isValid },
-
     setValue,
+    setError,
+    clearErrors,
   } = useForm({
     resolver: yupResolver(validationSchema),
     mode: "onBlur",
@@ -24,33 +27,59 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
   // 생년월일 처리
   const handleBirthdayChange = e => {
-    const formattedValue = formatBirthday(e.target.value); // 생년월일 포맷팅 적용
-    setValue("birthDay", formattedValue);
+    const formattedValue = formatBirthday(e.target.value);
+    setValue("birth", formattedValue);
+  };
+
+  // 이메일 중복 검사 핸들러 (onBlur 시 호출)
+  const handleEmailBlur = async e => {
+    const email = e.target.value;
+    if (email) {
+      try {
+        const exist = await checkEmailExist(email);
+        if (exist) {
+          setError("email", {
+            type: "manual",
+            message: "이미 가입된 이메일입니다. 다른 이메일을 입력해 주세요.",
+          });
+          setEmailAvailable(null);
+        } else {
+          clearErrors("email");
+          setEmailAvailable("사용 가능한 이메일입니다.");
+        }
+      } catch (error) {
+        console.error("이메일 중복 검사 실패:", error);
+        setEmailAvailable(null);
+      }
+    }
   };
 
   const onFinish = async values => {
     handleData(values);
-    if (type !== "lawyer") {
-      await handleSubmit(values);
-    } else {
-      nextStep();
-    }
+    await handleSubmit(values);
   };
 
   return (
-    <LoginForm title={type === "quest" ? "회원가입" : "변호사 회원가입"}>
+    <LoginForm title={type === "clients" ? "회원가입" : "변호사 회원가입"}>
       <Form onFinish={onSubmit(onFinish)}>
         <div className='flex gap-2 flex-col'>
-          {/* 이메일 입력하며 중복검사 하나? */}
-          {/* 이미 가입된 이메일입니다. 다른 이메일을 입력해 주세요. */}
           <Form.Item
-            validateStatus={errors.email ? "error" : "success"}
-            help={errors.email?.message || ""} // 에러 메시지를 표시
+            validateStatus={errors.email ? "error" : emailAvailable ? "success" : ""}
+            help={errors.email?.message || emailAvailable || ""}
           >
             <Controller
               name='email'
               control={control}
-              render={({ field }) => <Input placeholder='이메일 입력' {...field} />}
+              render={({ field }) => (
+                <Input
+                  placeholder='이메일 입력'
+                  {...field}
+                  onBlur={e => {
+                    field.onBlur();
+                    handleEmailBlur(e);
+                  }}
+                />
+              )}
             />
           </Form.Item>
 
@@ -97,18 +126,18 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
 
           <Form.Item>
             <Controller
-              name='birthDay'
+              name='birth'
               control={control}
               render={({ field }) => (
                 <Input
                   placeholder='생년월일 8자리 (YYYY.MM.DD)'
                   maxLength='10'
                   {...field}
-                  onChange={handleBirthdayChange} // 생년월일 포맷팅 적용
+                  onChange={handleBirthdayChange}
                 />
               )}
             />
-            {errors.birthDay && <p style={{ color: "red" }}>{errors.birthDay.message}</p>}
+            {errors.birth && <p style={{ color: "red" }}>{errors.birth.message}</p>}
           </Form.Item>
 
           <Form.Item>
@@ -117,11 +146,11 @@ const JoinForm = ({ handleData, nextStep, type, handleSubmit }) => {
               control={control}
               render={({ field }) => (
                 <Radio.Group buttonStyle='solid' className='w-full grid grid-cols-3 text-center' {...field}>
-                  <Radio.Button value='MALE' className='!rounded-l-md'>
+                  <Radio.Button value='M' className='!rounded-l-md'>
                     남자
                   </Radio.Button>
-                  <Radio.Button value='FEMALE'>여자</Radio.Button>
-                  <Radio.Button value='none' className='!rounded-r-md'>
+                  <Radio.Button value='W'>여자</Radio.Button>
+                  <Radio.Button value='U' className='!rounded-r-md'>
                     선택안함
                   </Radio.Button>
                 </Radio.Group>

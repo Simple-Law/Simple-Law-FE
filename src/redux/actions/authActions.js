@@ -36,23 +36,36 @@ export const refreshAccessToken = newAccessToken => {
 };
 
 // 비동기 Thunk 함수
-export const loginUserAction = (values, userType) => async dispatch => {
+
+export const loginUserAction = values => async dispatch => {
   dispatch(showUserLoading());
   try {
-    const response = await apiLoginUser(values, userType);
-    const { token: tokens, user } = response.data.payload;
+    const response = await apiLoginUser(values);
+    const { content } = response;
 
+    // 토큰 정보 생성: accessTokenExpiredAt을 ISO 문자열로 변환
+    const tokens = {
+      accessToken: content.accessToken,
+      refreshToken: cookies.get("refreshToken"),
+      accessTokenExpiredAt: new Date(Date.now() + content.expiredIn * 1000).toISOString(),
+    };
+    const tokenPayload = JSON.parse(atob(tokens.accessToken.split(".")[1]));
+    console.log("Token payload:", tokenPayload);
     // 쿠키에 토큰 저장
     cookies.set("accessToken", tokens.accessToken, { path: "/" });
-    cookies.set("refreshToken", tokens.refreshToken, { path: "/" });
-    cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" }); // 액세스 토큰 만료 시간 저장
+    cookies.set("expiresAt", tokens.accessTokenExpiredAt, { path: "/" });
+    // 타입 전송
+    const computedUserType = tokenPayload.role.toLowerCase() + "s";
+    // getMemberInfo 호출 시 에러 발생하면 빈 객체로 처리
+    let user;
+    try {
+      user = await getMemberInfo(computedUserType);
+    } catch (err) {
+      console.error("Error fetching member info, defaulting to empty object:", err);
+      user = {};
+    }
 
-    // 로그인 후 사용자 정보 가져오기
-    const userInfo = await getMemberInfo(userType);
-
-    // 상태에 토큰과 사용자 정보 저장
-    dispatch(login(tokens, { ...user, ...userInfo }));
-    // dispatch(login(tokens, user));
+    dispatch(login(tokens, user));
     dispatch(hideUserLoading());
 
     return { success: true };
@@ -60,21 +73,22 @@ export const loginUserAction = (values, userType) => async dispatch => {
     dispatch(hideUserLoading());
     const message = error.response?.data?.message || "로그인 실패!";
     console.error("Error during login process:", error.response?.data || error);
-    return { success: false, message: message };
+    return { success: false, message };
   }
 };
 
 // 인증번호 발송 Thunk 함수
-export const sendAuthCodeAction = (phoneNumber, type) => async dispatch => {
-  dispatch(showUserLoading());
-  try {
-    await apiSendAuthCode(phoneNumber, type);
-    dispatch(hideUserLoading());
-    return { success: true };
-  } catch (error) {
-    dispatch(hideUserLoading());
-    const message = error.response?.data?.message || "인증번호 발송 실패!";
-    console.error("Error during sending auth code:", error.response?.data || error);
-    return { success: false, message: message };
-  }
+export const sendAuthCodeAction = (phoneNumber, type) => {
+  console.log("sendAuthCodeAction", phoneNumber, type);
+  // dispatch(showUserLoading());
+  // try {
+  //   await apiSendAuthCode(phoneNumber, type);
+  //   dispatch(hideUserLoading());
+  //   return { success: true };
+  // } catch (error) {
+  //   dispatch(hideUserLoading());
+  //   const message = error.response?.data?.message || "인증번호 발송 실패!";
+  //   console.error("Error during sending auth code:", error.response?.data || error);
+  //   return { success: false, message: message };
+  // }
 };
