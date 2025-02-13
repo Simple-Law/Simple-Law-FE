@@ -73,7 +73,7 @@ export const updateMail = async (id, updateData) => {
 export const createMail = async requestData => {
   console.log("requestData", requestData);
   try {
-    const response = await axiosInstance.post("/api/v1/members/cases", requestData, {
+    const response = await axiosInstance.post("/api/v1/clients/instances", requestData, {
       headers: {
         "Content-Type": "application/json",
       },

@@ -6,9 +6,9 @@ import ConfirmModal from "components/modal/ConfirmModal";
 import { useSelector } from "react-redux";
 import { useMail } from "hooks/useMail";
 
-import LeftSideContent from "components/requestEditor/CategorySelectionPanel";
-import CommonForm from "components/editor/ContentEditorForm";
+import CategorySelectionPanel from "components/requestEditor/CategorySelectionPanel";
 import { FormDiv } from "components/requestEditor/styles";
+import RequestContentForm from "components/requestEditor/RequestContentForm";
 
 const RequestForm = () => {
   const { id, mode } = useParams();
@@ -53,9 +53,10 @@ const RequestForm = () => {
         <h2 className='text-2xl font-bold mb-6 absolute top-[40px] left-0'>의뢰 요청서</h2>
         <Form onFinish={handleSubmit} className='flex pt-24'>
           <div className='left-side'>
-            {loading ? <Spin /> : <LeftSideContent existingMail={existingMail} formik={formik} />}
+            {loading ? <Spin /> : <CategorySelectionPanel existingMail={existingMail} formik={formik} />}
           </div>
-          <CommonForm
+
+          <RequestContentForm
             formik={formik}
             editorRef={editorRef}
             setPendingFiles={setPendingFiles}

@@ -1,4 +1,4 @@
-import { Form, Select, Checkbox } from "antd";
+import { Form, Select, Checkbox, InputNumber } from "antd";
 import { StyledList } from "./styles";
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
@@ -12,7 +12,6 @@ const CategorySelectionPanel = ({ existingMail, formik }) => {
     const fetchData = async () => {
       try {
         const categoriesData = await fetchCaseCategories();
-
         setCategories(categoriesData);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -21,6 +20,13 @@ const CategorySelectionPanel = ({ existingMail, formik }) => {
 
     fetchData();
   }, []);
+
+  // 선택한 시간(12, 24)을 현재 시각에 더해 ISO 문자열로 변환하여 "due" 필드에 저장
+  const handleTimeChange = value => {
+    const hours = parseInt(value, 10);
+    const dueDate = new Date(Date.now() + hours * 3600000).toISOString();
+    formik.setFieldValue("due", dueDate);
+  };
 
   return (
     <div className='mr-16'>
@@ -76,11 +82,34 @@ const CategorySelectionPanel = ({ existingMail, formik }) => {
 
             <Form.Item>
               <p>의뢰 작업 기한</p>
-              <Select name='time' placeholder='의뢰 작업 기한' onChange={value => formik.setFieldValue("time", value)}>
+              <Select name='due' placeholder='의뢰 작업 기한' onChange={handleTimeChange}>
                 <Select.Option value='12'>12시간</Select.Option>
                 <Select.Option value='24'>24시간</Select.Option>
               </Select>
             </Form.Item>
+
+            <Form.Item>
+              <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
+                <div className="text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
+                  총 결제 금액
+                </div>
+                <div className='flex justify-start items-center gap-0.5'>
+                  <InputNumber
+                    className="text-right text-blue-500 text-[22px] font-bold font-['Pretendard']"
+                    style={{ background: "transparent", border: "none", outline: "none", width: "auto" }}
+                    formatter={value => value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                    parser={value => value.replace(/(,*)/g, "")}
+                    min={1}
+                    value={formik.values.amount}
+                    onChange={value => formik.setFieldValue("amount", value)}
+                  />
+                  <div className="text-right text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
+                    원
+                  </div>
+                </div>
+              </div>
+            </Form.Item>
+
             <div>
               <p>의뢰 등록 전 안내사항</p>
               <StyledList className='rounded-md bg-slate-100 px-5 py-5 mb-[10px]'>
@@ -117,15 +146,6 @@ const CategorySelectionPanel = ({ existingMail, formik }) => {
               </Form.Item>
             </div>
           </div>
-          <div className='mt-10 w-full h-[58px] px-5 py-4 bg-blue-500 bg-opacity-10 rounded-md justify-between items-center inline-flex'>
-            <div className="text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">총 결제 금액</div>
-            <div className='justify-start items-center gap-0.5 flex'>
-              <div className="text-right text-blue-500 text-[22px] font-bold font-['Pretendard']">120,000</div>
-              <div className="text-right text-blue-500 text-base font-semibold font-['Pretendard'] leading-tight">
-                원
-              </div>
-            </div>
-          </div>
         </>
       )}
     </div>
@@ -143,6 +163,7 @@ CategorySelectionPanel.propTypes = {
     handleChange: PropTypes.func.isRequired,
     values: PropTypes.shape({
       isCheckboxChecked: PropTypes.bool.isRequired,
+      amount: PropTypes.number, // amount 필드 추가
     }).isRequired,
   }).isRequired,
 };
