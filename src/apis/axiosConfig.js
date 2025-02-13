@@ -8,13 +8,22 @@ const cookies = new Cookies();
 
 const axiosInstance = axios.create({
   baseURL: process.env.REACT_APP_SERVER_URL,
+  withCredentials: true,
 });
 
 // 새로운 액세스 토큰을 리프레시 토큰을 통해 얻는 함수
 const getNewAccessToken = async userType => {
-  const refreshToken = cookies.get("refreshToken");
+  const refreshToken = cookies.get("refresh");
   if (!refreshToken) {
     console.error("리프레시 토큰이 없습니다. 로그아웃 처리합니다.");
+    store.dispatch(logout());
+    return null;
+  }
+
+  // accessToken이 유효한지 확인
+  const currentAccessToken = cookies.get("accessToken");
+  if (!currentAccessToken || currentAccessToken.trim() === "") {
+    console.error("유효한 액세스 토큰이 없습니다. 로그아웃 처리합니다.");
     store.dispatch(logout());
     return null;
   }
@@ -24,22 +33,13 @@ const getNewAccessToken = async userType => {
   console.log("Refresh URL:", url);
 
   try {
-    const currentAccessToken = cookies.get("accessToken") || "";
-    const response = await axiosInstance.post(
-      url,
-      { accessToken: currentAccessToken },
-      {
-        headers: {
-          Authorization: `Bearer ${refreshToken}`,
-        },
-      },
-    );
+    // 요청 본문에 현재 accessToken 전송
+    const response = await axiosInstance.post(url, { accessToken: currentAccessToken });
 
     const { content } = response.data;
     const newAccessToken = content.accessToken;
-    const expiredIn = content.expiredIn; // 초 단위 유효 시간
+    const expiredIn = content.expiredIn;
 
-    // expiredIn(초)를 기반으로 만료 시간을 계산하고 ISO 문자열로 변환
     const accessTokenExpiredAt = new Date(Date.now() + expiredIn * 1000).toISOString();
 
     // Redux 스토어와 쿠키에 갱신된 토큰 정보 저장
@@ -50,7 +50,8 @@ const getNewAccessToken = async userType => {
     return newAccessToken;
   } catch (error) {
     console.error("액세스 토큰 갱신에 실패했습니다. 로그아웃 처리합니다.", error);
-    cookies.remove("refreshToken", { path: "/" });
+    cookies.remove("accessToken", { path: "/" });
+    cookies.remove("refresh", { path: "/" });
     store.dispatch(logout());
     return null;
   }
@@ -61,16 +62,14 @@ axiosInstance.interceptors.request.use(
     const token = cookies.get("accessToken");
     const expiresAt = cookies.get("expiresAt");
 
-    // 토큰이 존재하고 만료되지 않았다면 헤더에 추가
+    // 토큰이 존재하고 아직 만료되지 않았다면 헤더에 추가
     if (token && expiresAt && moment().isBefore(moment(expiresAt))) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
   },
-  error => {
-    return Promise.reject(error);
-  },
+  error => Promise.reject(error),
 );
 
 axiosInstance.interceptors.response.use(
@@ -89,7 +88,7 @@ axiosInstance.interceptors.response.use(
         console.error("사용자 유형이 정의되지 않았습니다. 로그아웃 처리합니다.");
         store.dispatch(logout());
         cookies.remove("accessToken", { path: "/" });
-        cookies.remove("refreshToken", { path: "/" });
+        cookies.remove("refresh", { path: "/" });
         return Promise.reject(error);
       }
 
@@ -102,7 +101,7 @@ axiosInstance.interceptors.response.use(
         console.error("액세스 토큰 갱신에 실패했습니다. 로그아웃 처리합니다.");
         store.dispatch(logout());
         cookies.remove("accessToken", { path: "/" });
-        cookies.remove("refreshToken", { path: "/" });
+        cookies.remove("refresh", { path: "/" });
         return Promise.reject(error);
       }
     }
@@ -112,7 +111,7 @@ axiosInstance.interceptors.response.use(
       console.error("토큰 갱신 실패로 로그아웃 처리합니다.");
       store.dispatch(logout());
       cookies.remove("accessToken", { path: "/" });
-      cookies.remove("refreshToken", { path: "/" });
+      cookies.remove("refresh", { path: "/" });
     }
 
     return Promise.reject(error);
